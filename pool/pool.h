@@ -22,6 +22,6 @@ int init_pool(pool *);
 
 char *my_malloc(pool *);
 
-
+int free_pool(char *, pool *);
 
 

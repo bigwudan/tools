@@ -57,6 +57,43 @@ char *my_malloc(pool *p_pool)
 	return NULL;
 }
 
+int free_pool(char *p_node, pool *p_pool)
+{
+	block *p_block = p_pool->p_next;
+	int count = 0;
+	while(p_block){
+
+		if(  p_node > (char *)p_block 
+				&& p_node < (char *)p_block + sizeof(block) +  p_pool->inodenum*4 )
+		{
+		
+			count = p_node - (char *)p_block - sizeof(block);
+			count = count / 4;
+
+			*(( short  *)p_node) = p_block->free_count;
+
+
+			p_block->free_count = count;
+			p_block->freenum++;
+			return 1;
+		
+		}
+	
+	
+	
+	}
+
+
+	return 0;
+
+	
+
+
+
+}
+
+
+
 int main()
 {
 	char *p_free = NULL;
@@ -67,7 +104,10 @@ int main()
 	init_pool(&my_pool);
 	p_free = my_malloc(&my_pool);
 		
-	printf("p_free=%p\n", p_free);
+	int flag = free_pool(p_free, &my_pool);
+
+
+	printf("flag=%d\n", flag);
 
 
 
