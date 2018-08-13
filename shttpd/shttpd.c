@@ -1,29 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <stddef.h>
-
-
 #include "shttpd.h"
-
-
-
 void header_parse( char *head_str, int len, struct headers *ch)
 {
 	char *p = NULL;
 	char *pos = head_str;
 	char *end = head_str + len ;
 	union variant *v = NULL;
-
-
-
 	while( p <= end ){
-
 		for(p = pos; *p != '\n'; p++){
-
 		}	
-		
 		struct http_header *p_http_header = NULL;
 		for(p_http_header = http_headers; p_http_header->len !=0; p_http_header++){
 			if( strncmp(p_http_header->name, pos, p_http_header->len   ) == 0  ){
@@ -45,13 +33,7 @@ void header_parse( char *head_str, int len, struct headers *ch)
 		}
 		pos = p + 1;	
 	}
-
 	return ;
-
-
-
-
-
 }
 
 
@@ -86,20 +68,7 @@ void request_parse(struct conn_request *p_request)
 	str = p_request->rqs + clen  ;
 	len = len - clen;
 	header_parse(str, len, &p_request->ch);
-
-
-
-
-
-
-	
-	
-
-
-
 	return ;
-
-
 }
 
 
