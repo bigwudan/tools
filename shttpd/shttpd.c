@@ -82,18 +82,6 @@ int main(int argn, char **argv)
 	char headstr[1024] = "GET /root/default.html HTTP/1.1\r\nContent-Length: 1111\r\nContent-Type: 2222\r\nUser-Agent: 323232\r\n\r\nhttpsaeqrwerwerwer";
 	struct conn_request my_request;
 	strcpy(my_request.rqs, headstr);
-
 	my_request.len = strlen(headstr);
-
-
 	request_parse(&my_request);
-
-
-
-
-
-
-
-
-
 }
