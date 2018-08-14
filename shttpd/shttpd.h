@@ -1,92 +1,77 @@
 #ifndef _SHTTPD_H_
 #define _SHTTPD_H_
-#define JUMPTO_CHAR(pos, s_char) do{ for(; *pos != s_char; pos++);  }while(0);
-#define JUMPOVER_CHAR(pos, s_char) do{ for(; *pos == s_char; pos++);   }while(0);
-#define OFFSET(x) offsetof(struct headers, x)
-
-
-typedef enum SHTTPD_METHOD_TYPE{
-	METGOD_GET,
-	METGOD_POST,
-	METGOD_PUT,
-	METGOD_DELETE,
-	METGOD_HEAD
-}SHTTPD_METHOD_TYPE;
-
-typedef struct vec{
-	char *ptr;
-	int len;
-	SHTTPD_METHOD_TYPE type;
-}vec;
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <pthread.h>
+#include <signal.h>
+#include <errno.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 
 
-union variant{
-	char *v_str;
-	int v_int;
-	struct vec v_vec;
 
+
+struct conf_opts{
+	char CGIRoot[128];		/*CGI��·��*/
+	char DefaultFile[128];		/*Ĭ���ļ�����*/
+	char DocumentRoot[128];	/*���ļ�·��*/
+	char ConfigFile[128];		/*�����ļ�·��������*/
+	int ListenPort;			/*�����˿�*/
+	int MaxClient;			/*���ͻ�������*/
+	int TimeOut;				/*��ʱʱ��*/
+	int InitClient;				/*��ʼ���߳�����*/
 };
 
-struct headers{
-	union variant cl;
-	union variant ct;
-	union variant connection;
-	union variant ims;
-	union variant user;
-	union variant auth;
-	union variant useragent;
-	union variant referer;
-	union variant cookie;
-};
-
-struct http_header{
-	int len;
-	int type;
-	long unsigned int offset;
-	char *name;
-};
-
-enum {HDR_DATE, HDR_INT, HDR_STRING};
-
-struct http_header http_headers[] = {
-
-	{16, HDR_INT, OFFSET(cl), "Content-Length: "},
-	{14, HDR_STRING, OFFSET(ct), "Content-Type: "},
-	{12, HDR_STRING, OFFSET(useragent), "User-Agent: "},
-	{0, HDR_INT, 0 , NULL}
+extern struct conf_opts my_conf_opts;
 
 
-
-
-};
-
-
-
-struct conn_request{
-	struct vec req;
-	char *head;
-	char *uri;
-	char rpath[1024];
-	char rqs[4012];
-	int len;
-	int method;
-	unsigned long major;
-	unsigned long minor;
-	struct headers ch;
-};
-
-struct vec _shttpd_methods[] = 
+struct worker_ctl;
+struct worker_opts
 {
-	{"GET", 3, METGOD_GET   },
-	{"POST", 4, METGOD_POST},
-	{NULL, 0, 0}
+	pthread_t th;
+	int flag;
+	pthread_mutex_t mutex;
+	struct worker_ctl *ctl;
 };
 
 
+struct worker_conn
+{
+#define K 1024
+	char drep[16*K];	
+	char dres[16*K];
+	int cs;
+	int to;
+	struct worker_ctl *ctl;
+
+
+};
+
+
+struct worker_ctl
+{
+	struct worker_opts opts;
+	struct worker_conn conn;
+};
+
+extern int Worker_ScheduleRun(int);
 
 
 
 
 
-#endif 
+
+
+
+
+
+
+
+
+
+
+
+#endif
+
