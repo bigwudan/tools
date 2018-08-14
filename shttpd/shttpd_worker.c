@@ -31,7 +31,7 @@ static Worker_Init()
 	for(n=0; n < my_conf_opts.MaxClient; n++){
 		ctls[n].opts.ctl = &ctls[n];
 		ctls[n].conn.ctl = &ctls[n];
-		ctls[n].opts.flag = 0;
+		ctls[n].opts.flag = WORKER_IDEL;
 		pthread_mutex_init(&ctls[n].opts.mutex, NULL);
 		pthread_mutex_lock(&ctls[n].opts.mutex);
 	}
@@ -73,34 +73,9 @@ int Worker_ScheduleRun(int ss)
 						
 					printf("sc=%d\n", sc);
 					close(sc);
-				
-				
 				}
-				
-				
-		
-		
-		
-		
-		
-		
-		
 		}	
-			
-
-
-
-
-
-
-
-	
-	
 	}
-
-	
-
-
 }
 
 

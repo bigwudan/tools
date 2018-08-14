@@ -11,7 +11,7 @@
 
 
 
-
+enum{WORKER_INITED, WORKER_RUNNING,WORKER_DETACHING, WORKER_DETACHED,WORKER_IDEL};
 
 struct conf_opts{
 	char CGIRoot[128];		/*CGI��·��*/
