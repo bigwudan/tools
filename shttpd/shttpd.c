@@ -17,7 +17,7 @@ struct conf_opts my_conf_opts =
 
 static void sig_int(int num)
 {
-	exit;
+	printf("sig_int\n");
 }
 
 static int do_listen()
@@ -59,7 +59,7 @@ static int do_listen()
 
 int main(int argc,  char **argv)
 {
-	signal(SIGINT, sig_int);
+	//signal(SIGINT, sig_int);
 	int ss = do_listen();
 	
 	printf("ss=%d\n", ss);

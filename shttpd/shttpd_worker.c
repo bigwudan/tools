@@ -3,9 +3,63 @@ static struct worker_ctl *ctls = NULL;
 pthread_mutex_t thread_init = PTHREAD_MUTEX_INITIALIZER;
 
 
+
+static int worker_isstatus(int status)
+{
+	int n = 0;
+	for(n = 0; n < my_conf_opts.MaxClient; n++){
+		if(ctls[n].opts.flag == status   ){
+			return n;
+		}
+	}
+	return -1;
+}
+
+
+static void do_work( struct worker_ctl *ctl )
+{
+	int fd = ctl->conn.cs;
+	char buff[1200];
+
+	read(fd,buff, 1200 );
+
+	printf("buff=%s\n", buff);
+
+	getchar();
+
+
+}
+
+
+
 static void *worker(void *arg)
 {
-	return NULL;
+	printf("thread start\n");
+	struct worker_ctl *p_ctl = NULL;
+	int flag = 0;
+	p_ctl = (struct worker_ctl *)arg;
+	pthread_mutex_unlock(&thread_init);
+	p_ctl->opts.flag = WORKER_IDEL;
+	for(; p_ctl->opts.flag != WORKER_DETACHING; ){
+		flag = pthread_mutex_trylock(&p_ctl->opts.mutex);
+		if(flag){
+			sleep(1);
+			continue;
+		}else{
+			p_ctl->opts.flag == WORKER_RUNNING;
+			printf("do work!\n");
+			do_work( p_ctl );
+
+			if( p_ctl->opts.flag == WORKER_DETACHING  ){
+				break;
+			}else{
+				p_ctl->opts.flag = WORKER_IDEL;
+				continue;
+			}
+		}
+	}
+	p_ctl->opts.flag = WORKER_DETACHED;
+	return ;
 }
 
 
@@ -31,7 +85,7 @@ static Worker_Init()
 	for(n=0; n < my_conf_opts.MaxClient; n++){
 		ctls[n].opts.ctl = &ctls[n];
 		ctls[n].conn.ctl = &ctls[n];
-		ctls[n].opts.flag = 0;
+		ctls[n].opts.flag = WORKER_IDEL;
 		pthread_mutex_init(&ctls[n].opts.mutex, NULL);
 		pthread_mutex_lock(&ctls[n].opts.mutex);
 	}
@@ -49,9 +103,7 @@ int Worker_ScheduleRun(int ss)
 	socklen_t len = sizeof(client);
 	int i = 0;
 	while(1){
-
 		printf("select start\n");
-
 		struct timeval tv;
 		fd_set rfds;
 		int retval = -1;
@@ -69,38 +121,25 @@ int Worker_ScheduleRun(int ss)
 				continue;
 			default:
 				if(FD_ISSET( ss, &rfds ) ){
+					printf("request arrive\n");
 					int sc = accept(ss, (struct sockaddr*)&client, &len  );	
-						
-					printf("sc=%d\n", sc);
-					close(sc);
-				
-				
+					i = worker_isstatus(WORKER_IDEL);
+//					if(i == -1){
+//						i = worker_isstatus(WORKER_DETACHED);
+//						if(i != 1){
+//							Worker_add(i);				
+//						}
+//					}
+					if(i != -1){
+						ctls[i].conn.cs = sc;	
+						pthread_mutex_unlock(&ctls[i].opts.mutex);
+					}else{
+						printf("pthread error\n");
+						exit;
+					}
 				}
-				
-				
-		
-		
-		
-		
-		
-		
-		
 		}	
-			
-
-
-
-
-
-
-
-	
-	
 	}
-
-	
-
-
 }
 
 
