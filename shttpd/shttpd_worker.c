@@ -123,7 +123,6 @@ int Worker_ScheduleRun(int ss)
 				if(FD_ISSET( ss, &rfds ) ){
 					printf("request arrive\n");
 					int sc = accept(ss, (struct sockaddr*)&client, &len  );	
-<<<<<<< HEAD
 					i = worker_isstatus(WORKER_IDEL);
 //					if(i == -1){
 //						i = worker_isstatus(WORKER_DETACHED);
