@@ -19,15 +19,57 @@ static int worker_isstatus(int status)
 static void do_work( struct worker_ctl *ctl )
 {
 	int fd = ctl->conn.cs;
-	char buff[1200];
+	int retval = 1;
+	int flag = 0;
+	struct timeval tv;
+	
+//	printf("do_wrok-------- \n");
+//
+//	flag =  read( fd, ctl->conn.drep, sizeof(ctl->conn.drep)  );
+//
+//	if(flag > 0){
+//		printf("drep=%s\n", ctl->conn.drep);
+//	}else{
+//		printf("error\n");
+//	}
+//
+//
+//	
+//	getchar();
 
-	read(fd,buff, 1200 );
-
-	printf("buff=%s\n", buff);
-
-	getchar();
+	fd_set rfds;
 
 
+	for(; retval>0; ){
+		FD_ZERO(&rfds);
+		FD_SET(fd, &rfds);
+		tv.tv_sec = 300;
+		tv.tv_usec = 0;
+		retval = select(fd+1, &rfds, NULL, NULL, &tv);
+		
+		switch(retval){
+			case -1:
+				close(fd);
+				break;
+			case 0:
+				close(fd);
+				break;
+			default:
+				if( FD_ISSET(fd, &rfds) ){
+					memset(ctl->conn.drep, 0, sizeof(ctl->conn.drep));
+					ctl->conn.con_req.req.len \
+						= \
+					read( fd, ctl->conn.drep, sizeof(ctl->conn.drep)  );
+					if( ctl->conn.con_req.req.len > 0 ){
+						printf("buff=%s\n", ctl->conn.drep);
+					}else{
+						close(fd);
+						retval = -1;
+					}
+				}
+		}
+	}
+	
 }
 
 
