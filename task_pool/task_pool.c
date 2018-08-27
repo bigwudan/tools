@@ -61,14 +61,20 @@ void *assemble_task( void *arg  )
 			if(p_thread_pool->task_num <5){
 			
 				p_task->th = p_thread_pool->th;
+				p_thread_pool->task_num++;
+				pthread_mutex_unlock(&p_thread_pool->mutex_t);
 				break;
 			}
-			p_thread_pool->task_num++;
 			pthread_mutex_unlock(&p_thread_pool->mutex_t);
 			p_thread_pool = p_thread_pool->p_next;
 		}	
 	}
 	return NULL;
+}
+
+int process_data(int data)
+{
+	return data;
 }
 
 void *process_pthread( void *arg)
@@ -83,21 +89,31 @@ void *process_pthread( void *arg)
 	}
 	while(1){
 		pthread_mutex_lock( &p_thread_pool->mutex_t );		
-		while( p_thread_pool->task_num>0  ){
-				
-		
+		while( p_thread_pool->task_num == 0  ){
+			pthread_mutex_unlock(&p_thread_pool->mutex_t);
+			sleep(10);
+			pthread_mutext_lock(&p_thread_pool->mutex_t);
 		}
+		pthread_mutex_lock( &my_task_head.mutex_t );
+		Task *p_task = my_task_head.p_task;
+		Task *p_old_task = NULL;
 
+		while(p_task ){
+			if( p_task->th == th ){
+				process_data( p_task->data );
+				p_old_task->p_next = p_task->p_next;	
+				free( p_task );
+				my_task_head.task_num--;
+				p_thread_pool->task_num--;
 
+				break;
 
-
-		
+			}
+			p_old_task = p_task;	
+		}		
+		pthread_mutex_unlock( &p_thread_pool->mutex_t );	
 	
 	}
-
-
-
-
 
 	return NULL;
 
