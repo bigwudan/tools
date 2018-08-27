@@ -62,6 +62,31 @@ static void do_work( struct worker_ctl *ctl )
 					read( fd, ctl->conn.drep, sizeof(ctl->conn.drep)  );
 					if( ctl->conn.con_req.req.len > 0 ){
 						printf("buff=%s\n", ctl->conn.drep);
+
+						char html[1024] = {0};
+						snprintf(
+								html,
+								sizeof(html),
+										"HTTP/1.1 %d %s\r\n" 
+							"Date: %s\r\n"
+							"Last-Modified: %s\r\n"
+							"Etag: \"%s\"\r\n"
+							"Content-Type: %s\r\n"
+							"Content-Length: %d\r\n"
+							"Accept-Ranges: bytes\r\n\r\nwudan",
+							200,
+							"ok",
+							"Fri, 03 Mar 2019 06:34:03 GMT",
+							"Fri, 03 Mar 2019 06:34:03 GMT",
+							"5ca4f75b8c3ec61:9ee",	
+							"text/html",
+							37	
+								);
+						int flag = write(fd, html, sizeof(html));
+						printf("write=%d\n", flag);
+						close(fd);
+
+
 					}else{
 						close(fd);
 						retval = -1;
