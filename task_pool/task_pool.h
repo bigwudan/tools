@@ -5,6 +5,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+
+#define PTHREAD_MAX 5
+
 typedef struct _task{
 	pthread_t th;
 	struct _task *p_next;
