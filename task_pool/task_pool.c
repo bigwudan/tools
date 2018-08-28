@@ -13,6 +13,51 @@ void * thread_work( void *arg)
 
 	printf("start thread work pthread_t = %ld  th=%ld \n", pthread_self(), p_pool->th );
 
+	while(1){
+
+		pthread_mutex_lock( &p_pool->mutex_t );
+		while( p_pool->task_num <= 0   ){
+		
+			pthread_mutex_unlock( &p_pool->mutex_t );	
+			sleep(10);
+		
+			pthread_mutex_lock(&p_pool->mutex_t );	
+		}
+	
+		pthread_mutex_lock(  &my_task_head.mutex_t);
+		
+		Task *p_my_task = my_task_head.p_next;
+		Task *p_pre_task = NULL;
+
+		while(  p_my_task ){
+		
+			if(p_my_task->th == pthread_self()){
+				
+				if(p_pre_task == NULL){
+					my_task_head.p_next = p_my_task->p_next;	
+
+				
+				}else{
+				
+					p_pre_task->p_next = p_my_task->p_next;
+				}
+
+				my_task_head.task_num--;
+				break;		
+			}
+
+			p_pre_task = p_my_task;
+
+		
+		}
+		printf("worker = %d\n", p_my_task->data);
+		p_pool->task_num--;
+		pthread_mutex_unlock( &my_task_head.mutex_t );
+		pthread_mutex_unlock( &p_pool->mutex_t   );
+	}
+
+
+
 	sleep(5);
 
 	return NULL;
