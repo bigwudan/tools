@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#define PTHREAD_MAX 5
+#define PTHREAD_MAX 2
 
 typedef struct _task{
 	pthread_t th;
