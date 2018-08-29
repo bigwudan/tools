@@ -4,16 +4,11 @@
 Task_Head my_task_head;
 
 Thread_Pool_Head my_thread_pool_head;
-
+int num1 = 0;
 void * thread_work( void *arg)
 {
     sleep(2);
-    //printf("thread_work run....\n  ");
-    return NULL;
 	Thread_Pool *p_pool = (Thread_Pool *)arg;	
-
-	printf("start thread work pthread_t = %ld  th=%ld \n", pthread_self(), p_pool->th );
-
 	while(1){
 
 		pthread_mutex_lock( &p_pool->mutex_t );
@@ -21,10 +16,10 @@ void * thread_work( void *arg)
 		
 			pthread_mutex_unlock( &p_pool->mutex_t );	
 			sleep(2);
-		
 			pthread_mutex_lock(&p_pool->mutex_t );	
 		}
-	
+        num1++;
+        printf("work deal task num1=%d\n", num1);	
 		pthread_mutex_lock(  &my_task_head.mutex_t);
 		
 		Task *p_my_task = my_task_head.p_next;
