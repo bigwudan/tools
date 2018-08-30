@@ -16,8 +16,26 @@ void * thread_work( void *arg)
 			sleep(2);
 			pthread_mutex_lock(&p_pool->mutex_t );	
 		}
-		pthread_mutex_lock(  &my_task_head.mutex_t);
-		
+
+        printf("test2\n");
+
+		//pthread_mutex_lock(  &my_task_head.mutex_t);
+        
+        int flag = 0;
+        flag = pthread_mutex_trylock(&my_task_head.mutex_t  );
+        if(flag ){
+            pthread_mutex_unlock(&p_pool->mutex_t);
+            
+            sleep(3);
+            continue;
+        
+        }
+
+        
+        
+		    
+        printf("test3\n");
+
 		Task *p_my_task = my_task_head.p_next;
 		Task *p_pre_task = NULL;
 
@@ -114,6 +132,7 @@ void *get_task(void *arg )
 		p_my_task->th = 0;
 		p_my_task->p_next = NULL;
 		pthread_mutex_lock(&my_task_head.mutex_t  );
+        printf("task_head lock 122\n");
 		Task *p_task = NULL;
 		p_task =  my_task_head.p_next;
 		my_task_head.p_next = p_my_task;
@@ -131,6 +150,7 @@ void * allocate_task(void *arg)
 {
 	while(1){
 		pthread_mutex_lock(&my_task_head.mutex_t);
+        printf("task_head lock 140\n");
 		while( my_task_head.free_num <= 0  ){
 			pthread_cond_wait(&my_task_head.cond_t, &my_task_head.mutex_t  );
             printf("task arriver cond_t over \n");
@@ -151,7 +171,7 @@ void * allocate_task(void *arg)
 		my_thread_pool = my_thread_pool_head.p_next;
 		Thread_Pool *selected_thread_pool = NULL;
 		while(  my_thread_pool ){
-			    printf("test\n");
+			    printf("test-1-1\n");
 			pthread_mutex_lock( &my_thread_pool->mutex_t  );
 			if( my_thread_pool->task_num < PTHREAD_MAX  ){
 				selected_thread_pool = my_thread_pool;
@@ -162,14 +182,15 @@ void * allocate_task(void *arg)
 		}	
         if( selected_thread_pool == NULL ){
             printf("thread_pool full \n");
+            pthread_mutex_unlock(  &my_task_head.mutex_t );
         }else{
             p_my_task->th = my_thread_pool->th;
             printf("allcoate task over \n");
             my_thread_pool->task_num++;
+            pthread_mutex_unlock(  &my_task_head.mutex_t );
             pthread_mutex_unlock( &my_thread_pool->mutex_t );
         }
-		pthread_mutex_unlock(  &my_task_head.mutex_t );
-	
+	    printf("test-1-2\n");
 	}	
 
 
