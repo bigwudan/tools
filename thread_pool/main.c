@@ -87,12 +87,15 @@ void *task_manage(void *arg){
 		p_task_node->next = NULL;
 		pthread_mutex_init(&p_task_node->mutex, NULL);
 		pthread_mutex_lock(&p_task_queue->mutex);
-		if(p_task_queue->number == 0){
+		
+		Task_node *p_tmp = NULL;
+		p_tmp = p_task_queue->head;
+		if(p_tmp == NULL){
 			p_task_queue->head = p_task_node;
 		}else{
-			Task_node *p_tmp_task_node = p_task_queue->head;
-			p_task_queue->head = p_task_node;
-			p_task_node->next = p_tmp_task_node;
+			while(p_tmp->next != NULL)
+				p_tmp = p_tmp->next;
+			p_tmp->next = p_task_node;
 		}
 		p_task_queue->number++;
 		pthread_cond_signal(&p_task_queue->cond);
@@ -112,44 +115,25 @@ void *pthread_manage(void *arg)
 		Task_node *p_task_node = NULL; 
 		Task_node *p_pre_task_node = NULL;
 		p_task_node = p_task_queue->head;
-		if( p_task_queue->number == 1 ){
-			p_task_queue->head = NULL;
-		}else{
-			while(p_task_node){
-				if(p_task_node->next == NULL){
-					p_pre_task_node->next = NULL;	
-					break;
-				}
-				p_pre_task_node = p_task_node;
-				p_task_node = p_task_node->next;
-			}
-		}
+		p_task_queue->head = p_task_node->next;
 		p_task_queue->number--;
 		pthread_mutex_unlock( &p_task_queue->mutex );
-		
 		pthread_mutex_lock( &p_pthread_queue_idle->mutex );
-
-
 		while( p_pthread_queue_idle->number <=0  ){
 			pthread_cond_wait( &p_pthread_queue_idle->cond, &p_pthread_queue_idle->mutex );	
 
 		}
-
 		Thread_node *p_thread_node = NULL;
-		Thread_node *p_pre_thread_node = NULL;
-		p_thread_node  = p_pthread_queue_idle->head;
+		p_thread_node = p_pthread_queue_idle->head;
+		if(p_pthread_queue_idle->head == p_pthread_queue_idle->rear ){
+			p_pthread_queue_idle->head = NULL;
+			p_pthread_queue_idle->rear = NULL;
 
-		while( p_thread_node ){
-			if( p_thread_node->next == NULL ){
-				
-				p_pre_thread_node->next = NULL;
-			
-			}	
-			p_pre_thread_node = p_thread_node;
-			p_thread_node = p_thread_node->next;
-		
-		
-		}	
+		}else{
+			p_pthread_queue_idle->head = p_pthread_queue_idle->head->next;
+			p_pthread_queue_idle->head->prev = NULL;	
+		}
+
 		p_pthread_queue_idle->number--;		
 		pthread_mutex_lock( &p_task_node->mutex );	
 		p_task_node->tid = p_thread_node->tid;

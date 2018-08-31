@@ -12,18 +12,18 @@ enum
 }; 
 
 
-typedef struct _task_node
+typedef struct Task_node
 {
 	int arg;
 	void *(*fun)(void *);
 	pthread_t tid;
 	int flag;
-	struct _task_node *next;
+	struct Task_node *next;
 	pthread_mutex_t mutex;
 }Task_node;
 
 
-typedef struct _task_queue_t
+typedef struct Task_queue_t
 {
 	pthread_mutex_t mutex;
 	pthread_cond_t cond;
@@ -32,13 +32,13 @@ typedef struct _task_queue_t
 }Task_queue_t;
 
 
-typedef struct _thread_node
+typedef struct Thread_node
 {
 	pthread_t tid;
 	int flag;
-	struct _task_node *work;
-	struct _pthread_node *next;
-	struct _pthread_node *prev;
+	Task_node *work;
+	struct Thread_node *next;
+	struct Thread_node *prev;
 	pthread_cond_t cond;
 	pthread_mutex_t mutex;
 
@@ -46,11 +46,11 @@ typedef struct _thread_node
 
 
 
-typedef struct _pthread_queue_t
+typedef struct Pthread_queue_t
 {
 	int number;
-	struct _thread_node *head;
-	struct _thread_node *rear;
+	Thread_node *head;
+	Thread_node *rear;
 	pthread_cond_t cond;
 	pthread_mutex_t mutex;
 }Pthread_queue_t;
