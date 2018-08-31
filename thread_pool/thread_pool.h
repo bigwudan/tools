@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <pthread.h>
 #define MAX_NUM 5
 enum
 {
@@ -26,7 +27,7 @@ typedef struct _task_queue_t
 {
 	pthread_mutex_t mutex;
 	pthread_cond_t cond;
-	struct task_node *head;
+	Task_node *head;
 	int number; 
 }Task_queue_t;
 
