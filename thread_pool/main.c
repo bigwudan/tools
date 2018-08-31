@@ -142,22 +142,27 @@ void *pthread_manage(void *arg)
 		pthread_mutex_unlock(&p_task_node->mutex);
 		pthread_mutex_lock(&p_thread_node->mutex);
 		p_thread_node->work = p_task_node;
-		pthread_cond_signal(&p_thread_node->cond);
 		pthread_mutex_unlock(&p_thread_node->mutex);
 
+		pthread_mutex_lock(&p_pthread_queue_busy->mutex);
+		Thread_node *p_pthread_busy_node = p_pthread_queue_busy->head;
+		if(p_pthread_queue_busy->head == NULL && p_pthread_queue_busy->rear == NULL  ){
+			p_pthread_queue_busy->head = p_thread_node;
+			p_pthread_queue_busy->rear = p_thread_node;
+			p_thread_node->next = NULL;
+			p_thread_node->prev = NULL;
+		}else{
+			p_pthread_queue_busy->head = p_thread_node;
+			p_thread_node->next = p_pthread_busy_node;
+			p_thread_node->prev = NULL;
+			p_pthread_busy_node->prev = p_thread_node;
+		
+		}
 
-
-
-
-
-	
-	
+		p_pthread_queue_busy->number++;
+		pthread_mutex_unlock(&p_pthread_queue_busy->mutex);	
+		pthread_cond_signal(&p_thread_node->cond);
 	}
-
-
-
-
-
 }
 
 
