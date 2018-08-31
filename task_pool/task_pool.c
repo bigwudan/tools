@@ -16,39 +16,21 @@ void * thread_work( void *arg)
 			sleep(2);
 			pthread_mutex_lock(&p_pool->mutex_t );	
 		}
-
-        printf("test2\n");
-
 		//pthread_mutex_lock(  &my_task_head.mutex_t);
-        
         int flag = 0;
         flag = pthread_mutex_trylock(&my_task_head.mutex_t  );
         if(flag ){
             pthread_mutex_unlock(&p_pool->mutex_t);
-            
             sleep(3);
             continue;
-        
         }
-
-        
-        
-		    
-        printf("test3\n");
-
 		Task *p_my_task = my_task_head.p_next;
 		Task *p_pre_task = NULL;
-
 		while(  p_my_task ){
-		
 			if(p_my_task->th == pthread_self()){
-				
 				if(p_pre_task == NULL){
 					my_task_head.p_next = p_my_task->p_next;	
-
-				
 				}else{
-				
 					p_pre_task->p_next = p_my_task->p_next;
 				}
 
@@ -62,7 +44,18 @@ void * thread_work( void *arg)
 		
 		}
 		printf("worker = %d\n", p_my_task->data);
-		
+
+        int fd = open("rec_test.txt",O_CREAT|O_APPEND|O_RDWR); 
+        
+        char buf[10] ={0};
+
+        sprintf(buf, "%d\r\n", p_my_task->data);
+
+        write(fd, buf, 10);
+    
+
+        close(fd);
+
 		p_pool->task_num--;
 		pthread_mutex_unlock( &my_task_head.mutex_t );
 		pthread_mutex_unlock( &p_pool->mutex_t   );
@@ -132,14 +125,12 @@ void *get_task(void *arg )
 		p_my_task->th = 0;
 		p_my_task->p_next = NULL;
 		pthread_mutex_lock(&my_task_head.mutex_t  );
-        printf("task_head lock 122\n");
 		Task *p_task = NULL;
 		p_task =  my_task_head.p_next;
 		my_task_head.p_next = p_my_task;
 		p_my_task->p_next = p_task;
 		my_task_head.task_num++;
 		my_task_head.free_num++;
-		printf("create task over  task_num=%d, free_num = %d  \n", my_task_head.task_num, my_task_head.free_num);
 		pthread_cond_signal(&my_task_head.cond_t);
 		pthread_mutex_unlock(&my_task_head.mutex_t);
 	}
@@ -150,10 +141,8 @@ void * allocate_task(void *arg)
 {
 	while(1){
 		pthread_mutex_lock(&my_task_head.mutex_t);
-        printf("task_head lock 140\n");
 		while( my_task_head.free_num <= 0  ){
 			pthread_cond_wait(&my_task_head.cond_t, &my_task_head.mutex_t  );
-            printf("task arriver cond_t over \n");
 		}
 		Task *p_my_task = NULL;	
 		p_my_task = my_task_head.p_next;
@@ -164,14 +153,12 @@ void * allocate_task(void *arg)
 			p_my_task = p_my_task->p_next;	
 		}
 		my_task_head.free_num--;
-		printf(" find  free task ..... \n");
 
 
 		Thread_Pool *my_thread_pool = NULL;
 		my_thread_pool = my_thread_pool_head.p_next;
 		Thread_Pool *selected_thread_pool = NULL;
 		while(  my_thread_pool ){
-			    printf("test-1-1\n");
 			pthread_mutex_lock( &my_thread_pool->mutex_t  );
 			if( my_thread_pool->task_num < PTHREAD_MAX  ){
 				selected_thread_pool = my_thread_pool;
@@ -181,16 +168,13 @@ void * allocate_task(void *arg)
 			    my_thread_pool = my_thread_pool->p_next;
 		}	
         if( selected_thread_pool == NULL ){
-            printf("thread_pool full \n");
             pthread_mutex_unlock(  &my_task_head.mutex_t );
         }else{
             p_my_task->th = my_thread_pool->th;
-            printf("allcoate task over \n");
             my_thread_pool->task_num++;
             pthread_mutex_unlock(  &my_task_head.mutex_t );
             pthread_mutex_unlock( &my_thread_pool->mutex_t );
         }
-	    printf("test-1-2\n");
 	}	
 
 
@@ -207,7 +191,6 @@ int main(int argc, char **argv)
 	pthread_create(&assemb_task_th, NULL ,allocate_task, NULL  );
 	while(1);
 
-	printf("test\n");
 	return 1;
 }
 
