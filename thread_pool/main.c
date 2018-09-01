@@ -2,11 +2,11 @@
 Pthread_queue_t *p_pthread_queue_idle = NULL;
 Pthread_queue_t *p_pthread_queue_busy = NULL;
 Task_queue_t *p_task_queue = NULL;
-
+int num = 0;
 
 int fun(int data)
 {
-	
+	printf("data=%d\n", data);
 	return data;
 
 }
@@ -20,7 +20,7 @@ void *worker(void *arg)
 			pthread_cond_wait(&p_thread_node->cond, &p_thread_node->mutex);
 		}
 		Task_node *p_task_node = NULL;
-		Task_node *p_task_node = p_thread_node->work;
+		p_task_node = p_thread_node->work;
 		pthread_mutex_lock(&p_task_node->mutex);
 		fun(p_task_node->arg);
 		pthread_mutex_unlock(&p_task_node->mutex);
@@ -29,7 +29,11 @@ void *worker(void *arg)
 		p_thread_node->work = NULL;
 		pthread_mutex_unlock(&p_thread_node->mutex);
 
+		printf("line=32 ...\n");
 		pthread_mutex_lock(&p_pthread_queue_idle->mutex);
+
+		printf("line=32 end ...\n");
+
 		Thread_node *p_tmp = NULL;
 		p_tmp = p_pthread_queue_idle->head;
 		if(p_pthread_queue_idle->head == NULL && p_pthread_queue_idle->rear == NULL  ){
@@ -50,7 +54,7 @@ void *worker(void *arg)
 //初始化
 int sys_init()
 {
-	p_task_queue = calloc(sizeof(p_task_queue), 1);
+	p_task_queue = calloc(sizeof(Task_queue_t), 1);
 	if(p_task_queue == NULL){
 		perror("malloc error\n");exit(1);
 	}
@@ -111,7 +115,9 @@ int sys_init()
 
 int create_task()
 {
-	return 1;
+
+	num++;
+	return num;
 
 }
 
@@ -157,7 +163,13 @@ void *pthread_manage(void *arg)
 		p_task_queue->head = p_task_node->next;
 		p_task_queue->number--;
 		pthread_mutex_unlock( &p_task_queue->mutex );
+		
+		printf("line = 162 ... \n");
+
 		pthread_mutex_lock( &p_pthread_queue_idle->mutex );
+
+		printf("line = 162 end ...\n");
+
 		while( p_pthread_queue_idle->number <=0  ){
 			pthread_cond_wait( &p_pthread_queue_idle->cond, &p_pthread_queue_idle->mutex );	
 
@@ -174,6 +186,9 @@ void *pthread_manage(void *arg)
 		}
 
 		p_pthread_queue_idle->number--;		
+		
+		pthread_mutex_unlock(&p_pthread_queue_idle->mutex);
+
 		pthread_mutex_lock( &p_task_node->mutex );	
 		p_task_node->tid = p_thread_node->tid;
 		p_task_node->flag = 1;
@@ -212,7 +227,16 @@ void *pthread_manage(void *arg)
 
 int main(int argc, char **argv )
 {
+	pthread_t task_manage_t;
+	pthread_t thread_manage_t;
 	sys_init();
+	pthread_create(&task_manage_t, NULL,task_manage, NULL  );
+	pthread_create(&thread_manage_t, NULL,pthread_manage, NULL  );
+	printf("wait\n");
+	while(1);
+
+
+
 	printf("test\n");
 
 }

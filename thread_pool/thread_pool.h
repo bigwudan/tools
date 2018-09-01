@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pthread.h>
-#define MAX_NUM 5
+#define MAX_NUM 2
 enum
 {
 	thread_idle,
