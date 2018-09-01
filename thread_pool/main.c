@@ -3,8 +3,47 @@ Pthread_queue_t *p_pthread_queue_idle = NULL;
 Pthread_queue_t *p_pthread_queue_busy = NULL;
 Task_queue_t *p_task_queue = NULL;
 
+
+int fun(int data)
+{
+	
+	return data;
+
+}
+
 void *worker(void *arg)
 {
+	Thread_node *p_thread_node = (Thread_node *)arg;
+	while(1){
+		pthread_mutex_lock(&p_thread_node->mutex);
+		while(p_thread_node->work == NULL){
+			pthread_cond_wait(&p_thread_node->cond, &p_thread_node->mutex);
+		}
+		Task_node *p_task_node = NULL;
+		Task_node *p_task_node = p_thread_node->work;
+		pthread_mutex_lock(&p_task_node->mutex);
+		fun(p_task_node->arg);
+		pthread_mutex_unlock(&p_task_node->mutex);
+		pthread_mutex_destroy(&p_task_node->mutex);
+		free(p_task_node);
+		p_thread_node->work = NULL;
+		pthread_mutex_unlock(&p_thread_node->mutex);
+
+		pthread_mutex_lock(&p_pthread_queue_idle->mutex);
+		Thread_node *p_tmp = NULL;
+		p_tmp = p_pthread_queue_idle->head;
+		if(p_pthread_queue_idle->head == NULL && p_pthread_queue_idle->rear == NULL  ){
+			p_pthread_queue_idle->head = p_thread_node;
+			p_pthread_queue_idle->rear = p_thread_node;
+		}else{
+			p_pthread_queue_idle->head = p_thread_node;	
+		}
+		p_pthread_queue_idle->number++;
+		pthread_mutex_unlock(&p_pthread_queue_idle->mutex);
+		pthread_mutex_lock(&p_thread_node->mutex);
+		p_thread_node->next = p_tmp;
+		pthread_mutex_unlock(&p_thread_node->mutex);
+	}
 	return NULL;
 }
 
@@ -164,6 +203,11 @@ void *pthread_manage(void *arg)
 		pthread_cond_signal(&p_thread_node->cond);
 	}
 }
+
+
+
+
+
 
 
 int main(int argc, char **argv )
