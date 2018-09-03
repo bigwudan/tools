@@ -4,6 +4,10 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pthread.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+
 #define MAX_NUM 2
 enum
 {

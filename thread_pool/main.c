@@ -7,6 +7,11 @@ int num = 0;
 int fun(int data)
 {
 	printf("data=%d\n", data);
+    char buf[12] = {0};
+    sprintf(buf, "%d\r\n",data);
+    int fd = open("test.txt", O_CREAT|O_APPEND|O_RDWR);
+    write(fd, buf, 12);
+    close(fd);
 	return data;
 
 }
