@@ -7,6 +7,11 @@ int num = 0;
 int fun(int data)
 {
 	printf("data=%d\n", data);
+    char buf[12] = {0};
+    sprintf(buf, "%d\r\n",data);
+    int fd = open("test.txt", O_CREAT|O_APPEND|O_RDWR);
+    write(fd, buf, 12);
+    close(fd);
 	return data;
 
 }
@@ -43,6 +48,7 @@ void *worker(void *arg)
 			p_pthread_queue_idle->head = p_thread_node;	
 		}
 		p_pthread_queue_idle->number++;
+        pthread_cond_signal(&p_pthread_queue_idle->cond);
 		pthread_mutex_unlock(&p_pthread_queue_idle->mutex);
 		pthread_mutex_lock(&p_thread_node->mutex);
 		p_thread_node->next = p_tmp;
