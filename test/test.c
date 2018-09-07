@@ -5,50 +5,19 @@
 #include <sys/types.h>
 #include <pthread.h>
 
-void *pthread_run1(void *arg)
-{
-    (void)arg;
-    while(1){
-        printf("I am thread1, ID:%lu\n", pthread_self());
-        
-        printf("test\n");
-
-        sleep(2);    
-    
-    }
-
-
-
-}
-
-
-void* pthread_run2(void* arg)
-{
-    (void)arg;
-    while(1)
-    {
-        printf("I am thread2,ID: %lu\n",pthread_self());
-        sleep(2);
-    }
-}
+#define NTY_POOL_WAIT           0x01
+#define NTY_POOL_DESTROY        0x02
 
 int main()
 {
-    pthread_t tid1;
-    pthread_t tid2;
-
-    printf("I am main thread\n");
-
-    pthread_create(&tid2, NULL, pthread_run2, NULL);
-    pthread_create(&tid1, NULL, pthread_run1, NULL);
-
-    pthread_join(tid1, NULL);
-    pthread_join(tid2, NULL);
+    int flag = 1;
+    //int a = flag & NTY_POOL_DESTROY;
+    flag &= ~NTY_POOL_WAIT;
 
 
 
+    printf("a=%d\n", flag);
 
+
+    
 }
-
-
-
