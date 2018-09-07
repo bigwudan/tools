@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
 
 typedef void(*ngx_pool_cleanup_pt)(void *data);
 typedef struct  ngx_pool_cleanup_s ngx_pool_cleanup_t;
