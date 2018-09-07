@@ -4,8 +4,17 @@
 static void *
 ngx_palloc_block(ngx_pool_t *pool,int size)
 {
-
-
+    char *p_v = NULL;
+    char *p_pool = NULL;
+    ngx_pool_t p = NULL;
+    posix_memalign( &p_pool, 16, pool->max  );
+    p_pool->d.last = p_pool + sizeof(ngx_pool_s);
+    p_v = p_pool->d.last;
+    p_pool->d.last += size; 
+    p_pool->d.end = p_pool + size; 
+    do{
+        p =   pool->d.next;
+    }while(p);
 
 }
 
