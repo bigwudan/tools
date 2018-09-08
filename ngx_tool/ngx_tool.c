@@ -4,18 +4,30 @@
 static void *
 ngx_palloc_block(ngx_pool_t *pool,int size)
 {
-    char *p_v = NULL;
-    char *p_pool = NULL;
-    ngx_pool_t p = NULL;
-    posix_memalign( &p_pool, 16, pool->max  );
-    p_pool->d.last = p_pool + sizeof(ngx_pool_s);
-    p_v = p_pool->d.last;
-    p_pool->d.last += size; 
-    p_pool->d.end = p_pool + size; 
-    do{
-        p =   pool->d.next;
-    }while(p);
+	unsigned char *m;
+	int psize;
+	ngx_pool_t *new, *current, *p;
+	psize = (int)(pool->d.end - pool);
+	posix_memalign((void *)&new, 16, psize);
+	m = (void *)new;
+	new->d.end = m + psize;
+	new->d.next = NULL;
+	new->d.failed = 0;
+	
+	m += sizeof(ngx_pool_data_t);
+	m = ngx_align_ptr(m, NGX_ALIGNMENT);//对m指针按4字节对齐处理
 
+	new->d.last = m + size;//设置新内存块的last，即申请使用size大小的内存
+
+	current = pool->current;
+	for(p = current; p->d.next; p=p->d.next ){
+		if (p->d.failed++ > 4) {
+			current = p->d.next;
+		}
+	}	
+	p->d.next = new;
+	pool->d.current = current ? current : new;
+	return m;
 }
 
 
