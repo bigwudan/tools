@@ -131,14 +131,37 @@ void build_request(const char *url)
             strncpy(host,url+i,strcspn(url+i,"/"));
         }
         strcat(request+strlen(request),url+i+strcspn(url+i,"/"));
-    } 
+    }else{
+        strcat(request,url);
+    }
+    if(http10==1)
+        strcat(request," HTTP/1.0");
+    else if (http10==2)
+        strcat(request," HTTP/1.1");
+    strcat(request,"\r\n");
+    if(http10>0)
+        strcat(request,"User-Agent: WebBench "PROGRAM_VERSION"\r\n");
+    if(proxyhost==NULL && http10>0)
+    {
+        strcat(request,"Host: ");
+        strcat(request,host);
+        strcat(request,"\r\n");
+    }
+    if(force_reload && proxyhost!=NULL)
+    {
+        strcat(request,"Pragma: no-cache\r\n");
+    }
+    if(http10>1)
+        strcat(request,"Connection: close\r\n");
+
+    if(http10>0) strcat(request,"\r\n"); 
 
 
 
 
 
 
-    printf("i=%d\n", i);
+    printf("i=%s\n", request);
 
 
 
