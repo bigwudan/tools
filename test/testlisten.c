@@ -47,11 +47,15 @@ int main(int argc, char *argv[])
 
 
     assert(ret != -1);
+    
+    ret = listen(sock, backlog);
+
+    assert(ret != -1);
 
     while(!stop){
         sleep(1);
     
-    
+        printf("1111\n");
     }
     close(sock);
     return 0;
