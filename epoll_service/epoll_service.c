@@ -3,6 +3,48 @@
 
 
 
+int m_epollfd;
+int sig_pipefd[2];
+
+static void sig_handler( int sig )
+{
+    int save_errno = errno;
+    int msg = sig;
+    send( sig_pipefd[1], ( char* )&msg, 1, 0 );
+    errno = save_errno;
+}
+
+
+static int setnonblocking( int fd )
+{
+    int old_option = fcntl( fd, F_GETFL );
+    int new_option = old_option | O_NONBLOCK;
+    fcntl( fd, F_SETFL, new_option );
+    return old_option;
+}
+
+static void addfd( int epollfd, int fd )
+{
+    struct epoll_event event;
+    event.data.fd = fd;
+    event.events = EPOLLIN | EPOLLET;
+    epoll_ctl( epollfd, EPOLL_CTL_ADD, fd, &event );
+    setnonblocking( fd );
+}
+
+static void addsig( int sig, void( handler )(int), int restart  )
+{
+    struct sigaction sa;
+    memset( &sa, '\0', sizeof( sa ) );
+    sa.sa_handler = handler;
+    if( restart )
+    {
+        sa.sa_flags |= SA_RESTART;
+    }
+    sigfillset( &sa.sa_mask );
+    assert( sigaction( sig, &sa, NULL ) != -1 );
+}
+
 
 void
 setup_sig_pipe()
@@ -16,10 +58,10 @@ setup_sig_pipe()
     setnonblocking( sig_pipefd[1] );
     addfd( m_epollfd, sig_pipefd[0] );
 
-    addsig( SIGCHLD, sig_handler );
-    addsig( SIGTERM, sig_handler );
-    addsig( SIGINT, sig_handler );
-    addsig( SIGPIPE, SIG_IGN );
+    addsig( SIGCHLD, sig_handler, 1 );
+    addsig( SIGTERM, sig_handler, 1 );
+    addsig( SIGINT, sig_handler, 1 );
+    addsig( SIGPIPE, SIG_IGN, 1 );
 
 }
 
@@ -51,6 +93,8 @@ void
 processpool_run()
 {
     int m_idx = -1;
+
+
     process *m_sub_process = calloc(sizeof(process), 1);
     if(!m_sub_process){
         perror("error calloc \n");

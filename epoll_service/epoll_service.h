@@ -24,7 +24,6 @@ typedef struct process
     int m_pipefd[2];
 }process;
 
-typedef strcut even_info
 
 
 void processpool_run();
