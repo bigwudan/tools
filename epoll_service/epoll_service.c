@@ -75,14 +75,21 @@ setup_sig_pipe()
 
 
 void 
-run_child()
+run_child(process *m_sub_process, int m_idx)
 {
+    setup_sig_pipe();
+
+    int pipefd = m_sub_process[m_idx].m_pipefd[ 1 ];
+    addfd( m_epollfd, pipefd );
+
+    struct epoll_event events[ MAX_EVENT_NUMBER ];
+
 
     printf("run_child\n");
 }
 
 void 
-run_parent()
+run_parent(process *m_sub_process, int m_idx)
 {
     int wstatus = 0;
     printf("run_parent");
@@ -121,10 +128,10 @@ processpool_run()
 
     if( m_idx != -1 )
     {
-        run_child();
+        run_child(m_sub_process, m_idx);
         return;
     }
-    run_parent();
+    run_parent(m_sub_process, m_idx);
 
 
     printf("ok\n");

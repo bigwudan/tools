@@ -17,6 +17,8 @@
 #include <sys/stat.h>
 
 #define PROCESS_NUMBER 8
+#define MAX_EVENT_NUMBER 10000
+#define USER_PER_PROCESS 65536
 
 typedef struct process
 {
