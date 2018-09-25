@@ -26,6 +26,16 @@ typedef struct process
     int m_pipefd[2];
 }process;
 
+typedef struct user user;
+
+struct user
+{
+    int m_epollfd;
+    int connfd;
+    struct sockaddr_in client_address;
+    user *p_next_user;
+};
+
 
 
 void processpool_run();
