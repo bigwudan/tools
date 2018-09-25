@@ -68,12 +68,16 @@ setup_sig_pipe()
 void del_user(user *p_user)
 {
     user *p_tmp_user = p_user->p_next_user;
-    do{
-    
-        p_tmp_user =  p_tmp_user->p_next_user;
-    
-    
-    }while();
+	while(p_tmp_user){
+	
+		user *p_tmp = p_tmp_user;
+		p_tmp_user = p_tmp_user->p_next_user;
+		free(p_tmp);
+		p_tmp = NULL;
+			
+	}	
+	return ;
+
 
 
 
@@ -220,10 +224,127 @@ run_child(process *m_sub_process, int m_idx)
 void 
 run_parent(process *m_sub_process, int m_idx)
 {
-    int wstatus = 0;
-    printf("run_parent");
-    wait(&wstatus);
+	setup_sig_pipe();
+	addfd( m_epollfd, m_listenfd );
+	struct epoll_event events[ MAX_EVENT_NUMBER ];
+	int sub_process_counter = 0;
+	int new_conn = 1;
+	int number = 0;
+	int ret = -1;
+	int m_process_number = 0;
+
+
+	while( ! m_stop )
+	{
+		number = epoll_wait( m_epollfd, events, MAX_EVENT_NUMBER, -1 );
+		if ( ( number < 0 ) && ( errno != EINTR ) )
+		{
+			printf( "epoll failure\n" );
+			break;
+		}
+
+		for ( int i = 0; i < number; i++ )
+		{
+			int sockfd = events[i].data.fd;
+			if( sockfd == m_listenfd )
+			{
+				int i =  sub_process_counter;
+				do
+				{
+					if( m_sub_process[i].m_pid != -1 )
+					{
+						break;
+					}
+					i = (i+1)%m_process_number;
+				}
+				while( i != sub_process_counter );
+
+				if( m_sub_process[i].m_pid == -1 )
+				{
+					m_stop = 1;
+					break;
+				}
+				sub_process_counter = (i+1)%m_process_number;
+				send( m_sub_process[i].m_pipefd[0], ( char* )&new_conn, sizeof( new_conn ), 0 );
+				printf( "send request to child %d\n", i );
+			}
+			else if( ( sockfd == sig_pipefd[0] ) && ( events[i].events & EPOLLIN ) )
+			{
+				int sig;
+				char signals[1024];
+				ret = recv( sig_pipefd[0], signals, sizeof( signals ), 0 );
+				if( ret <= 0 )
+				{
+					continue;
+				}
+				else
+				{
+					for( int i = 0; i < ret; ++i )
+					{
+						switch( signals[i] )
+						{
+							case SIGCHLD:
+								{
+									pid_t pid;
+									int stat;
+									while ( ( pid = waitpid( -1, &stat, WNOHANG ) ) > 0 )
+									{
+										for( int i = 0; i < m_process_number; ++i )
+										{
+											if( m_sub_process[i].m_pid == pid )
+											{
+												printf( "child %d join\n", i );
+												close( m_sub_process[i].m_pipefd[0] );
+												m_sub_process[i].m_pid = -1;
+											}
+										}
+									}
+									m_stop = 1;
+									for( int i = 0; i < m_process_number; ++i )
+									{
+										if( m_sub_process[i].m_pid != -1 )
+										{
+											m_stop = 0;
+										}
+									}
+									break;
+								}
+							case SIGTERM:
+							case SIGINT:
+								{
+									printf( "kill all the clild now\n" );
+									for( int i = 0; i < m_process_number; ++i )
+									{
+										int pid = m_sub_process[i].m_pid;
+										if( pid != -1 )
+										{
+											kill( pid, SIGTERM );
+										}
+									}
+									break;
+								}
+							default:
+								{
+									break;
+								}
+						}
+					}
+				}
+			}
+			else
+			{
+				continue;
+			}
+		}
+	}
+
+	close( m_listenfd );
+	close( m_epollfd );
+
+
 }
+
+
 
 void 
 processpool_run()
