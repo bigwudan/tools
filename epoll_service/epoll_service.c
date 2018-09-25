@@ -64,6 +64,22 @@ setup_sig_pipe()
 
 }
 
+
+void del_user(user *p_user)
+{
+    user *p_tmp_user = p_user->p_next_user;
+    do{
+    
+        p_tmp_user =  p_tmp_user->p_next_user;
+    
+    
+    }while();
+
+
+
+
+}
+
 void 
 add_user(user *p_user, int m_epollfd, int connfd, struct sockaddr_in *p_sockaddr)
 {
@@ -194,7 +210,9 @@ run_child(process *m_sub_process, int m_idx)
 
 
 
-
+    close( pipefd );
+    close( m_listenfd );
+    close( m_epollfd );
 
     printf("run_child\n");
 }
