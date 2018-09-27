@@ -139,6 +139,8 @@ run_child(process *m_sub_process, int m_idx)
             int sockfd = events[i].data.fd;
             if( ( sockfd == pipefd ) && ( events[i].events & EPOLLIN ) )
             {
+                printf("children arrive \n");
+                exit(1);
                 int client = 0;
                 ret = recv( sockfd, ( char* )&client, sizeof( client ), 0 );
                 if( ( ( ret < 0 ) && ( errno != EAGAIN ) ) || ret == 0 ) 
@@ -248,6 +250,7 @@ run_parent(process *m_sub_process, int m_idx)
 			int sockfd = events[i].data.fd;
 			if( sockfd == m_listenfd )
 			{
+                printf("arrive m_listenfd\n");
 				int i =  sub_process_counter;
 				do
 				{
