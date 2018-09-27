@@ -350,7 +350,26 @@ void
 processpool_run()
 {
     int m_idx = -1;
-
+    struct sockaddr_in address;
+    bzero( &address, sizeof( address ) );
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = htonl(INADDR_ANY);
+    address.sin_port = htons( 8888 );
+    m_listenfd = socket( PF_INET, SOCK_STREAM, 0 );
+    if(m_listenfd == -1){
+        printf("error socket \n");
+        exit(1);
+    }
+    int ret = bind( m_listenfd, ( struct sockaddr* )&address, sizeof( address ) );
+    if(ret == -1){
+        printf("error bind \n");
+        exit(1);
+    }
+    ret = listen( m_listenfd, 5 );
+    if(ret == -1){
+        printf("error listen \n");
+        exit(1);
+    }
 
     process *m_sub_process = calloc(sizeof(process), 1);
     if(!m_sub_process){
