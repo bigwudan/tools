@@ -121,10 +121,7 @@ run_child(process *m_sub_process, int m_idx)
     struct epoll_event events[ MAX_EVENT_NUMBER ];
     int number = 0;
     int ret = -1;
-    
     user my_user;
-
-
     while( ! m_stop )
     {
         number = epoll_wait( m_epollfd, events, MAX_EVENT_NUMBER, -1 );
@@ -140,7 +137,6 @@ run_child(process *m_sub_process, int m_idx)
             if( ( sockfd == pipefd ) && ( events[i].events & EPOLLIN ) )
             {
                 printf("children arrive \n");
-                exit(1);
                 int client = 0;
                 ret = recv( sockfd, ( char* )&client, sizeof( client ), 0 );
                 if( ( ( ret < 0 ) && ( errno != EAGAIN ) ) || ret == 0 ) 
@@ -154,7 +150,7 @@ run_child(process *m_sub_process, int m_idx)
                     int connfd = accept( m_listenfd, ( struct sockaddr* )&client_address, &client_addrlength );
                     if ( connfd < 0 )
                     {
-                        printf( "errno is: %d\n", errno );
+			perror("error is\n");
                         continue;
                     }
                     addfd( m_epollfd, connfd );
@@ -233,7 +229,7 @@ run_parent(process *m_sub_process, int m_idx)
 	int new_conn = 1;
 	int number = 0;
 	int ret = -1;
-	int m_process_number = 0;
+	int m_process_number = PROCESS_NUMBER;
 
 
 	while( ! m_stop )
