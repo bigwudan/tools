@@ -1,4 +1,4 @@
-#include ""
+#include "processpool.h"
 
 class cgi_conn
 {
@@ -22,16 +22,16 @@ public:
 		int idx = 0;
 		int ret = -1;
 		while(true){
-			idx = m_read_dix;
+			idx = m_read_idx;
 			ret = recv(m_sockfd, m_buf + idx, BUFFER_SIZE - 1- idx, 0);
 			if(ret < 0){
-				if(erron != EAGAIN){
+				if(errno != EAGAIN){
 					removefd(m_epollfd, m_sockfd);
 				
 				}
 				break;
 			}else if(ret == 0){
-				removefd(m_epollfd, m_sockfd)
+				removefd(m_epollfd, m_sockfd);
 				break;
 			}else{
 			
@@ -69,7 +69,7 @@ public:
 				}else{
 					close(STDOUT_FILENO);
 					dup(m_sockfd);
-					execl(m_buf, m_buf, 0);
+					execl(m_buf, m_buf, NULL);
 					exit(0);
 				}
 			}
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
 	ret = listen(listenfd, 5);
 	assert(ret != -1);
-	processpool< cgi_conn >* pool = porcesspoll<cgi_conn> :: create(listenfd);
+	processpool< cgi_conn >* pool = processpool<cgi_conn> :: create(listenfd);
 	if(pool){
 		pool->run();
 		delete pool;
