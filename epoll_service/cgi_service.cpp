@@ -95,14 +95,14 @@ int cgi_conn::m_epollfd = -1;
 
 int main(int argc, char* argv[])
 {
-	if(argc <=2){
+	if(argc <=1){
 		printf("ip error");
 		return 1;
 	
 	
 	}
-	const char* ip = argv[1];
-	int port = atoi(argv[2]);
+	//const char* ip = argv[1];
+	int port = atoi(argv[1]);
 	int listenfd = socket(PF_INET, SOCK_STREAM, 0);
 	if(listenfd == -1){
 
@@ -113,7 +113,11 @@ int main(int argc, char* argv[])
 	struct sockaddr_in address;
 	bzero(&address, sizeof(address));
 	address.sin_family = AF_INET;
-	inet_pton(AF_INET, ip, &address.sin_addr);
+	//inet_pton(AF_INET, ip, &address.sin_addr);
+
+
+	address.sin_addr.s_addr = htonl(INADDR_ANY);
+
 	address.sin_port = htons(port);
 	ret = bind(listenfd, (struct sockaddr*)&address, sizeof(address));
 	assert(ret != -1);
