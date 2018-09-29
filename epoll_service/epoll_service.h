@@ -35,31 +35,8 @@ struct user
     struct sockaddr_in client_address;
     user *p_next_user;
 };
-
-
-
 void processpool_run();
 void run_child();
-
 void run_parent();
-
 void setup_sig_pipe();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif

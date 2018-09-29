@@ -1,191 +1,127 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/stat.h>
-#include <netinet/in.h>
+#include <sys/epoll.h>
+#include <netdb.h>
 #include <string.h>
-#include <strings.h>
+#include <stdio.h>
 #include <unistd.h>
-#include <signal.h>
 #include <fcntl.h>
-#include <sys/uio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
+#define IP   "127.0.0.1"
+#define PORT  8888
+#define PROCESS_NUM 4
+#define MAXEVENTS 64
 
-
-#define err_sys(msg) \
-    do { perror(msg); exit(-1); } while(0)
-#define err_exit(msg) \
-    do { fprintf(stderr, msg); exit(-1); } while(0)
-#define head200 "HTTP/1.1 200 OK \r\n"
-#define head404 "HTTP/1.1 404 Not Found\r\n"
-#define head503 "HTTP/1.1 503 Service unabailiable\r\n"
-#define MAXCHILD 4
-#define BUFFSIZE 1024
-
-typedef struct
+static int create_and_bind ()
 {
-    pid_t pid;
-    char status;
-}sReport;
-
-int len200, len404, len503;
-int pipe_fd1[2], pipe_fd2[2];
-
-void process_child(int listenfd, char* filename)
-{
-    int connfd;
-    int cnt, len;
-    struct sockaddr_in cliaddr;
-    socklen_t clilen = sizeof(cliaddr);
-    sReport req;
-    char comm = '\0';
-    int running = 1;
-    char head_buf[1024];
-
-    req.pid = getpid();
-    while(running)
-    {
-        connfd = accept(listenfd, (struct sockaddr *)&cliaddr, &clilen);
-        if(connfd < 0)
-            err_sys("accept");
-        req.status = 'n';
-
-        /* send mes`.sage to parent process that got a new accept */
-        if(write(pipe_fd1[1], &req, sizeof(req)) < 0)
-            err_sys("write");
-
-        int fd;
-        struct stat file_stat;
-        if((fd = open(filename, O_RDONLY)) < 0)
-            err_sys("open");
-        if(stat(filename, &file_stat) < 0)
-            err_sys("stat");
-
-        bzero(head_buf, sizeof(head_buf));
-        len = 0;
-        cnt = snprintf(head_buf, BUFFSIZE - 1, head200);
-        len += cnt;
-        cnt = snprintf(head_buf + len, BUFFSIZE - 1 - len, "Coontent-Length: %lu\r\n", file_stat.st_size);
-        len += cnt;
-        cnt = snprintf(head_buf + len, BUFFSIZE - 1 - len, "\r\n");
-
-        char *file_buf;
-        struct iovec iv[2];
-
-        if((file_buf = (char *)malloc(file_stat.st_size)) == NULL)
-            err_sys("malloc");
-        bzero(file_buf, file_stat.st_size);
-        if(read(fd, file_buf, file_stat.st_size) < 0)
-            err_sys("read");
-        iv[0].iov_base = head_buf;
-        iv[0].iov_len = strlen(head_buf);
-        iv[1].iov_base = file_buf;
-        iv[1].iov_len = strlen(file_buf);
-        writev(connfd, iv, 2); /* send the file to client host */
-        free(file_buf);
-
-        close(fd);
-        close(connfd);
-
-        req.status = 'f';
-        /* tell parent process that finish the request */
-        if(write(pipe_fd1[1], &req, sizeof(req)) < 0)
-            err_sys("write");
-        /* wait for commond from parent process */
-        if(read(pipe_fd2[0], &comm, 1) < 1)
-            err_sys("read");
-
-        if('e' == comm)
-        {
-            printf("[%d] exit\n", req.pid);
-            running = 0;
-        }
-        else if('c' == comm)
-            printf("[%d] continue\n", req.pid);
-        else
-            printf("[%d]: comm: %c illeagle\n", req.pid, comm);
-    }
+    int fd = socket(PF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in serveraddr;
+    serveraddr.sin_family = AF_INET;
+    inet_pton( AF_INET, IP, &serveraddr.sin_addr);  
+    serveraddr.sin_port = htons(PORT);
+    bind(fd, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+    return fd;
 }
 
-void handle_sigchld(int sig)
+static int make_socket_non_blocking (int sfd)
 {
-    printf("the child process exit.\n");
-}
-
-int main(int argc, char *argv[])
-{
-    int listenfd;
-    struct sockaddr_in servaddr;
-    pid_t pid;
-
-//    if(argc != 2)
- //       err_exit("Usage: http-server port\n");
-
-    //int port = atoi(argv[1]);
-    int port = 8888;
-    len200 = strlen(head200);
-    len404 = strlen(head404);
-    len503 = strlen(head503);
-
-    if(signal(SIGCHLD, handle_sigchld) < 0)
-        err_sys("signal");
-    if(pipe(pipe_fd1) < 0)
-        err_sys("pipe pipe_fd1");
-    if(pipe(pipe_fd2) < 0)
-        err_sys("pipe piep_fd2");
-
-    bzero(&servaddr, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(port);
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-    if((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-        err_sys("socket");
-    if(bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
-        err_sys("bind");
-    if(listen(listenfd, 10) < 0)
-        err_sys("listen");
-    int i;
-    for(i = 0; i < MAXCHILD; i++)
-    {
-        if((pid = fork()) < 0)
-            err_sys("fork");
-        else if(0 == pid)
-        {
-            process_child(listenfd, "test.txt"); //test.txt为测试文件，内容为 Hello World!!!
-        }
-        else
-        {
-            printf("have create child %d\n", pid);
-        }
+    int flags, s;
+    flags = fcntl (sfd, F_GETFL, 0);
+    if (flags == -1) {
+        perror ("fcntl");
+        return -1;
     }
-
-    close(pipe_fd1[1]);
-    close(pipe_fd2[0]);
-    close(listenfd);
-    char c = 'c';
-    int req_num = 0;
-    sReport req;
-
-    while(1)
-    {
-        if(read(pipe_fd1[0], &req, sizeof(req)) < 0)
-            err_sys("read pipe_fd1");
-        /* a new request come */
-        if(req.status == 'n') //子进程收到一个连接请求
-        {
-            req_num++;
-            printf("parent: %d have receive new request\n", req.pid);
-        }
-        else if(req.status == 'f') /* just finish a accept */
-        {
-            req_num--;
-            if(write(pipe_fd2[1], &c, sizeof(c)) < sizeof(c))
-                err_sys("write");
-        }
+    flags |= O_NONBLOCK;
+    s = fcntl (sfd, F_SETFL, flags);
+    if (s == -1) {
+        perror ("fcntl");
+        return -1;
     }
-    printf("Done\n");
-
     return 0;
+}
+
+void worker(int sfd, int efd, struct epoll_event *events, int k) {
+    /* The event loop */
+    while (1) {
+        int n, i;
+        n = epoll_wait(efd, events, MAXEVENTS, -1);
+        sleep(2);
+        printf("worker  %d return from epoll_wait!\n", k);
+        for (i = 0; i < n; i++) {
+            if ((events[i].events & EPOLLERR) || (events[i].events & EPOLLHUP) || (!(events[i].events &EPOLLIN))) {
+                /* An error has occured on this fd, or the socket is not ready for reading (why were we notified then?) */
+                fprintf (stderr, "epoll error\n");
+                close (events[i].data.fd);
+                continue;
+            } else if (sfd == events[i].data.fd) {
+                /* We have a notification on the listening socket, which means one or more incoming connections. */
+                struct sockaddr in_addr;
+                socklen_t in_len;
+                int infd;
+                char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+                in_len = sizeof in_addr;
+                infd = accept(sfd, &in_addr, &in_len);
+                if (infd == -1) {
+                    printf("worker %d accept failed!\n", k);
+                    break;
+                }
+                printf("worker %d accept successed!\n", k);
+                /* Make the incoming socket non-blocking and add it to the list of fds to monitor. */
+                close(infd); 
+            }
+        }
+    }
+}
+
+int main (int argc, char *argv[])
+{
+    int sfd, s;
+    int efd;
+    struct epoll_event event;
+    struct epoll_event *events;
+    sfd = create_and_bind();
+    if (sfd == -1) {
+        abort ();
+    }
+    s = make_socket_non_blocking (sfd);
+    if (s == -1) {
+        abort ();
+    }
+    s = listen(sfd, SOMAXCONN);
+    if (s == -1) {
+        perror ("listen");
+        abort ();
+    }
+    efd = epoll_create(MAXEVENTS);
+    if (efd == -1) {
+        perror("epoll_create");
+        abort();
+    }
+    event.data.fd = sfd;
+    event.events = EPOLLIN;
+    s = epoll_ctl(efd, EPOLL_CTL_ADD, sfd, &event);
+    if (s == -1) {
+        perror("epoll_ctl");
+        abort();
+    }
+
+    /* Buffer where events are returned */
+    events = calloc(MAXEVENTS, sizeof event);
+    int k;
+    for(k = 0; k < PROCESS_NUM; k++) {
+        printf("Create worker %d\n", k+1);
+        int pid = fork();
+        if(pid == 0) {
+            worker(sfd, efd, events, k);
+        }
+    }
+    int status;
+    wait(&status);
+    free (events);
+    close (sfd);
+    return EXIT_SUCCESS;
 }
