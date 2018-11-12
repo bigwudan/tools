@@ -38,7 +38,7 @@ void sig_handler( int sig )
 }
 
 
-int father_run()
+int father_run(struct process_data *p_process_data)
 {
     struct log_data log_data_list[CONCURRENCY_NUM];
 
@@ -51,14 +51,19 @@ int father_run()
     assert( ret != -1 );
 
     setnonblocking( sig_pipefd[1] );
-    addfd( m_epollfd, sig_pipefd[0] );
+    addfd( m_epollfd, sig_pipefd[0], EPOLLIN | EPOLLET);
 
     addsig( SIGCHLD, sig_handler, 1);
     addsig( SIGTERM, sig_handler, 1);
     addsig( SIGINT, sig_handler, 1);
     addsig( SIGPIPE, SIG_IGN, 1);
 
+    for(int i =0; i < PROCESS_NUM ; i++){
+        addfd(m_epollfd, p_process_data[i].pipe_fd[0], EPOLLIN | EPOLLET); 
+    }
 
+
+    struct epoll_event events[ 10000 ];
 
 
 
@@ -114,7 +119,7 @@ int main(int argc, char **argv)
     if(m_idx == -1){
     
         //father
-        father_run(); 
+        father_run(process_data_list); 
     }else{
         //children
         child_run();
