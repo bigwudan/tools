@@ -23,10 +23,49 @@
 
 #include "concurrency_client.h"
 #include "config.h"
+#include "event_process.h"
+int m_epollfd;
+int sig_pipefd[2];
+
+
+//中断任务
+void sig_handler( int sig )
+{
+    int save_errno = errno;
+    int msg = sig;
+    send( sig_pipefd[1], ( char* )&msg, 1, 0 );
+    errno = save_errno;
+}
+
 
 int father_run()
 {
     struct log_data log_data_list[CONCURRENCY_NUM];
+
+
+
+    m_epollfd = epoll_create( 5 );
+    assert( m_epollfd != -1 );
+
+    int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
+    assert( ret != -1 );
+
+    setnonblocking( sig_pipefd[1] );
+    addfd( m_epollfd, sig_pipefd[0] );
+
+    addsig( SIGCHLD, sig_handler, 1);
+    addsig( SIGTERM, sig_handler, 1);
+    addsig( SIGINT, sig_handler, 1);
+    addsig( SIGPIPE, SIG_IGN, 1);
+
+
+
+
+
+
+
+
+
     printf("father \n");
 }
 
