@@ -7,5 +7,14 @@ extern void addfd( int epollfd, int fd, unsigned int events );
 extern void removefd( int epollfd, int fd );
 
 extern void addsig( int sig, void( handler )(int), int restart );
+
+
+extern struct event_msg{
+    int fd;
+    
+
+};
+
+
 #endif
 
