@@ -132,8 +132,26 @@ int child_run()
             }
     }
 
-    
-
+    struct event_msg *p_m_event_msg;
+    struct epoll_event events[ 10000 ];
+    int number = 0;        
+    while(m_stop == 1){
+        number = epoll_wait( m_epollfd, events, 10000, -1 );
+        if ( ( number < 0 ) && ( errno != EINTR ) )
+        {
+            printf( "epoll failure\n" );
+            break;
+        }
+        for(int i=0; i < number ; i++){
+            //接受fd 接受数据
+            p_m_event_msg =  events[i].data.ptr;        
+            //接受数据
+            if( ( SOCK_FD == p_m_event_msg->m_event_type ) && ( events[i].events & EPOLLIN ) ){
+                read(m_connect_data[i].fd, m_connect_data[i].buf, sizeof(m_connect_data[i].buf));             
+                printf("buf=%s\n", m_connect_data[i].buf); 
+            }
+        }
+    }
     printf("children \n");
 }
 
