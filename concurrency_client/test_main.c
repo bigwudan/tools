@@ -42,54 +42,50 @@ void sig_handler( int sig )
 int father_run(struct process_data *p_process_data)
 {
     struct log_data log_data_list[CONCURRENCY_NUM];
-
-
-
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
-
     int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
     assert( ret != -1 );
-
     setnonblocking( sig_pipefd[1] );
-    addfd( m_epollfd, sig_pipefd[0], EPOLLIN | EPOLLET);
-
+    struct event_msg m_event_msg;
+    m_event_msg.fd = sig_pipefd[0];
+    m_event_msg.m_event_type = SIG_FD;
+    m_event_msg.count = 0;
+    addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
     addsig( SIGCHLD, sig_handler, 1);
     addsig( SIGTERM, sig_handler, 1);
     addsig( SIGINT, sig_handler, 1);
     addsig( SIGPIPE, SIG_IGN, 1);
-
+    struct event_msg m_1_event_msg;
     for(int i =0; i < PROCESS_NUM ; i++){
-        addfd(m_epollfd, p_process_data[i].pipe_fd[0], EPOLLIN | EPOLLET); 
+        m_1_event_msg.fd = p_process_data[i].pipe_fd[0];
+        m_1_event_msg.count = i;
+        m_1_event_msg.m_event_type = PIPE_FD;
+        addfd(m_epollfd,&m_1_event_msg , EPOLLIN | EPOLLET); 
     }
     struct epoll_event events[ 10000 ];
     int number = 0;
-    while(m_stop == 1){
-        number = epoll_wait( m_epollfd, events, 10000, -1 );
-        if ( ( number < 0 ) && ( errno != EINTR ) )
-        {
-            printf( "epoll failure\n" );
-            break;
-        }
-        for(int i=0; i < number ; i++){
-            //接受fd 接受数据
-            
-
-
-
-        
-        
-        
-        }
-
-
-    
-    }
-
-
-
-
-
+//    while(m_stop == 1){
+//        number = epoll_wait( m_epollfd, events, 10000, -1 );
+//        if ( ( number < 0 ) && ( errno != EINTR ) )
+//        {
+//            printf( "epoll failure\n" );
+//            break;
+//        }
+//        for(int i=0; i < number ; i++){
+//            //接受fd 接受数据
+//            
+//
+//
+//
+//        
+//        
+//        
+//        }
+//
+//
+//    
+//    }
     printf("father \n");
 }
 
