@@ -22,7 +22,13 @@ struct log_data
 
 };
 
-
+struct connect_data{
+    int fd;
+    char buf[1024];
+    enum LOG_STATES state;
+    int count;
+    int beg_time;
+};
 
 
 #endif

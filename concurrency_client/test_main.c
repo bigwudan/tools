@@ -17,8 +17,8 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-
-
+#include <math.h>
+#include <time.h>
 
 
 #include "concurrency_client.h"
@@ -91,6 +91,48 @@ int father_run(struct process_data *p_process_data)
 
 int child_run()
 {
+    int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
+    m_epollfd = epoll_create( 5 );
+    assert( m_epollfd != -1 );
+    int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
+    assert( ret != -1 );
+    setnonblocking( sig_pipefd[1] );
+    struct event_msg m_event_msg;
+    m_event_msg.fd = sig_pipefd[0];
+    m_event_msg.m_event_type = SIG_FD;
+    m_event_msg.count = 0;
+    addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
+    addsig( SIGCHLD, sig_handler, 1);
+    addsig( SIGTERM, sig_handler, 1);
+    addsig( SIGINT, sig_handler, 1);
+    addsig( SIGPIPE, SIG_IGN, 1);
+
+    struct connect_data m_connect_data[concurrent_num];
+    struct sockaddr_in server_address;
+    bzero( &server_address, sizeof( server_address ) );
+    server_address.sin_family = AF_INET;
+    inet_pton( AF_INET, IP, &server_address.sin_addr );
+    server_address.sin_port = htons(PORT);
+    int sockfd = 0;
+    for(int i=0; i <concurrent_num; i++){
+            sockfd = socket( PF_INET, SOCK_STREAM, 0 );
+            if(sockfd > 0 ){
+                if ( connect( sockfd, ( struct sockaddr* )&server_address, sizeof( server_address ) ) < 0 )
+                {
+                    printf( "connection failed\n" );
+                }
+                m_connect_data[i].fd = sockfd;
+                m_connect_data[i].count = i;
+                m_connect_data[i].state = WAIT;
+                m_connect_data[i].beg_time = time(0);
+                m_event_msg.count = i;
+                m_event_msg.fd = sockfd;
+                m_event_msg.m_event_type = SOCK_FD;
+                addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
+            }
+    }
+
+    
 
     printf("children \n");
 }
