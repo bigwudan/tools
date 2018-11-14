@@ -93,7 +93,7 @@ int father_run(struct process_data *p_process_data)
 int child_run()
 {
     int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-    concurrent_num = 1;
+    concurrent_num = 1000;
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
   //  int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
@@ -125,7 +125,7 @@ int child_run()
                     printf("error = %d\n", errno);
                 }
                 //char buf[1200] = {0};
-                write(sockfd, p_2_request, 540);
+                write(sockfd, p_2_request, 69);
                 //read(sockfd,buf, sizeof(buf) );
                 m_connect_data[i].fd = sockfd;
                 m_connect_data[i].count = i;
@@ -154,7 +154,6 @@ int child_run()
             if( ( SOCK_FD == p_m_event_msg->m_event_type ) && ( events[i].events & EPOLLIN ) ){
                 read(m_connect_data[i].fd, m_connect_data[i].buf, sizeof(m_connect_data[i].buf));             
                 printf("buf=%s\n", m_connect_data[i].buf); 
-                exit(1);
             }
         }
     }
