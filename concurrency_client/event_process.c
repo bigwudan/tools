@@ -27,13 +27,13 @@ int setnonblocking( int fd )
     return old_option;
 }
 
-void addfd( int epollfd, int fd, unsigned int events )
+void addfd( int epollfd, struct event_msg *p_event_msg  , unsigned int events )
 {
     struct epoll_event event;
-    event.data.fd = fd;
+    event.data.ptr = (void *)p_event_msg;
     event.events = events;
-    epoll_ctl( epollfd, EPOLL_CTL_ADD, fd, &event );
-    setnonblocking( fd );
+    epoll_ctl( epollfd, EPOLL_CTL_ADD, p_event_msg->fd, &event );
+    setnonblocking( p_event_msg->fd );
 }
 
 void removefd( int epollfd, int fd )
