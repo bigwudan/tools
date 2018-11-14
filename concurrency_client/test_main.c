@@ -94,12 +94,12 @@ int child_run()
 {
     int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
     concurrent_num = 1;
-  //  m_epollfd = epoll_create( 5 );
-  //  assert( m_epollfd != -1 );
+    m_epollfd = epoll_create( 5 );
+    assert( m_epollfd != -1 );
   //  int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
   //  assert( ret != -1 );
   //  setnonblocking( sig_pipefd[1] );
-  //  struct event_msg m_event_msg;
+    struct event_msg m_event_msg;
   //  m_event_msg.fd = sig_pipefd[0];
   //  m_event_msg.m_event_type = SIG_FD;
   //  m_event_msg.count = 0;
@@ -123,30 +123,20 @@ int child_run()
                 {
                     printf( "connection failed\n" );
                     printf("error = %d\n", errno);
-
-
                 }
-                printf("child_socket=%d\n", sockfd);
-                char buf[1200] = {0};
-
-                int flag = write(sockfd, request, 93);
-
-                 read(sockfd,buf, sizeof(buf) );
-                 printf("buf=%s\n", buf);
-                 exit(1);   
-
-
- //               m_connect_data[i].fd = sockfd;
- //               m_connect_data[i].count = i;
- //               m_connect_data[i].state = WAIT;
- //               m_connect_data[i].beg_time = time(0);
- //               m_event_msg.count = i;
- //               m_event_msg.fd = sockfd;
- //               m_event_msg.m_event_type = SOCK_FD;
- //               addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
+                //char buf[1200] = {0};
+                write(sockfd, p_2_request, 540);
+                //read(sockfd,buf, sizeof(buf) );
+                m_connect_data[i].fd = sockfd;
+                m_connect_data[i].count = i;
+                m_connect_data[i].state = WAIT;
+                m_connect_data[i].beg_time = time(0);
+                m_event_msg.count = i;
+                m_event_msg.fd = sockfd;
+                m_event_msg.m_event_type = SOCK_FD;
+                addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
             }
     }
-    exit(1);
     struct event_msg *p_m_event_msg;
     struct epoll_event events[ 10000 ];
     int number = 0;        
@@ -164,9 +154,11 @@ int child_run()
             if( ( SOCK_FD == p_m_event_msg->m_event_type ) && ( events[i].events & EPOLLIN ) ){
                 read(m_connect_data[i].fd, m_connect_data[i].buf, sizeof(m_connect_data[i].buf));             
                 printf("buf=%s\n", m_connect_data[i].buf); 
+                exit(1);
             }
         }
     }
+    exit(1);
     printf("children \n");
 }
 
