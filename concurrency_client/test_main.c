@@ -92,8 +92,15 @@ int father_run(struct process_data *p_process_data)
 
 int child_run()
 {
+    int file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
+    if(file_fd == -1){
+    	printf("fd error\n");
+	exit(1);
+    }
+
+
     int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-    concurrent_num = 1000;
+    concurrent_num = 30;
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
   //  int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
@@ -126,7 +133,10 @@ int child_run()
                 }
                 //char buf[1200] = {0};
                 write(sockfd, p_2_request, 69);
+		//char buf[1200] = {0};
                 //read(sockfd,buf, sizeof(buf) );
+		//printf("buf=%s\n", buf);
+
                 m_connect_data[i].fd = sockfd;
                 m_connect_data[i].count = i;
                 m_connect_data[i].state = WAIT;
@@ -142,6 +152,8 @@ int child_run()
     int number = 0;        
     while(m_stop == 1){
         number = epoll_wait( m_epollfd, events, 10000, -1 );
+		
+	//printf("number=%d\n", number);
         if ( ( number < 0 ) && ( errno != EINTR ) )
         {
             printf( "epoll failure\n" );
@@ -153,7 +165,9 @@ int child_run()
             //接受数据
             if( ( SOCK_FD == p_m_event_msg->m_event_type ) && ( events[i].events & EPOLLIN ) ){
                 read(m_connect_data[i].fd, m_connect_data[i].buf, sizeof(m_connect_data[i].buf));             
-                printf("buf=%s\n", m_connect_data[i].buf); 
+		write(file_fd, m_connect_data[i].buf, strlen(m_connect_data[i].buf));
+
+                //printf("buf=%s\n", m_connect_data[i].buf); 
             }
         }
     }
@@ -165,7 +179,23 @@ int child_run()
 
 int main(int argc, char **argv)
 {
-    child_run();
+
+   int tmp_num =10;
+   
+   for(int n =0 ; n < tmp_num; n++){
+	pid_t tmp_pid=0;
+   	tmp_pid = fork();
+	if(tmp_pid == 0){
+		child_run();
+		break;
+	}else{
+		printf("father\n");
+	}
+
+   
+   }
+
+	while(1);
 
     return 1;
     int m_idx = -1;
