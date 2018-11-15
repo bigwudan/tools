@@ -93,7 +93,7 @@ int father_run(struct process_data *p_process_data)
 int child_run()
 {
     int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-    concurrent_num = 1000;
+    concurrent_num = 5;
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
   //  int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
@@ -140,7 +140,9 @@ int child_run()
     struct event_msg *p_m_event_msg;
     struct epoll_event events[ 10000 ];
     int number = 0;        
+    int flag_count = 0;
     while(m_stop == 1){
+        flag_count++;
         number = epoll_wait( m_epollfd, events, 10000, -1 );
         if ( ( number < 0 ) && ( errno != EINTR ) )
         {
@@ -156,6 +158,7 @@ int child_run()
                 printf("buf=%s\n", m_connect_data[i].buf); 
             }
         }
+
     }
     exit(1);
     printf("children \n");
