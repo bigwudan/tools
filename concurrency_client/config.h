@@ -16,7 +16,7 @@ char *p_request = "GET /index.html HTTP/1.1\r\nHost: www.bigwudan.com\r\nConnect
 char *p_1_request = "GET /index.html HTTP/1.1\r\nHost: www.bigwudan.com\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\nUpgrade-Insecure-Requests: 1\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8\r\nAccept-Encoding: gzip, deflate\r\nAccept-Language: zh-CN,zh;q=0.9\r\n\r\nxxxxxxxxxxx";
 
 
-char *p_2_request = "GET /index.php HTTP/1.1\r\nHost: www.bigwudan.com\r\n\r\nxxxxxxxxxxx";
+char *p_2_request = "GET /index.php?id=%d HTTP/1.1\r\nHost: www.bigwudan.com\r\n\r\nxxxxxxxxxxx";
 
 
 #endif

@@ -1,6 +1,23 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+<<<<<<< HEAD
+#include <errno.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#define IP   "127.0.0.1"
+#define PORT  8888
+#define PROCESS_NUM 4
+#define MAXEVENTS 64
+int stop = 1;
+void handle_term(int sig)
+{
+	stop = 0;
+
+=======
 typedef struct time_node time_node;
 struct time_node
 {
@@ -95,12 +112,47 @@ show_fun(time_list *pp_time_list)
         printf("expire_time=%d\n", p_tmp->expire_time);
         p_tmp = p_tmp->next;
     }
+>>>>>>> 966b6001d5612c2d9cd3c9be8bf29fe6c5d6d553
 }
 
 
 
 int main(int argc, char **argv)
 {
+<<<<<<< HEAD
+	int fd = socket(PF_INET, SOCK_STREAM, 0);
+	int ret;
+	if(fd == -1){
+		perror("socket error\n");
+		exit(1);
+	}
+	struct sockaddr_in serveraddr;
+	serveraddr.sin_family = AF_INET;
+	inet_pton( AF_INET, IP, &serveraddr.sin_addr);  
+	serveraddr.sin_port = htons(PORT);
+	serveraddr.sin_addr.s_addr = INADDR_ANY;
+	ret = bind(fd, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	if(ret == -1){
+		perror("bind error\n");
+	}
+	ret = listen(fd, 1);
+	if(ret == -1) perror("listen error\n");
+	char buf[120] = {0};
+	int conn = 0;
+	while(stop){
+	
+		memset(buf, 0, 120);
+		conn = accept(fd, NULL, NULL);
+		if(conn > 0 ){
+			printf("ok conn\n");
+		}
+		
+		
+		sleep(1);
+	}
+	close(fd);
+	return 0;
+=======
     
     time_list *p_my_list = NULL;
     printf("init_fun=%p\n", init_fun(&p_my_list)); 
@@ -135,4 +187,5 @@ int main(int argc, char **argv)
 
     return 0;
 
+>>>>>>> 966b6001d5612c2d9cd3c9be8bf29fe6c5d6d553
 }

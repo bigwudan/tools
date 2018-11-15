@@ -92,8 +92,15 @@ int father_run(struct process_data *p_process_data)
 
 int child_run()
 {
+    int file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
+    if(file_fd == -1){
+    	printf("fd error\n");
+	exit(1);
+    }
+
+
     int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-    concurrent_num = 5;
+    concurrent_num = 2;
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
   //  int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
@@ -116,6 +123,7 @@ int child_run()
     inet_pton( AF_INET, IP, &server_address.sin_addr );
     server_address.sin_port = htons(PORT);
     int sockfd = 0;
+    char tmp_buf[80] = {0};
     for(int i=0; i <concurrent_num; i++){
             sockfd = socket( PF_INET, SOCK_STREAM, 0 );
             if(sockfd > 0 ){
@@ -125,8 +133,16 @@ int child_run()
                     printf("error = %d\n", errno);
                 }
                 //char buf[1200] = {0};
-                write(sockfd, p_2_request, 69);
+                memset(tmp_buf, 0, sizeof(tmp_buf));
+                snprintf(tmp_buf, sizeof(tmp_buf), p_2_request, i);
+
+                printf("tmp=%s\n", tmp_buf);
+
+                write(sockfd, tmp_buf, strlen(tmp_buf));
+		//char buf[1200] = {0};
                 //read(sockfd,buf, sizeof(buf) );
+		//printf("buf=%s\n", buf);
+
                 m_connect_data[i].fd = sockfd;
                 m_connect_data[i].count = i;
                 m_connect_data[i].state = WAIT;
@@ -144,6 +160,8 @@ int child_run()
     while(m_stop == 1){
         flag_count++;
         number = epoll_wait( m_epollfd, events, 10000, -1 );
+		
+	//printf("number=%d\n", number);
         if ( ( number < 0 ) && ( errno != EINTR ) )
         {
             printf( "epoll failure\n" );
@@ -154,8 +172,11 @@ int child_run()
             p_m_event_msg =  events[i].data.ptr;        
             //接受数据
             if( ( SOCK_FD == p_m_event_msg->m_event_type ) && ( events[i].events & EPOLLIN ) ){
-                read(m_connect_data[i].fd, m_connect_data[i].buf, sizeof(m_connect_data[i].buf));             
+                recv(m_connect_data[i].fd, m_connect_data[i].buf, sizeof(m_connect_data[i].buf), 0);             
+		write(file_fd, m_connect_data[i].buf, strlen(m_connect_data[i].buf));
+
                 printf("buf=%s\n", m_connect_data[i].buf); 
+                close(m_connect_data[i].fd);
             }
         }
 
@@ -168,7 +189,25 @@ int child_run()
 
 int main(int argc, char **argv)
 {
-    child_run();
+
+		child_run();
+        exit(1);
+   int tmp_num =10;
+   
+   for(int n =0 ; n < tmp_num; n++){
+	pid_t tmp_pid=0;
+   	tmp_pid = fork();
+	if(tmp_pid == 0){
+		child_run();
+		break;
+	}else{
+		printf("father\n");
+	}
+
+   
+   }
+
+	while(1);
 
     return 1;
     int m_idx = -1;
