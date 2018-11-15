@@ -160,7 +160,7 @@ int child_run()
     while(m_stop == 1){
         flag_count++;
         number = epoll_wait( m_epollfd, events, 10000, -1 );
-		
+	    printf("number=%d\n", number);	
 	//printf("number=%d\n", number);
         if ( ( number < 0 ) && ( errno != EINTR ) )
         {
@@ -172,11 +172,25 @@ int child_run()
             p_m_event_msg =  events[i].data.ptr;        
             //接受数据
             if( ( SOCK_FD == p_m_event_msg->m_event_type ) && ( events[i].events & EPOLLIN ) ){
-                recv(m_connect_data[i].fd, m_connect_data[i].buf, sizeof(m_connect_data[i].buf), 0);             
-		write(file_fd, m_connect_data[i].buf, strlen(m_connect_data[i].buf));
-
-                printf("buf=%s\n", m_connect_data[i].buf); 
-                close(m_connect_data[i].fd);
+                while(1){
+                    int count = p_m_event_msg->count;
+                    int ret = recv(m_connect_data[count].fd, m_connect_data[count].buf, sizeof(m_connect_data[count].buf), 0);             
+                    if(ret < 0 ){
+                        if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) )
+                        {
+                            printf( "read later\n" );
+                            break;
+                        }
+                        close(m_connect_data[count].fd);
+                        break;
+                    }else if(ret == 0){
+                        close(m_connect_data[count].fd);
+                        break;
+                    }else{
+                        write(file_fd, m_connect_data[count].buf, strlen(m_connect_data[count].buf));
+                        printf("buf=%s\n", m_connect_data[count].buf); 
+                    }
+                }
             }
         }
 
