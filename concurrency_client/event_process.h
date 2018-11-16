@@ -11,6 +11,18 @@ struct event_msg{
 
 };
 
+struct thread_node{
+	int count;
+	struct thread_node *p_next;
+};
+
+struct thread_node_head{
+	int thread_count;
+	struct thread_node *p_thread_node;
+	pthread_mutex_t m_mutex;
+};
+
+
 extern int setnonblocking( int fd );
 extern void addfd( int epollfd,  struct event_msg *p_event_msg, unsigned int events );
 extern void removefd( int epollfd, int fd );

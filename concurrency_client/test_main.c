@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <math.h>
 #include <time.h>
-
+#include <pthread.h>
 
 #include "config.h"
 #include "event_process.h"
@@ -90,8 +90,43 @@ int father_run(struct process_data *p_process_data)
     printf("father \n");
 }
 
+//inser linke
+void insert_link_node(struct thread_node_head *p_head, int count)
+{
+	struct thread_node *m_thread_node = calloc(1, sizeof(struct thread_node));
+	if(!m_thread_node) exit(1);
+	m_thread_node->count = count;
+	m_thread_node->p_next = NULL;
+	struct thread_node *p_old_thread_node = p_head->p_thread_node;
+	p_head->p_thread_node = m_thread_node;
+	m_thread_node->p_next = p_old_thread_node;
+}
+
+//get link
+int get_link_node(struct thread_node_head *p_head)
+{
+	struct thread_node *m_thread_node = p_head->p_thread_node;
+	if(!m_thread_node){
+		return -1;
+	}
+	int count = m_thread_node->count;
+	p_head->p_thread_node = m_thread_node->p_next;
+	free(m_thread_node);
+	return count;
+}
+
+
 int child_run()
 {
+	int tot_rev = 0;
+	struct thread_node_head m_thread_node_head[THREAD_NUM];	
+	for(int i=0; i < THREAD_NUM; i++){
+		m_thread_node_head[i].thread_count = i;
+		m_thread_node_head[i].p_thread_node = NULL;
+		pthread_mutex_init(&(m_thread_node_head[i].m_mutex), NULL);
+	}	
+	
+
     int file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
     if(file_fd == -1){
     	printf("fd error\n");
@@ -100,7 +135,7 @@ int child_run()
 
 
     int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-    concurrent_num = 3;
+    concurrent_num = 2;
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
   //  int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
@@ -118,12 +153,12 @@ int child_run()
     
     struct connect_data m_connect_data[concurrent_num];
     char tmp_buf[80] = {0};
+    struct sockaddr_in server_address;
+    bzero( &server_address, sizeof( server_address ) );
+    server_address.sin_family = AF_INET;
+    inet_pton( AF_INET, IP, &server_address.sin_addr );
+    server_address.sin_port = htons(PORT);
     for(int i=0; i <concurrent_num; i++){
-	    struct sockaddr_in server_address;
-	    bzero( &server_address, sizeof( server_address ) );
-	    server_address.sin_family = AF_INET;
-	    inet_pton( AF_INET, IP, &server_address.sin_addr );
-	    server_address.sin_port = htons(PORT);
             m_connect_data[i].fd = socket( PF_INET, SOCK_STREAM, 0 );
             if(m_connect_data[i].fd> 0 ){
                 if ( connect( m_connect_data[i].fd, ( struct sockaddr* )&server_address, sizeof( server_address ) ) < 0 )
@@ -131,16 +166,10 @@ int child_run()
                     printf( "connection failed\n" );
                     printf("error = %d\n", errno);
                 }
-                //char buf[1200] = {0};
                 memset(tmp_buf, 0, sizeof(tmp_buf));
                 snprintf(tmp_buf, sizeof(tmp_buf), p_2_request, i);
-
                 printf("tmp=%s\n", tmp_buf);
-
                 write(m_connect_data[i].fd, tmp_buf, strlen(tmp_buf));
-		//char buf[1200] = {0};
-                //read(sockfd,buf, sizeof(buf) );
-		//printf("buf=%s\n", buf);
                 m_connect_data[i].count = i;
                 m_connect_data[i].state = WAIT;
                 m_connect_data[i].beg_time = time(0);
@@ -151,7 +180,6 @@ int child_run()
 		m_epoll_event.data.ptr = &(m_connect_data[i].m_event_msg);
 		m_epoll_event.events = EPOLLIN|EPOLLET;
                 //addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
-
 		epoll_ctl(m_epollfd, EPOLL_CTL_ADD, m_connect_data[i].fd, &m_epoll_event);
             }
     }
@@ -186,7 +214,12 @@ int child_run()
 			}else if(recv_num == 0){
 				close(p_m_event_msg->fd);
 			}else{
+				int thread_num = tot_rev%THREAD_NUM; 
+				m_thread_node_head[thread_num];
+				pthread_mutex_lock(&(m_thread_node_head[thread_num].m_mutex));
+				insert_link_node(&(m_thread_node_head[thread_num]), p_m_event_msg->count );
 				printf("tmp_rev=%s\n", tmp_rev);
+				pthread_mutex_unlock(&(m_thread_node_head[thread_num].m_mutex));
 			}
 		}
 //		recv(events[i].data.fd, tmp_rev, 1200, 0);
@@ -203,9 +236,7 @@ int child_run()
 int main(int argc, char **argv)
 {
 
-		child_run();
-        exit(1);
-   int tmp_num =10;
+   int tmp_num =2;
    
    for(int n =0 ; n < tmp_num; n++){
 	pid_t tmp_pid=0;
