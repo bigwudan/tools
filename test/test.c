@@ -1,191 +1,89 @@
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-<<<<<<< HEAD
-#include <errno.h>
-#include <sys/wait.h>
-#include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <assert.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <sys/epoll.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <math.h>
+#include <time.h>
 
-#define IP   "127.0.0.1"
-#define PORT  8888
-#define PROCESS_NUM 4
-#define MAXEVENTS 64
-int stop = 1;
-void handle_term(int sig)
-{
-	stop = 0;
 
-=======
-typedef struct time_node time_node;
-struct time_node
-{
-    int expire_time;
-    void (*bk_fun)( void * arv );
-    time_node *next;
-    time_node *prev;
+#define IP "114.215.85.234"
+#define PORT 80
+
+
+char *p_2_request = "GET /index.php?id=%d HTTP/1.1\r\nHost: www.bigwudan.com\r\n\r\nxxxxxxxxxxx";
+struct client{
+	int fd;
+	int count;
+	char buf[1000];
 };
 
-typedef struct time_list
+
+int main()
 {
-    time_node *head;
-    time_node *tail;
-}time_list;
-
-
-time_list *
-init_fun(time_list **pp_time_list)
-{
-   *pp_time_list =  calloc(1, sizeof(time_list));
-    (*pp_time_list)->head = NULL;
-    (*pp_time_list)->tail = NULL;
-    return *pp_time_list;
-}
-
-int
-add_fun(time_list *pp_time_list, time_node *p_time_node)
-{
-    if(pp_time_list->head == NULL && pp_time_list->tail == NULL ){
-        pp_time_list->head = p_time_node;
-        pp_time_list->tail = p_time_node;
-        p_time_node->next = NULL;
-        p_time_node->prev = NULL;
-        return 1; 
-    }else{
-        time_node *p_tmp = pp_time_list->head;
-        while(p_tmp){
-            if(p_tmp->expire_time >= p_time_node->expire_time ){
-                break; 
-            } 
-            p_tmp = p_tmp->next;
-        }
-        //未找到
-        if(p_tmp == NULL){
-            p_time_node->prev = pp_time_list->tail;
-            pp_time_list->tail->next = p_time_node;
-            pp_time_list->tail = p_time_node;
-            p_time_node->next = NULL;
-            return 1;
-        }
-        //找第一个位置
-        if(p_tmp->prev == NULL){
-            pp_time_list->head = p_time_node;
-            p_tmp->prev = p_time_node;
-            p_time_node->prev = NULL;
-            p_time_node->next = p_tmp;
-            return 1; 
-        }
-        p_time_node->prev = p_tmp->prev;
-        p_time_node->next = p_tmp;
-        p_tmp->prev->next = p_time_node;
-        p_tmp->prev = p_time_node;
-        return 1;
-    }
-}
-
-int
-del_fun(time_list *pp_time_list, time_node *p_time_node)
-{
-    if(p_time_node->next == NULL && p_time_node->prev == NULL){
-        pp_time_list->head = NULL;
-        pp_time_list->tail = NULL;
-    }else if(p_time_node->prev == NULL){
-        pp_time_list->head = p_time_node->next;
-        pp_time_list->head->prev = NULL;
-    }else if(p_time_node->next == NULL){
-        pp_time_list->tail = p_time_node->prev;
-        pp_time_list->tail->next = NULL;
-    }else{
-        p_time_node->prev->next = p_time_node->next;
-        p_time_node->next->prev = p_time_node->prev;
-    }    
-    p_time_node = NULL;
-    return 0;
-}
-
-void
-show_fun(time_list *pp_time_list)
-{
-    time_node *p_tmp = pp_time_list->head;
-    while(p_tmp){
-        printf("expire_time=%d\n", p_tmp->expire_time);
-        p_tmp = p_tmp->next;
-    }
->>>>>>> 966b6001d5612c2d9cd3c9be8bf29fe6c5d6d553
-}
-
-
-
-int main(int argc, char **argv)
-{
-<<<<<<< HEAD
-	int fd = socket(PF_INET, SOCK_STREAM, 0);
-	int ret;
-	if(fd == -1){
-		perror("socket error\n");
-		exit(1);
-	}
-	struct sockaddr_in serveraddr;
-	serveraddr.sin_family = AF_INET;
-	inet_pton( AF_INET, IP, &serveraddr.sin_addr);  
-	serveraddr.sin_port = htons(PORT);
-	serveraddr.sin_addr.s_addr = INADDR_ANY;
-	ret = bind(fd, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
-	if(ret == -1){
-		perror("bind error\n");
-	}
-	ret = listen(fd, 1);
-	if(ret == -1) perror("listen error\n");
-	char buf[120] = {0};
-	int conn = 0;
-	while(stop){
-	
-		memset(buf, 0, 120);
-		conn = accept(fd, NULL, NULL);
-		if(conn > 0 ){
-			printf("ok conn\n");
+	int file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
+        int count = 100;	
+	char tmp_buf[80] = {0};
+	int m_epollfd = epoll_create( 5 );
+	struct epoll_event events[ 10000 ];
+	struct client m_client[count];
+	for(int i=0; i<count; i++){
+		int tmp_sock = 0;	
+		memset(tmp_buf, 0, sizeof(tmp_buf));
+		snprintf(tmp_buf, sizeof(tmp_buf), p_2_request, i);
+		struct sockaddr_in m_server_addr;
+		bzero(&m_server_addr, sizeof(struct sockaddr_in));	
+		m_server_addr.sin_family = AF_INET;
+		inet_pton( AF_INET, IP, &m_server_addr.sin_addr);
+		m_server_addr.sin_port = htons(PORT);
+		tmp_sock = socket(PF_INET, SOCK_STREAM, 0);
+		m_client[i].fd = tmp_sock;
+		m_client[i].count = i;
+		memset(m_client[i].buf, '\0', sizeof(m_client[i].buf));
+		if ( connect( m_client[i].fd, ( struct sockaddr* )&m_server_addr, sizeof( m_server_addr ) ) < 0 ){
+			printf("connect failed\n");
+			exit(1);
 		}
-		
-		
-		sleep(1);
+		int w_num = write(m_client[i].fd, tmp_buf, strlen(tmp_buf));
+		struct epoll_event m_epoll_event;
+		m_epoll_event.data.fd = m_client[i].fd;
+		m_epoll_event.events = EPOLLIN| EPOLLET;
+		epoll_ctl ( m_epollfd, EPOLL_CTL_ADD, m_client[i].fd, &m_epoll_event );
 	}
-	close(fd);
-	return 0;
-=======
-    
-    time_list *p_my_list = NULL;
-    printf("init_fun=%p\n", init_fun(&p_my_list)); 
-    time_node time_node_1;
-    time_node_1.expire_time = 10;
-    time_node_1.prev = NULL;
-    time_node_1.next = NULL;
-    add_fun(p_my_list, &time_node_1);
-    
-
-    time_node time_node_2;
-    time_node_2.expire_time = 3;
-    time_node_2.prev = NULL;
-    time_node_2.next = NULL;
-    add_fun(p_my_list, &time_node_2);
+	int number = 0;
+	char tmp_rev[1000] = {0};
+	while(1){
+		number = epoll_wait( m_epollfd, events, 10000, -1 );
+		for(int i=0; i < number; i++){
+			if(  events[i].events & EPOLLIN  ){
+				memset(tmp_rev, '\0', 1000);
+				recv(events[i].data.fd,tmp_rev, 1000, 0 );
+				if(strlen(tmp_rev) > 0){
+					write(file_fd,  tmp_rev, strlen( tmp_rev));
+				}
+			}
+		}
+	}
 
 
-    time_node time_node_3;
-    time_node_3.expire_time = 20;
-    time_node_3.prev = NULL;
-    time_node_3.next = NULL;
-    add_fun(p_my_list, &time_node_3);
-
-    //del_fun(p_my_list, &time_node_1);
-
-    del_fun(p_my_list, &time_node_3);
-
-    //del_fun(p_my_list, &time_node_2);
-
-    show_fun(p_my_list);
 
 
-    return 0;
 
->>>>>>> 966b6001d5612c2d9cd3c9be8bf29fe6c5d6d553
+
+
 }
