@@ -146,6 +146,7 @@ int child_run()
                 m_connect_data[i].beg_time = time(0);
                 m_connect_data[i].m_event_msg.fd = m_connect_data[i].fd;
 		m_connect_data[i].m_event_msg.count = i;
+		m_connect_data[i].m_event_msg.m_event_type = SOCK_FD;
 		struct epoll_event m_epoll_event;
 		m_epoll_event.data.ptr = &(m_connect_data[i].m_event_msg);
 		m_epoll_event.events = EPOLLIN|EPOLLET;
@@ -172,16 +173,23 @@ int child_run()
             //接受fd 接受数据
             p_m_event_msg =  events[i].data.ptr;        
             //接受数据
-            if(   events[i].events & EPOLLIN  ){
+            if((p_m_event_msg->m_event_type== SOCK_FD)&&(events[i].events & EPOLLIN)){
 		char tmp_rev[1200] = {0};
-					
-		recv(p_m_event_msg->fd, tmp_rev, 1200, 0);
-
-
+		while(1){
+			int recv_num= recv(p_m_event_msg->fd, tmp_rev, 1200, 0);
+			if(recv_num < 0 ){
+				if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) ){
+					break;
+				}
+				close(p_m_event_msg->fd);		
+				break;	
+			}else if(recv_num == 0){
+				close(p_m_event_msg->fd);
+			}else{
+				printf("tmp_rev=%s\n", tmp_rev);
+			}
+		}
 //		recv(events[i].data.fd, tmp_rev, 1200, 0);
-		printf("tmp_rev=%s\n", tmp_rev);
-
-
             }
         }
 
