@@ -21,9 +21,9 @@
 #include <time.h>
 
 
-#include "concurrency_client.h"
 #include "config.h"
 #include "event_process.h"
+#include "concurrency_client.h"
 int m_epollfd;
 int sig_pipefd[2];
 int m_stop = 1;
@@ -100,7 +100,7 @@ int child_run()
 
 
     int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-    concurrent_num = 2;
+    concurrent_num = 3;
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
   //  int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
@@ -117,17 +117,16 @@ int child_run()
   //  addsig( SIGPIPE, SIG_IGN, 1);
     
     struct connect_data m_connect_data[concurrent_num];
-    struct sockaddr_in server_address;
-    bzero( &server_address, sizeof( server_address ) );
-    server_address.sin_family = AF_INET;
-    inet_pton( AF_INET, IP, &server_address.sin_addr );
-    server_address.sin_port = htons(PORT);
-    int sockfd = 0;
     char tmp_buf[80] = {0};
     for(int i=0; i <concurrent_num; i++){
-            sockfd = socket( PF_INET, SOCK_STREAM, 0 );
-            if(sockfd > 0 ){
-                if ( connect( sockfd, ( struct sockaddr* )&server_address, sizeof( server_address ) ) < 0 )
+	    struct sockaddr_in server_address;
+	    bzero( &server_address, sizeof( server_address ) );
+	    server_address.sin_family = AF_INET;
+	    inet_pton( AF_INET, IP, &server_address.sin_addr );
+	    server_address.sin_port = htons(PORT);
+            m_connect_data[i].fd = socket( PF_INET, SOCK_STREAM, 0 );
+            if(m_connect_data[i].fd> 0 ){
+                if ( connect( m_connect_data[i].fd, ( struct sockaddr* )&server_address, sizeof( server_address ) ) < 0 )
                 {
                     printf( "connection failed\n" );
                     printf("error = %d\n", errno);
@@ -138,19 +137,21 @@ int child_run()
 
                 printf("tmp=%s\n", tmp_buf);
 
-                write(sockfd, tmp_buf, strlen(tmp_buf));
+                write(m_connect_data[i].fd, tmp_buf, strlen(tmp_buf));
 		//char buf[1200] = {0};
                 //read(sockfd,buf, sizeof(buf) );
 		//printf("buf=%s\n", buf);
-
-                m_connect_data[i].fd = sockfd;
                 m_connect_data[i].count = i;
                 m_connect_data[i].state = WAIT;
                 m_connect_data[i].beg_time = time(0);
-                m_event_msg.count = i;
-                m_event_msg.fd = sockfd;
-                m_event_msg.m_event_type = SOCK_FD;
-                addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
+                m_connect_data[i].m_event_msg.fd = m_connect_data[i].fd;
+		m_connect_data[i].m_event_msg.count = i;
+		struct epoll_event m_epoll_event;
+		m_epoll_event.data.ptr = &(m_connect_data[i].m_event_msg);
+		m_epoll_event.events = EPOLLIN|EPOLLET;
+                //addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
+
+		epoll_ctl(m_epollfd, EPOLL_CTL_ADD, m_connect_data[i].fd, &m_epoll_event);
             }
     }
     struct event_msg *p_m_event_msg;
@@ -171,12 +172,16 @@ int child_run()
             //接受fd 接受数据
             p_m_event_msg =  events[i].data.ptr;        
             //接受数据
-            if( ( SOCK_FD == p_m_event_msg->m_event_type ) && ( events[i].events & EPOLLIN ) ){
-                recv(m_connect_data[i].fd, m_connect_data[i].buf, sizeof(m_connect_data[i].buf), 0);             
-		write(file_fd, m_connect_data[i].buf, strlen(m_connect_data[i].buf));
+            if(   events[i].events & EPOLLIN  ){
+		char tmp_rev[1200] = {0};
+					
+		recv(p_m_event_msg->fd, tmp_rev, 1200, 0);
 
-                printf("buf=%s\n", m_connect_data[i].buf); 
-                close(m_connect_data[i].fd);
+
+//		recv(events[i].data.fd, tmp_rev, 1200, 0);
+		printf("tmp_rev=%s\n", tmp_rev);
+
+
             }
         }
 

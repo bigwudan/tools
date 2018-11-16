@@ -28,6 +28,7 @@ struct connect_data{
     enum LOG_STATES state;
     int count;
     int beg_time;
+    struct event_msg m_event_msg;
 };
 
 
