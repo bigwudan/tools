@@ -31,11 +31,11 @@ int m_stop = 1;
 struct thread_node_head m_thread_node_head[THREAD_NUM];	
 
 //int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-int concurrent_num = 5;
+int concurrent_num = 100;
 
 int file_fd=0;
 
-struct connect_data m_connect_data[5];
+struct connect_data m_connect_data[100];
 //中断任务
 void sig_handler( int sig )
 {
@@ -130,12 +130,10 @@ void* fun_thread(void *p_avg ){
 		if(p_node){
 			pthread_mutex_lock(&(m_thread_node_head[tmp_int].m_mutex));
 			int count= get_link_node(&m_thread_node_head[tmp_int]);
-			printf("count=%d, buf=%s\n", count, m_connect_data[count].buf);	
+			//printf("count=%d, buf=%s\n", count, m_connect_data[count].buf);	
 			write(file_fd, m_connect_data[count].buf, sizeof(m_connect_data[count].buf));
 			pthread_mutex_unlock(&(m_thread_node_head[tmp_int].m_mutex));
 		}
-
-		sleep(2);	
 	}
 	return NULL;
 }
@@ -191,7 +189,7 @@ int child_run()
                 }
                 memset(tmp_buf, 0, sizeof(tmp_buf));
                 snprintf(tmp_buf, sizeof(tmp_buf), p_2_request, i);
-                printf("tmp=%s\n", tmp_buf);
+                //printf("tmp=%s\n", tmp_buf);
                 write(m_connect_data[i].fd, tmp_buf, strlen(tmp_buf));
                 m_connect_data[i].count = i;
                 m_connect_data[i].state = WAIT;
@@ -242,7 +240,7 @@ int child_run()
 				pthread_mutex_lock(&(m_thread_node_head[thread_num].m_mutex));
 				insert_link_node(&(m_thread_node_head[thread_num]), p_m_event_msg->count );
 				strncpy((m_connect_data[p_m_event_msg->count]).buf, tmp_rev, strlen(tmp_rev));
-				printf("tmp_rev=%s\n", tmp_rev);
+				//printf("tmp_rev=%s\n", tmp_rev);
 				pthread_mutex_unlock(&(m_thread_node_head[thread_num].m_mutex));
 			}
 		}
@@ -260,9 +258,9 @@ int child_run()
 int main(int argc, char **argv)
 {
 
-		child_run();
-		while(1);
-   int tmp_num =2;
+//		child_run();
+//		while(1);
+   int tmp_num =10;
    
    for(int n =0 ; n < tmp_num; n++){
 	pid_t tmp_pid=0;
