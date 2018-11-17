@@ -30,6 +30,12 @@ int m_stop = 1;
 
 struct thread_node_head m_thread_node_head[THREAD_NUM];	
 
+//int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
+int concurrent_num = 5;
+
+int file_fd=0;
+
+struct connect_data m_connect_data[5];
 //中断任务
 void sig_handler( int sig )
 {
@@ -120,9 +126,15 @@ void* fun_thread(void *p_avg ){
 	while(1){
 		int tmp_int = (int)p_avg;
 		int flag = m_thread_node_head[tmp_int].thread_count;
-		
+		struct thread_node *p_node = m_thread_node_head[tmp_int].p_thread_node;	
+		if(p_node){
+			pthread_mutex_lock(&(m_thread_node_head[tmp_int].m_mutex));
+			int count= get_link_node(&m_thread_node_head[tmp_int]);
+			printf("count=%d, buf=%s\n", count, m_connect_data[count].buf);	
+			write(file_fd, m_connect_data[count].buf, sizeof(m_connect_data[count].buf));
+			pthread_mutex_unlock(&(m_thread_node_head[tmp_int].m_mutex));
+		}
 
-			printf("flag=%p avg==%d pthread=%lu \n", m_thread_node_head[tmp_int].p_thread_node, p_avg, pthread_self());
 		sleep(2);	
 	}
 	return NULL;
@@ -141,15 +153,13 @@ int child_run()
 	for(int i=0; i < THREAD_NUM; i++){
 		pthread_create(&m_tid[i], NULL,fun_thread ,i);
 	}
-    int file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
+    file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
     if(file_fd == -1){
     	printf("fd error\n");
 	exit(1);
     }
 
 
-    int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-    concurrent_num = 5;
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
   //  int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
@@ -165,7 +175,6 @@ int child_run()
   //  addsig( SIGINT, sig_handler, 1);
   //  addsig( SIGPIPE, SIG_IGN, 1);
     
-    struct connect_data m_connect_data[concurrent_num];
     char tmp_buf[80] = {0};
     struct sockaddr_in server_address;
     bzero( &server_address, sizeof( server_address ) );
@@ -216,8 +225,8 @@ int child_run()
             p_m_event_msg =  events[i].data.ptr;        
             //接受数据
             if((p_m_event_msg->m_event_type== SOCK_FD)&&(events[i].events & EPOLLIN)){
-		char tmp_rev[1200] = {0};
 		while(1){
+			char tmp_rev[1200] = {0};
 			int recv_num= recv(p_m_event_msg->fd, tmp_rev, 1200, 0);
 			if(recv_num < 0 ){
 				if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) ){
@@ -229,9 +238,10 @@ int child_run()
 				close(p_m_event_msg->fd);
 			}else{
 				int thread_num = tot_rev%THREAD_NUM; 
-				m_thread_node_head[thread_num];
+				tot_rev++;
 				pthread_mutex_lock(&(m_thread_node_head[thread_num].m_mutex));
 				insert_link_node(&(m_thread_node_head[thread_num]), p_m_event_msg->count );
+				strncpy((m_connect_data[p_m_event_msg->count]).buf, tmp_rev, strlen(tmp_rev));
 				printf("tmp_rev=%s\n", tmp_rev);
 				pthread_mutex_unlock(&(m_thread_node_head[thread_num].m_mutex));
 			}
