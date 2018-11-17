@@ -28,6 +28,7 @@ int m_epollfd;
 int sig_pipefd[2];
 int m_stop = 1;
 
+struct thread_node_head m_thread_node_head[THREAD_NUM];	
 
 //中断任务
 void sig_handler( int sig )
@@ -115,18 +116,31 @@ int get_link_node(struct thread_node_head *p_head)
 	return count;
 }
 
+void* fun_thread(void *p_avg ){
+	while(1){
+		int tmp_int = (int)p_avg;
+		int flag = m_thread_node_head[tmp_int].thread_count;
+		
+
+			printf("flag=%p avg==%d pthread=%lu \n", m_thread_node_head[tmp_int].p_thread_node, p_avg, pthread_self());
+		sleep(2);	
+	}
+	return NULL;
+}
 
 int child_run()
 {
 	int tot_rev = 0;
-	struct thread_node_head m_thread_node_head[THREAD_NUM];	
 	for(int i=0; i < THREAD_NUM; i++){
 		m_thread_node_head[i].thread_count = i;
 		m_thread_node_head[i].p_thread_node = NULL;
 		pthread_mutex_init(&(m_thread_node_head[i].m_mutex), NULL);
 	}	
 	
-
+	pthread_t m_tid[THREAD_NUM];
+	for(int i=0; i < THREAD_NUM; i++){
+		pthread_create(&m_tid[i], NULL,fun_thread ,i);
+	}
     int file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
     if(file_fd == -1){
     	printf("fd error\n");
@@ -135,7 +149,7 @@ int child_run()
 
 
     int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-    concurrent_num = 2;
+    concurrent_num = 5;
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
   //  int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
@@ -236,6 +250,8 @@ int child_run()
 int main(int argc, char **argv)
 {
 
+		child_run();
+		while(1);
    int tmp_num =2;
    
    for(int n =0 ; n < tmp_num; n++){
