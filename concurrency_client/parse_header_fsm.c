@@ -14,6 +14,8 @@ parse_line(char *p_buf, int *p_checked, int *p_readed, int *p_begline){
 				*p_checked = checked+2;	
 				return LINE_OK;			
 			}else if(checked +1 >= readed ){
+				return LINE_ING;
+			}else{
 				return LINE_BAD;
 			}
 		}else if( c == '\n'){
