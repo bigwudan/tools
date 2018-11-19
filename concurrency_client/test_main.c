@@ -175,15 +175,21 @@ int child_run()
                 while(1){
                     int count = p_m_event_msg->count;
                     int ret = recv(m_connect_data[count].fd, m_connect_data[count].buf, sizeof(m_connect_data[count].buf), 0);             
+                        
+                        printf("buf=%s\n", m_connect_data[count].buf); 
+                        break;
+                    
                     if(ret < 0 ){
                         if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) )
                         {
                             printf( "read later\n" );
                             break;
                         }
+                        epoll_ctl(m_epollfd, EPOLL_CTL_DEL, m_connect_data[count].fd, NULL);
                         close(m_connect_data[count].fd);
                         break;
                     }else if(ret == 0){
+                        epoll_ctl(m_epollfd, EPOLL_CTL_DEL, m_connect_data[count].fd, NULL);
                         close(m_connect_data[count].fd);
                         break;
                     }else{
