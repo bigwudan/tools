@@ -3,7 +3,7 @@
 
 enum LINE_STATE{LINE_OK, LINE_ING, LINE_BAD  };
 enum HEAD_VAL_TYPE { STRING, INT };
-enum HEAD_TYPE{HTTP_HEAD_TYPE, PROTOCOL_HEAD_TYPE, BAD_HEAD_TYPE };
+enum HEAD_TYPE{HTTP_HEAD_TYPE, PROTOCOL_HEAD_TYPE, BAD_HEAD_TYPE, HTTP_BODY_TYPE };
 
 
 extern enum LINE_STATE
@@ -25,7 +25,7 @@ struct head_param{
 
 extern struct head_param head_param_list[]; 
 extern enum HEAD_TYPE parse_http_head(char *p_buf);
-
+extern enum HEAD_TYPE parse_proto_head(char *p_buf);
 
 #endif
 
