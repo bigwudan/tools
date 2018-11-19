@@ -8,27 +8,51 @@ char p_m_buf[] = "HTTP/1.1 200 OK\r\nDate: Mon, 19 Nov 2018 01:01:37 GM\r\nServe
 
 
 int main(){
-    
-    printf("p=%s\n", p_m_buf); 
 
-    return 1;
-	char p_buf[] = "1234567\r\nabcd\r\ncd";
+
+
 	int checked = 0;
-	int readed = strlen(p_buf);
+	int readed = strlen(p_m_buf);
 	int begline = 0;
 	int start = 0;
 	int flag = 0;
-	flag = parse_line(p_buf,&checked, &readed, &begline );
-	printf("flag=%d p_buf=%s checked=%d readed=%d begline=%d\n",flag, &p_buf[start], checked, readed, begline);	
+    
+    enum HEAD_TYPE m_head_type;
+    m_head_type = HTTP_HEAD_TYPE;
 
-	start = checked;
-	flag = parse_line(p_buf,&checked, &readed, &begline );
-	printf("flag=%d p_buf=%s checked=%d readed=%d begline=%d\n",flag, &p_buf[start], checked, readed, begline);	
+	while(parse_line(p_m_buf,&checked, &readed, &begline ) == LINE_OK){
+        switch(m_head_type){
+        
+            case HTTP_HEAD_TYPE:
+                parse_http_head( &p_m_buf[checked] );
+                
+                break;
 
 
-	start = checked;
-	flag = parse_line(p_buf,&checked, &readed, &begline );
-	printf("flag=%d\n", flag);
-	printf("flag=%d p_buf=%s checked=%d readed=%d begline=%d\n",flag, &p_buf[start], checked, readed, begline);	
+        
+        
+        }
+    
+
+
+
+
+    
+    } 
+
+
+    return 1;
+//	flag = parse_line(p_buf,&checked, &readed, &begline );
+//	printf("flag=%d p_buf=%s checked=%d readed=%d begline=%d\n",flag, &p_buf[start], checked, readed, begline);	
+//
+//	start = checked;
+//	flag = parse_line(p_buf,&checked, &readed, &begline );
+//	printf("flag=%d p_buf=%s checked=%d readed=%d begline=%d\n",flag, &p_buf[start], checked, readed, begline);	
+//
+//
+//	start = checked;
+//	flag = parse_line(p_buf,&checked, &readed, &begline );
+//	printf("flag=%d\n", flag);
+//	printf("flag=%d p_buf=%s checked=%d readed=%d begline=%d\n",flag, &p_buf[start], checked, readed, begline);	
 
 }

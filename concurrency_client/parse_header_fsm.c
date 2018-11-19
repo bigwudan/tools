@@ -1,3 +1,9 @@
+
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+
 #include "parse_header_fsm.h"
 
 struct head_param head_param_list[] = {
@@ -6,6 +12,15 @@ struct head_param head_param_list[] = {
     { .p_name = "X-Powered-By", .val_type = STRING, .len=0, .val.p_c_val= (void *)0   },
     { .p_name = "Content-Length", .val_type = INT, .len=0, .val.i_val=0   },
     { .p_name = (void *)0 , .val_type = INT, .len=0, .val.i_val=0   },
+};
+
+
+enum HEAD_TYPE
+parse_http_head(char *p_buf){
+
+    printf("test=%s\n", p_buf);
+    printf("test\n");
+    exit(1);
 };
 
 
