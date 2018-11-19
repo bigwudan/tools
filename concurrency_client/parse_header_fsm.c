@@ -7,11 +7,11 @@
 #include "parse_header_fsm.h"
 
 struct head_param head_param_list[] = {
-    { .p_name = "Date", .val_type = INT, .len=0, .val.i_val=0   },
-    { .p_name = "Server", .val_type = STRING, .len=0, .val.p_c_val= (void *)0   },
-    { .p_name = "X-Powered-By", .val_type = STRING, .len=0, .val.p_c_val= (void *)0   },
-    { .p_name = "Content-Length", .val_type = INT, .len=0, .val.i_val=0   },
-    { .p_name = "Content-Type", .val_type = STRING, .len=0, .val.p_c_val= (void *)0   },
+    { .p_name = "Date", .val_type = INT, .len=1, .val.i_val=0   },
+    { .p_name = "Server", .val_type = STRING, .len=1, .val.p_c_val= (void *)0   },
+    { .p_name = "X-Powered-By", .val_type = STRING, .len=1, .val.p_c_val= (void *)0   },
+    { .p_name = "Content-Length", .val_type = INT, .len=1, .val.i_val=0   },
+    { .p_name = "Content-Type", .val_type = STRING, .len=1, .val.p_c_val= (void *)0   },
     { .p_name = (void *)0 , .val_type = INT, .len=0, .val.i_val=0   },
 };
 
@@ -34,9 +34,11 @@ parse_proto_head(char *p_buf){
     int i = 0;
     while(1){
         struct head_param tmp_head_param =   head_param_list[i];
-        i++;
         if(strcasecmp(p_beg, tmp_head_param.p_name) == 0){
             if(strcasecmp(p_beg, "date") == 0){
+
+                printf("[date] i=%d\n",i);
+
                 struct tm tm_;
                 time_t t_;
                 strptime(p_end, "%Y-%m-%d %H:%M:%S", &tm_); //将字符串转换为tm时间  
@@ -45,17 +47,21 @@ parse_proto_head(char *p_buf){
                 head_param_list[i].val.i_val = t_;
                 return PROTOCOL_HEAD_TYPE;
             }else if(strcasecmp(p_beg, "Server") == 0 ){
+                printf("[server] i=%d \n",i);
                 head_param_list[i].val.p_c_val = p_end;
                 head_param_list[i].len = strlen(p_end);
                 return PROTOCOL_HEAD_TYPE;
             }else if(strcasecmp(p_beg, "X-Powered-By") == 0 ){
+                printf("[x-powered-by] i=%d \n",i);
                 head_param_list[i].val.p_c_val = p_end;
                 head_param_list[i].len = strlen(p_end);
                 return PROTOCOL_HEAD_TYPE;
             }else if(strcasecmp(p_beg, "Content-Length") == 0){
+                printf("[content-length] i=%d \n",i);
                 head_param_list[i].val.i_val = atoi(p_end);
                 return PROTOCOL_HEAD_TYPE;
             }else if(strcasecmp(p_beg, "Content-Type") == 0){
+                printf("[content-type] i=%d \n",i);
                 head_param_list[i].val.p_c_val = p_end;
                 head_param_list[i].len = strlen(p_end);
                 return HTTP_BODY_TYPE;
@@ -66,6 +72,7 @@ parse_proto_head(char *p_buf){
         }
 
 
+        i++;
         if(tmp_head_param.p_name == NULL) break;
 
 
