@@ -81,18 +81,23 @@ int main(int argc, char **argv)
 
 
     int number = 0;
+    ret = -1;
     while(1){
     
         number = epoll_wait( m_epollfd, events, MAX_EVENT_NUMBER, -1 );
         if(number > 0){
-
-            printf("number=%d\n",number);
-
             for(int i=0; i< number; i++){
                 int sockfd = events[i].data.fd;
                 if( ( sockfd == sig_pipefd[0] ) && ( events[i].events & EPOLLIN ) ){
                     printf("sockfd=%d\n",sockfd);
-                
+                    int sig;
+                    char signals[1024];
+                    ret = recv( sig_pipefd[0], signals, sizeof( signals ), 0 );
+                    printf("ret=%d, signals[0]=%d , signals[1]=%d\n",ret, signals[0], signals[1]);
+                    exit(1);
+
+
+
                 }
 
             
