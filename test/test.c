@@ -2,40 +2,111 @@
 #include <sys/types.h> 
 #include <fcntl.h> 
 #include <unistd.h> 
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/epoll.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
 
-typedef struct{ 
-    char name[4]; 
-    int age; 
-}people; 
+#define MAX_EVENT_NUMBER 10000
 
-int main(int argc, char** argv) // map a normal file as shared mem: 
-{ 
-    int fd,i; 
-    people *p_map; 
-    char temp; 
 
-    fd = open(argv[1],O_CREAT|O_RDWR|O_TRUNC,00777); 
+static int setnonblocking( int fd )
+{
+    int old_option = fcntl( fd, F_GETFL );
+    int new_option = old_option | O_NONBLOCK;
+    fcntl( fd, F_SETFL, new_option );
+    return old_option;
+}
 
-    if(fd < 0)
-    {
-        printf("error open\n");
+static void addfd( int epollfd, int fd )
+{
+    struct epoll_event event;
+    event.data.fd = fd;
+    event.events = EPOLLIN | EPOLLET;
+    epoll_ctl( epollfd, EPOLL_CTL_ADD, fd, &event );
+    setnonblocking( fd );
+}
+
+static int sig_pipefd[2];
+
+static void sig_handler( int sig )
+{
+    printf("sig=%d\n", sig);
+    int save_errno = errno;
+    int msg = sig;
+    send( sig_pipefd[1], ( char* )&msg, 1, 0 );
+    errno = save_errno;
+}
+
+
+static void addsig( int sig, void( handler )(int))
+{
+    struct sigaction sa;
+    memset( &sa, '\0', sizeof( sa ) );
+    sa.sa_handler = handler;
+    sa.sa_flags |= SA_RESTART;
+    int flag = sigfillset( &sa.sa_mask );
+    sigaction( sig, &sa, NULL );
+}
+
+
+int main(int argc, char **argv)
+{
+
+    int m_epollfd = epoll_create( 5 );
+    int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
+    if(ret == -1){
+        perror("socketpair\n");
         exit(1);
     }
 
-    lseek(fd,sizeof(people)*5-1,SEEK_SET); 
-    write(fd,"",1); 
-    p_map = (people*) mmap( NULL,sizeof(people)*10,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0 );
-    close( fd ); 
-    temp = 'a'; 
-    for(i=0; i<10; i++) 
-    { 
-        temp += 1; 
-        memcpy( ( *(p_map+i) ).name, &temp,2 ); 
-        ( *(p_map+i) ).age = 20+i; 
-    } 
 
-    printf(" initialize over \n "); 
-        sleep(10); 
-    munmap( p_map, sizeof(people)*10 ); 
-    printf( "umap ok \n" ); 
+
+    setnonblocking( sig_pipefd[1] );
+    addfd( m_epollfd, sig_pipefd[0] );
+
+
+
+    addsig( SIGCHLD, sig_handler );
+    addsig( SIGTERM, sig_handler );
+    addsig( SIGINT, sig_handler ); 
+    addsig( SIGPIPE, SIG_IGN ); 
+    struct epoll_event events[ MAX_EVENT_NUMBER ];
+
+
+
+    int number = 0;
+    while(1){
+    
+        number = epoll_wait( m_epollfd, events, MAX_EVENT_NUMBER, -1 );
+        if(number > 0){
+
+            printf("number=%d\n",number);
+
+            for(int i=0; i< number; i++){
+                int sockfd = events[i].data.fd;
+                if( ( sockfd == sig_pipefd[0] ) && ( events[i].events & EPOLLIN ) ){
+                    printf("sockfd=%d\n",sockfd);
+                
+                }
+
+            
+            }
+
+        } 
+    
+    }
+
+
+
+
+    sleep(30);
+    printf("test\n");
+
 }
+
