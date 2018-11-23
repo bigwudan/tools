@@ -12,15 +12,6 @@ struct process_data {
     enum STATES state;
 };
 
-struct log_data
-{
-    int fd;
-    pid_t my_pid_t;
-    char buf[1024];
-    enum LOG_STATES state;
-
-
-};
 
 struct connect_data{
     int fd;
