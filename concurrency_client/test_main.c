@@ -48,7 +48,7 @@ void sig_handler( int sig )
 
 int father_run(struct process_data *p_process_data)
 {
-    struct log_data log_data_list[CONCURRENCY_NUM];
+   // struct log_data log_data_list[CONCURRENCY_NUM];
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
     int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
@@ -58,42 +58,83 @@ int father_run(struct process_data *p_process_data)
     m_event_msg.fd = sig_pipefd[0];
     m_event_msg.m_event_type = SIG_FD;
     m_event_msg.count = 0;
+
+	struct epoll_event m_epoll_event;
+	m_epoll_event.data.ptr = &(m_event_msg);
+	m_epoll_event.events = EPOLLIN|EPOLLET;
+
+
+	epoll_ctl(m_epollfd, EPOLL_CTL_ADD, sig_pipefd[0], &m_epoll_event);
+
     addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
     addsig( SIGCHLD, sig_handler, 1);
     addsig( SIGTERM, sig_handler, 1);
     addsig( SIGINT, sig_handler, 1);
     addsig( SIGPIPE, SIG_IGN, 1);
-    struct event_msg m_1_event_msg;
-    for(int i =0; i < PROCESS_NUM ; i++){
-        m_1_event_msg.fd = p_process_data[i].pipe_fd[0];
-        m_1_event_msg.count = i;
-        m_1_event_msg.m_event_type = PIPE_FD;
-        addfd(m_epollfd,&m_1_event_msg , EPOLLIN | EPOLLET); 
-    }
+
+//    struct event_msg m_1_event_msg;
+//    for(int i =0; i < PROCESS_NUM ; i++){
+//        m_1_event_msg.fd = p_process_data[i].pipe_fd[0];
+//        m_1_event_msg.count = i;
+//        m_1_event_msg.m_event_type = PIPE_FD;
+//        addfd(m_epollfd,&m_1_event_msg , EPOLLIN | EPOLLET); 
+//    }
     struct epoll_event events[ 10000 ];
     int number = 0;
-    while(1);
-//    while(m_stop == 1){
-//        number = epoll_wait( m_epollfd, events, 10000, -1 );
-//        if ( ( number < 0 ) && ( errno != EINTR ) )
-//        {
-//            printf( "epoll failure\n" );
-//            break;
-//        }
-//        for(int i=0; i < number ; i++){
-//            //接受fd 接受数据
-//            
-//
-//
-//
-//        
-//        
-//        
-//        }
-//
-//
-//    
-//    }
+    while(m_stop == 1){
+        number = epoll_wait( m_epollfd, events, 10000, -1 );
+        if ( ( number < 0 ) && ( errno != EINTR ) )
+        {
+            printf( "epoll failure\n" );
+            break;
+        }
+        for(int i=0; i < number ; i++){
+            //接受fd 接受数据
+            struct event_msg *p_m_event_msg =  events[i].data.ptr;        
+            //接受数据
+            if((p_m_event_msg->m_event_type== SIG_FD)&&(events[i].events & EPOLLIN)){
+				printf("sockfd=%d\n",p_m_event_msg->fd);
+				int sig;
+				char signals[1024];
+				ret = recv( p_m_event_msg->fd, signals, sizeof( signals ), 0 );
+				printf("ret=%d, signals[0]=%d , signals[1]=%d\n",ret, signals[0], signals[1]);
+				if( ret <= 0 )
+				{
+					continue;
+				}
+				else
+				{
+					for( int i = 0; i < ret; ++i )
+					{
+						switch( signals[i] )
+						{
+							case SIGCHLD:
+								{
+									break;
+								}
+							case SIGTERM:
+							case SIGINT:
+								{
+									for(int i=0; i < PROCESS_NUM; i++){
+										kill( p_process_data[i].pid, SIGTERM);
+									}
+
+									while(1);
+
+									printf( "kill all the clild now\n" );
+									break;
+								}
+							default:
+								{
+									break;
+								}
+						}
+					}
+				};
+				exit(1);
+			}
+        }
+    }
     printf("father \n");
 }
 
@@ -140,6 +181,7 @@ void* fun_thread(void *p_avg ){
 
 int child_run()
 {
+	return 1;
 	int tot_rev = 0;
 	for(int i=0; i < THREAD_NUM; i++){
 		m_thread_node_head[i].thread_count = i;
@@ -163,7 +205,7 @@ int child_run()
   //  int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
   //  assert( ret != -1 );
   //  setnonblocking( sig_pipefd[1] );
-    struct event_msg m_event_msg;
+	struct event_msg m_event_msg;
   //  m_event_msg.fd = sig_pipefd[0];
   //  m_event_msg.m_event_type = SIG_FD;
   //  m_event_msg.count = 0;
@@ -195,14 +237,14 @@ int child_run()
                 m_connect_data[i].state = WAIT;
                 m_connect_data[i].beg_time = time(0);
                 m_connect_data[i].m_event_msg.fd = m_connect_data[i].fd;
-		m_connect_data[i].m_event_msg.count = i;
-		m_connect_data[i].m_event_msg.m_event_type = SOCK_FD;
-		struct epoll_event m_epoll_event;
-		m_epoll_event.data.ptr = &(m_connect_data[i].m_event_msg);
-		m_epoll_event.events = EPOLLIN|EPOLLET;
-                //addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
-		epoll_ctl(m_epollfd, EPOLL_CTL_ADD, m_connect_data[i].fd, &m_epoll_event);
-            }
+				m_connect_data[i].m_event_msg.count = i;
+				m_connect_data[i].m_event_msg.m_event_type = SOCK_FD;
+				struct epoll_event m_epoll_event;
+				m_epoll_event.data.ptr = &(m_connect_data[i].m_event_msg);
+				m_epoll_event.events = EPOLLIN|EPOLLET;
+				//addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
+				epoll_ctl(m_epollfd, EPOLL_CTL_ADD, m_connect_data[i].fd, &m_epoll_event);
+			}
     }
     struct event_msg *p_m_event_msg;
     struct epoll_event events[ 10000 ];
@@ -257,28 +299,8 @@ int child_run()
 
 int main(int argc, char **argv)
 {
-
-//		child_run();
-//		while(1);
-   int tmp_num =2;
-   
-   for(int n =0 ; n < tmp_num; n++){
-	pid_t tmp_pid=0;
-   	tmp_pid = fork();
-	if(tmp_pid == 0){
-		child_run();
-		break;
-	}else{
-		printf("father\n");
-	}
-
-   
-   }
-
-	while(1);
-
-    return 1;
-    int m_idx = -1;
+	int tmp_num =PROCESS_NUM ;
+	int m_idx = -1;
     struct process_data process_data_list[PROCESS_NUM];
     for(int i=0; i<PROCESS_NUM ; i++){
         process_data_list[i].pid = 0;
@@ -288,7 +310,7 @@ int main(int argc, char **argv)
     
     }
 
-    for(int i = 0; i < PROCESS_NUM-1 ; i++){
+    for(int i = 0; i < PROCESS_NUM ; i++){
         pid_t t_pid = 0;
         int ret = socketpair( PF_UNIX, SOCK_STREAM, 0,process_data_list[i].pipe_fd );
         if(ret < 0) exit;
@@ -301,6 +323,7 @@ int main(int argc, char **argv)
             break;
         }else if(t_pid > 0 ){
             //father
+            process_data_list[i].pid = t_pid;
             close(process_data_list[i].pipe_fd[1]);
             continue;
         }else{
@@ -310,22 +333,18 @@ int main(int argc, char **argv)
     
     }
 
-    if(m_idx == -1){
-    
-        //father
-        father_run(process_data_list); 
-    }else{
-        //children
-        child_run();
+	if(m_idx == -1){
+		//father
+		father_run(process_data_list); 
+	}else{
+		//children
+		child_run();
 
-    }
+	}
 
+	while(1);
 
-
-
-
-
-
+    return 1;
 
 
     printf("test\n");
