@@ -93,11 +93,9 @@ int father_run(struct process_data *p_process_data)
             struct event_msg *p_m_event_msg =  events[i].data.ptr;        
             //接受数据
             if((p_m_event_msg->m_event_type== SIG_FD)&&(events[i].events & EPOLLIN)){
-				printf("sockfd=%d\n",p_m_event_msg->fd);
 				int sig;
 				char signals[1024];
 				ret = recv( p_m_event_msg->fd, signals, sizeof( signals ), 0 );
-				printf("ret=%d, signals[0]=%d , signals[1]=%d\n",ret, signals[0], signals[1]);
 				if( ret <= 0 )
 				{
 					continue;
@@ -110,6 +108,22 @@ int father_run(struct process_data *p_process_data)
 						{
 							case SIGCHLD:
 								{
+									pid_t t_pid;
+									int stat;
+									while((t_pid = waitpid(-1, &stat, WNOHANG)  ) >0   ){
+										for(int i =0; i< PROCESS_NUM; i++){
+											if(p_process_data[i].pid == t_pid){
+												p_process_data[i].pid = -1;	
+											}
+										}
+									
+									}
+									m_stop = 0;
+									for(int i =0; i< PROCESS_NUM; i++){
+										if(p_process_data[i].pid != -1 ){
+											m_stop = 1;
+										}
+									}
 									break;
 								}
 							case SIGTERM:
@@ -118,10 +132,6 @@ int father_run(struct process_data *p_process_data)
 									for(int i=0; i < PROCESS_NUM; i++){
 										kill( p_process_data[i].pid, SIGTERM);
 									}
-
-									while(1);
-
-									printf( "kill all the clild now\n" );
 									break;
 								}
 							default:
@@ -130,12 +140,12 @@ int father_run(struct process_data *p_process_data)
 								}
 						}
 					}
-				};
-				exit(1);
+				}
 			}
         }
     }
-    printf("father \n");
+	printf("father over\n");
+	exit(1);
 }
 
 //inser linke
