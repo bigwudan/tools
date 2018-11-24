@@ -69,15 +69,38 @@ int father_run(struct process_data *p_process_data)
 
 	//进程通信
 	for(int i=0; i < PROCESS_NUM; i++){
+		struct event_msg *p_event_msg = malloc(sizeof(struct event_msg));
+		
+
+
 		setnonblocking( p_process_data[i].pipe_fd[0] );
-		m_event_msg.fd = p_process_data[i].pipe_fd[0];
-		m_event_msg.m_event_type = PIPE_FD;
-		m_event_msg.count = i;
-		m_epoll_event.data.ptr = &(m_event_msg);
+		p_event_msg->fd = p_process_data[i].pipe_fd[0];
+		p_event_msg->m_event_type = PIPE_FD;
+		p_event_msg->count = i;
+		m_epoll_event.data.ptr = p_event_msg;
 		m_epoll_event.events = EPOLLIN|EPOLLET;
 		epoll_ctl(m_epollfd, EPOLL_CTL_ADD, p_process_data[i].pipe_fd[0], &m_epoll_event);
-		addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
 	}
+
+//	struct event_msg m_event_msg_0;
+//	struct epoll_event m_epoll_event_0;
+//	setnonblocking( p_process_data[0].pipe_fd[0] );
+//	m_event_msg_0.fd = p_process_data[0].pipe_fd[0];
+//	m_event_msg_0.m_event_type = PIPE_FD;
+//	m_event_msg_0.count = 0;
+//	m_epoll_event_0.data.ptr = &(m_event_msg_0);
+//	m_epoll_event_0.events = EPOLLIN|EPOLLET;
+//	epoll_ctl(m_epollfd, EPOLL_CTL_ADD, p_process_data[0].pipe_fd[0], &m_epoll_event_0);
+//
+//	struct event_msg m_event_msg_1;
+//	struct epoll_event m_epoll_event_1;
+//	setnonblocking( p_process_data[1].pipe_fd[0] );
+//	m_event_msg_1.fd = p_process_data[1].pipe_fd[0];
+//	m_event_msg_1.m_event_type = PIPE_FD;
+//	m_event_msg_1.count = 1;
+//	m_epoll_event_1.data.ptr = &(m_event_msg_1);
+//	m_epoll_event_1.events = EPOLLIN|EPOLLET;
+//	epoll_ctl(m_epollfd, EPOLL_CTL_ADD, p_process_data[1].pipe_fd[0], &m_epoll_event_1);
 
     struct epoll_event events[ 10000 ];
     int number = 0;
@@ -93,63 +116,63 @@ int father_run(struct process_data *p_process_data)
             struct event_msg *p_m_event_msg =  events[i].data.ptr;        
             //接受数据
             if((p_m_event_msg->m_event_type== SIG_FD)&&(events[i].events & EPOLLIN)){
-				int sig;
-				char signals[1024];
-				ret = recv( p_m_event_msg->fd, signals, sizeof( signals ), 0 );
-				if( ret <= 0 )
-				{
-					continue;
-				}
-				else
-				{
-					for( int i = 0; i < ret; ++i )
-					{
-						switch( signals[i] )
-						{
-							case SIGCHLD:
-								{
-									pid_t t_pid;
-									int stat;
-									while((t_pid = waitpid(-1, &stat, WNOHANG)  ) >0   ){
-										for(int i =0; i< PROCESS_NUM; i++){
-											if(p_process_data[i].pid == t_pid){
-												p_process_data[i].pid = -1;	
-											}
-										}
-									
-									}
-									m_stop = 0;
-									for(int i =0; i< PROCESS_NUM; i++){
-										if(p_process_data[i].pid != -1 ){
-											m_stop = 1;
-										}
-									}
-									break;
-								}
-							case SIGTERM:
-							case SIGINT:
-								{
-									for(int i=0; i < PROCESS_NUM; i++){
-										kill( p_process_data[i].pid, SIGTERM);
-									}
-									break;
-								}
-							default:
-								{
-									break;
-								}
-						}
-					}
-				}
-			}
-			else if((p_m_event_msg->m_event_type== PIPE_FD)&&(events[i].events & EPOLLIN)){
-				printf("father rev pipe=%d\n", p_m_event_msg->count);
-				char _buf[10] = {0};
-				int _n = recv(p_m_event_msg->fd, _buf, 10, 0);
-				if(_n > 0 ){
-					printf("_buf=%s\n", _buf);
-				}
-			}
+    			int sig;
+    			char signals[1024];
+    			ret = recv( p_m_event_msg->fd, signals, sizeof( signals ), 0 );
+    			if( ret <= 0 )
+    			{
+    				continue;
+    			}
+    			else
+    			{
+    				for( int i = 0; i < ret; ++i )
+    				{
+    					switch( signals[i] )
+    					{
+    						case SIGCHLD:
+    							{
+    								pid_t t_pid;
+    								int stat;
+    								while((t_pid = waitpid(-1, &stat, WNOHANG)  ) >0   ){
+    									for(int i =0; i< PROCESS_NUM; i++){
+    										if(p_process_data[i].pid == t_pid){
+    											p_process_data[i].pid = -1;	
+    										}
+    									}
+    								
+    								}
+    								m_stop = 0;
+    								for(int i =0; i< PROCESS_NUM; i++){
+    									if(p_process_data[i].pid != -1 ){
+    										m_stop = 1;
+    									}
+    								}
+    								break;
+    							}
+    						case SIGTERM:
+    						case SIGINT:
+    							{
+    								for(int i=0; i < PROCESS_NUM; i++){
+    									kill( p_process_data[i].pid, SIGTERM);
+    								}
+    								break;
+    							}
+    						default:
+    							{
+    								break;
+    							}
+    					}
+    				}
+    			}
+    		}
+    		else if((p_m_event_msg->m_event_type== PIPE_FD)&&(events[i].events & EPOLLIN)){
+    			printf("father rev pipe=%d\n", p_m_event_msg->count);
+    			char _buf[10] = {0};
+    			int _n = recv(p_m_event_msg->fd, _buf, 10, 0);
+    			if(_n > 0 ){
+    				printf("_buf=%s\n", _buf);
+    			}
+    		}
         }
     }
 	printf("father over\n");
