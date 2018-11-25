@@ -23,14 +23,10 @@ parse_proto_head(char *p_buf){
     char *p_beg =   p_buf;
     char *p_end = NULL;
     char find_str[30] = {0};
-    
     p_end = strpbrk(p_buf, ": \t");
-
     *p_end = '\0';
     *(p_end+1) = '\0';
     p_end = p_end+2;
-
-
     int i = 0;
     while(1){
         struct head_param tmp_head_param =   head_param_list[i];
@@ -66,27 +62,11 @@ parse_proto_head(char *p_buf){
                 head_param_list[i].len = strlen(p_end);
                 return HTTP_BODY_TYPE;
             }
-            
-
-
         }
-
-
         i++;
         if(tmp_head_param.p_name == NULL) break;
-
-
-
-
-    
     }
-
-
-
-
-
     printf("p_buf=%s\n", p_beg);
-    exit(1);
 }
 
 

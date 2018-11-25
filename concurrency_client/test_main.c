@@ -24,6 +24,8 @@
 #include "config.h"
 #include "event_process.h"
 #include "concurrency_client.h"
+#include "parse_header_fsm.h"
+
 int m_epollfd;
 int sig_pipefd[2];
 int m_stop = 1;
@@ -31,7 +33,7 @@ int m_idx = -1;
 struct thread_node_head m_thread_node_head[THREAD_NUM];	
 
 //int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-int concurrent_num = 4;
+int concurrent_num = 2;
 
 int file_fd=0;
 
@@ -189,8 +191,9 @@ void* fun_thread(void *p_avg ){
 		if(p_node){
 			pthread_mutex_lock(&(m_thread_node_head[tmp_int].m_mutex));
 			int count= get_link_node(&m_thread_node_head[tmp_int]);
-			write(file_fd, m_connect_data[count].buf, sizeof(m_connect_data[count].buf));
 			pthread_mutex_unlock(&(m_thread_node_head[tmp_int].m_mutex));
+			write(file_fd, m_connect_data[count].buf, sizeof(m_connect_data[count].buf));
+
 		}
 	}
 	return NULL;
@@ -198,8 +201,6 @@ void* fun_thread(void *p_avg ){
 
 int child_run(struct process_data *p_process_data)
 {
-
-	sleep(5);
 	printf("pid=%d, m_idx=%d\n", getpid(), m_idx);
     char _buf[10] = {0};
 	sprintf(_buf, "idx:%d", m_idx);
@@ -280,7 +281,6 @@ int child_run(struct process_data *p_process_data)
         flag_count++;
         number = epoll_wait( m_epollfd, events, 10000, -1 );
 	    printf("number=%d\n", number);	
-	//printf("number=%d\n", number);
         if ( ( number < 0 ) && ( errno != EINTR ) )
         {
             printf( "epoll failure\n" );
@@ -308,7 +308,6 @@ int child_run(struct process_data *p_process_data)
                         pthread_mutex_lock(&(m_thread_node_head[thread_num].m_mutex));
                         insert_link_node(&(m_thread_node_head[thread_num]), p_m_event_msg->count );
                         strncpy((m_connect_data[p_m_event_msg->count]).buf, tmp_rev, strlen(tmp_rev));
-                        //printf("tmp_rev=%s\n", tmp_rev);
                         pthread_mutex_unlock(&(m_thread_node_head[thread_num].m_mutex));
                     }
                 }
@@ -385,11 +384,9 @@ int main(int argc, char **argv)
             //error
             exit(0);
         }
-    
     }
 
 	if(m_idx == -1){
-		
 		//father
 		father_run(process_data_list); 
 
