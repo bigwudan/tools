@@ -53,55 +53,32 @@ int father_run(struct process_data *p_process_data)
     int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
     assert( ret != -1 );
     setnonblocking( sig_pipefd[1] );
-    struct event_msg m_event_msg;
-    m_event_msg.fd = sig_pipefd[0];
-    m_event_msg.m_event_type = SIG_FD;
-    m_event_msg.count = 0;
+    //初始化event_msg
+	struct event_msg *p_m_event_msg;
+	p_m_event_msg = (struct event_msg *)calloc(sizeof(struct event_msg), 1);
+    p_m_event_msg->fd = sig_pipefd[0];
+    p_m_event_msg->m_event_type = SIG_FD;
+    p_m_event_msg->count = 0;
 	struct epoll_event m_epoll_event;
-	m_epoll_event.data.ptr = &(m_event_msg);
+	m_epoll_event.data.ptr = p_m_event_msg;
 	m_epoll_event.events = EPOLLIN|EPOLLET;
 	epoll_ctl(m_epollfd, EPOLL_CTL_ADD, sig_pipefd[0], &m_epoll_event);
-    addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
     addsig( SIGCHLD, sig_handler, 1);
     addsig( SIGTERM, sig_handler, 1);
     addsig( SIGINT, sig_handler, 1);
     addsig( SIGPIPE, SIG_IGN, 1);
-
 	//进程通信
 	for(int i=0; i < PROCESS_NUM; i++){
-		struct event_msg *p_event_msg = malloc(sizeof(struct event_msg));
-		
-
-
+		p_m_event_msg = (struct event_msg *)calloc(sizeof(struct event_msg), 1);
 		setnonblocking( p_process_data[i].pipe_fd[0] );
-		p_event_msg->fd = p_process_data[i].pipe_fd[0];
-		p_event_msg->m_event_type = PIPE_FD;
-		p_event_msg->count = i;
-		m_epoll_event.data.ptr = p_event_msg;
+		p_m_event_msg->fd = p_process_data[i].pipe_fd[0];
+		p_m_event_msg->m_event_type = PIPE_FD;
+		p_m_event_msg->count = i;
+		memset(&m_epoll_event, 0, sizeof(struct epoll_event));
+		m_epoll_event.data.ptr = p_m_event_msg;
 		m_epoll_event.events = EPOLLIN|EPOLLET;
 		epoll_ctl(m_epollfd, EPOLL_CTL_ADD, p_process_data[i].pipe_fd[0], &m_epoll_event);
 	}
-
-//	struct event_msg m_event_msg_0;
-//	struct epoll_event m_epoll_event_0;
-//	setnonblocking( p_process_data[0].pipe_fd[0] );
-//	m_event_msg_0.fd = p_process_data[0].pipe_fd[0];
-//	m_event_msg_0.m_event_type = PIPE_FD;
-//	m_event_msg_0.count = 0;
-//	m_epoll_event_0.data.ptr = &(m_event_msg_0);
-//	m_epoll_event_0.events = EPOLLIN|EPOLLET;
-//	epoll_ctl(m_epollfd, EPOLL_CTL_ADD, p_process_data[0].pipe_fd[0], &m_epoll_event_0);
-//
-//	struct event_msg m_event_msg_1;
-//	struct epoll_event m_epoll_event_1;
-//	setnonblocking( p_process_data[1].pipe_fd[0] );
-//	m_event_msg_1.fd = p_process_data[1].pipe_fd[0];
-//	m_event_msg_1.m_event_type = PIPE_FD;
-//	m_event_msg_1.count = 1;
-//	m_epoll_event_1.data.ptr = &(m_event_msg_1);
-//	m_epoll_event_1.events = EPOLLIN|EPOLLET;
-//	epoll_ctl(m_epollfd, EPOLL_CTL_ADD, p_process_data[1].pipe_fd[0], &m_epoll_event_1);
-
     struct epoll_event events[ 10000 ];
     int number = 0;
     while(m_stop == 1){
@@ -222,24 +199,19 @@ void* fun_thread(void *p_avg ){
 int child_run(struct process_data *p_process_data)
 {
 
-	sleep(20);
-
+	sleep(5);
 	printf("pid=%d, m_idx=%d\n", getpid(), m_idx);
     char _buf[10] = {0};
 	sprintf(_buf, "idx:%d", m_idx);
-
     int t = send(p_process_data[m_idx].pipe_fd[1], _buf, 10, 0);	
 	printf("send pipe= %s\n", _buf);
 	assert(t != -1);
-
-
 	int tot_rev = 0;
 	for(int i=0; i < THREAD_NUM; i++){
 		m_thread_node_head[i].thread_count = i;
 		m_thread_node_head[i].p_thread_node = NULL;
 		pthread_mutex_init(&(m_thread_node_head[i].m_mutex), NULL);
 	}	
-	
 	pthread_t m_tid[THREAD_NUM];
 	for(int i=0; i < THREAD_NUM; i++){
 		pthread_create(&m_tid[i], NULL,fun_thread ,i);
@@ -256,17 +228,17 @@ int child_run(struct process_data *p_process_data)
     int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
     assert( ret != -1 );
     setnonblocking( sig_pipefd[1] );
-	struct event_msg m_event_msg;
-    
-    m_event_msg.fd = sig_pipefd[0];
-    m_event_msg.m_event_type = SIG_FD;
-    m_event_msg.count = 0;
+
+	struct event_msg *p_m_event_msg;
+	p_m_event_msg = (struct event_msg *)calloc(sizeof(struct event_msg), 1);
+    p_m_event_msg->fd = sig_pipefd[0];
+    p_m_event_msg->m_event_type = SIG_FD;
+    p_m_event_msg->count = 0;
 
 	struct epoll_event m_epoll_event;
-	m_epoll_event.data.ptr = &(m_event_msg);
+	m_epoll_event.data.ptr = p_m_event_msg;
 	m_epoll_event.events = EPOLLIN|EPOLLET;
 	epoll_ctl(m_epollfd, EPOLL_CTL_ADD, sig_pipefd[0], &m_epoll_event);
-    addfd( m_epollfd, &m_event_msg, EPOLLIN | EPOLLET);
     addsig( SIGCHLD, sig_handler, 1);
     addsig( SIGTERM, sig_handler, 1);
     addsig( SIGINT, sig_handler, 1);
@@ -301,7 +273,6 @@ int child_run(struct process_data *p_process_data)
 				epoll_ctl(m_epollfd, EPOLL_CTL_ADD, m_connect_data[i].fd, &m_epoll_event);
 			}
     }
-    struct event_msg *p_m_event_msg;
     struct epoll_event events[ 10000 ];
     int number = 0;        
     int flag_count = 0;
