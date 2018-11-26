@@ -8,6 +8,8 @@
 #define CONCURRENCY_NUM 2
 #define IP "114.215.85.234"
 #define PORT 80
+#define LOG_CHAR_NUM 200
+
 
 const char* request = "GET http://www.bigwudan.com/index.html HTTP/1.1\r\nConnection: keep-alive\r\n\r\nxxxxxxxxxxxx";
 

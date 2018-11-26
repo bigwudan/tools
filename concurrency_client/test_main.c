@@ -20,6 +20,7 @@
 #include <math.h>
 #include <time.h>
 #include <pthread.h>
+#include <sys/mman.h>
 
 #include "config.h"
 #include "event_process.h"
@@ -34,6 +35,11 @@ struct thread_node_head m_thread_node_head[THREAD_NUM];
 //int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
 int concurrent_num = 2;
 int file_fd=0;
+int log_fd = 0;
+int log_num_my = 0;
+
+char *log_p = NULL;
+char *log_p_my = NULL;
 
 struct connect_data m_connect_data[4];
 //中断任务
@@ -152,6 +158,8 @@ int father_run(struct process_data *p_process_data)
     		}
         }
     }
+    int log_num = LOG_CHAR_NUM * CONCURRENCY_NUM + 200;    
+    munmap(log_p, log_num+1);
     printf("suc_num=%d\n", suc_num);
 	printf("father over\n");
 	exit(1);
@@ -191,8 +199,12 @@ void* fun_thread(void *p_avg ){
 		if(p_node){
 			pthread_mutex_lock(&(m_thread_node_head[tmp_int].m_mutex));
 			int count= get_link_node(&m_thread_node_head[tmp_int]);
+            char *tmp_log_p = NULL;
+            tmp_log_p = tmp_log_p + log_num_my*LOG_CHAR_NUM;
+            memcpy(tmp_log_p, m_connect_data[count].buf, LOG_CHAR_NUM);
+            log_num_my++;
 			pthread_mutex_unlock(&(m_thread_node_head[tmp_int].m_mutex));
-			write(file_fd, m_connect_data[count].buf, sizeof(m_connect_data[count].buf));
+			//write(file_fd, m_connect_data[count].buf, sizeof(m_connect_data[count].buf));
             int _t_num = parse_run(m_connect_data[count].buf);
             if(_t_num == 0){
                 char _buf[10] = {0};
@@ -208,6 +220,9 @@ void* fun_thread(void *p_avg ){
 
 int child_run(struct process_data *p_process_data)
 {
+
+    log_p_my = log_p + m_idx*LOG_CHAR_NUM*concurrent_num;
+
 	int tot_rev = 0;
 	for(int i=0; i < THREAD_NUM; i++){
 		m_thread_node_head[i].thread_count = i;
@@ -355,12 +370,23 @@ int child_run(struct process_data *p_process_data)
     printf("children over \n");
 }
 
+void
+log_mmap()
+{
+    log_fd = open("test.txt", O_CREAT|O_RDWR|O_TRUNC);
+    int log_num = LOG_CHAR_NUM * CONCURRENCY_NUM + 200;    
+    int flag = lseek(log_fd, log_num, SEEK_SET);
+    assert(flag > 0);
+    write(log_fd, "",1);
+    log_p = (char *)mmap(NULL, log_num+1, PROT_READ|PROT_WRITE, MAP_SHARED, log_fd, 0);
+}
 
 
 int main(int argc, char **argv)
 {
     concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
 	int tmp_num =PROCESS_NUM ;
+    log_mmap();
     struct process_data process_data_list[PROCESS_NUM];
     for(int i=0; i<PROCESS_NUM ; i++){
         process_data_list[i].pid = 0;
