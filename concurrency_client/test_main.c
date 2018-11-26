@@ -31,10 +31,8 @@ int sig_pipefd[2];
 int m_stop = 1;
 int m_idx = -1;
 struct thread_node_head m_thread_node_head[THREAD_NUM];	
-
 //int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
 int concurrent_num = 2;
-
 int file_fd=0;
 
 struct connect_data m_connect_data[4];
@@ -361,6 +359,7 @@ int child_run(struct process_data *p_process_data)
 
 int main(int argc, char **argv)
 {
+    concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
 	int tmp_num =PROCESS_NUM ;
     struct process_data process_data_list[PROCESS_NUM];
     for(int i=0; i<PROCESS_NUM ; i++){

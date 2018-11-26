@@ -5,7 +5,7 @@
 #define THREAD_NUM 2
 #define EXPIRED_TIME 30
 #define THREAD_TASK_NUM 30
-#define CONCURRENCY_NUM 10
+#define CONCURRENCY_NUM 2
 #define IP "114.215.85.234"
 #define PORT 80
 
