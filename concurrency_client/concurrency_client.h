@@ -22,6 +22,11 @@ struct connect_data{
     struct event_msg m_event_msg;
 };
 
+struct thread_args{
+    int i;
+    struct process_data *p_process_data;
+};
+
 
 #endif
 

@@ -50,6 +50,7 @@ void sig_handler( int sig )
 
 int father_run(struct process_data *p_process_data)
 {
+    int suc_num =0;
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
     int ret = socketpair( PF_UNIX, SOCK_STREAM, 0, sig_pipefd );
@@ -145,15 +146,15 @@ int father_run(struct process_data *p_process_data)
     			}
     		}
     		else if((p_m_event_msg->m_event_type== PIPE_FD)&&(events[i].events & EPOLLIN)){
-    			printf("father rev pipe=%d\n", p_m_event_msg->count);
     			char _buf[10] = {0};
     			int _n = recv(p_m_event_msg->fd, _buf, 10, 0);
     			if(_n > 0 ){
-    				printf("_buf=%s\n", _buf);
+                    suc_num++;
     			}
     		}
         }
     }
+    printf("suc_num=%d\n", suc_num);
 	printf("father over\n");
 	exit(1);
 }
@@ -185,7 +186,8 @@ int get_link_node(struct thread_node_head *p_head)
 
 void* fun_thread(void *p_avg ){
 	while(1){
-		int tmp_int = (int)p_avg;
+        struct thread_args *p_thread_args = (struct thread_args *)p_avg;
+        int tmp_int = p_thread_args->i;
 		int flag = m_thread_node_head[tmp_int].thread_count;
 		struct thread_node *p_node = m_thread_node_head[tmp_int].p_thread_node;	
 		if(p_node){
@@ -193,6 +195,13 @@ void* fun_thread(void *p_avg ){
 			int count= get_link_node(&m_thread_node_head[tmp_int]);
 			pthread_mutex_unlock(&(m_thread_node_head[tmp_int].m_mutex));
 			write(file_fd, m_connect_data[count].buf, sizeof(m_connect_data[count].buf));
+            int _t_num = parse_run(m_connect_data[count].buf);
+            if(_t_num == 0){
+                char _buf[10] = {0};
+                sprintf(_buf, "idx:%d", m_idx);
+                int t = send((p_thread_args->p_process_data)[m_idx].pipe_fd[1], _buf, 10, 0);	
+            }
+
 
 		}
 	}
@@ -201,12 +210,6 @@ void* fun_thread(void *p_avg ){
 
 int child_run(struct process_data *p_process_data)
 {
-	printf("pid=%d, m_idx=%d\n", getpid(), m_idx);
-    char _buf[10] = {0};
-	sprintf(_buf, "idx:%d", m_idx);
-    int t = send(p_process_data[m_idx].pipe_fd[1], _buf, 10, 0);	
-	printf("send pipe= %s\n", _buf);
-	assert(t != -1);
 	int tot_rev = 0;
 	for(int i=0; i < THREAD_NUM; i++){
 		m_thread_node_head[i].thread_count = i;
@@ -215,7 +218,10 @@ int child_run(struct process_data *p_process_data)
 	}	
 	pthread_t m_tid[THREAD_NUM];
 	for(int i=0; i < THREAD_NUM; i++){
-		pthread_create(&m_tid[i], NULL,fun_thread ,i);
+        struct thread_args *p_thread_args = (struct thread_args *)calloc(1, sizeof(struct thread_args));
+        p_thread_args->i = i;
+        p_thread_args->p_process_data = p_process_data;
+		pthread_create(&m_tid[i], NULL,fun_thread ,p_thread_args);
 	}
     file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
     if(file_fd == -1){
@@ -280,7 +286,6 @@ int child_run(struct process_data *p_process_data)
     while(m_stop == 1){
         flag_count++;
         number = epoll_wait( m_epollfd, events, 10000, -1 );
-	    printf("number=%d\n", number);	
         if ( ( number < 0 ) && ( errno != EINTR ) )
         {
             printf( "epoll failure\n" );

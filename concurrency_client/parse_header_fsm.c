@@ -125,3 +125,44 @@ parse_line(char *p_buf, int *p_checked, int *p_readed, int *p_begline){
 	*p_checked = checked+1;
 	return LINE_ING;
 }
+int
+parse_run(char *p_m_buf)
+{
+	int checked = 0;
+	int readed = strlen(p_m_buf);
+	int begline = 0;
+	int start = 0;
+	int flag = 0;
+    int old_beg = 0; 
+    enum HEAD_TYPE m_head_type;
+    enum HEAD_TYPE o_head_type;
+    m_head_type = HTTP_HEAD_TYPE;
+
+	while(parse_line(p_m_buf,&checked, &readed, &begline ) == LINE_OK){
+        switch(m_head_type){
+        
+            case HTTP_HEAD_TYPE:
+                o_head_type =  parse_http_head( &p_m_buf[old_beg] );
+                return o_head_type;
+//                if( o_head_type ==  BAD_HEAD_TYPE ){
+//                    exit(1); 
+//                    break;
+//                }
+//                m_head_type = PROTOCOL_HEAD_TYPE;
+//                break;
+            case PROTOCOL_HEAD_TYPE:
+                o_head_type = parse_proto_head( &p_m_buf[old_beg]);
+                if(o_head_type == PROTOCOL_HEAD_TYPE){
+                    m_head_type = o_head_type;
+                }else{
+                    printf("over boday\n");
+                    exit(1);
+                }
+                break;
+        }
+        old_beg = checked;
+    } 
+    return 1;
+}
+
+

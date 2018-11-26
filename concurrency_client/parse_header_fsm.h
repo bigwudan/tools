@@ -27,5 +27,7 @@ extern struct head_param head_param_list[];
 extern enum HEAD_TYPE parse_http_head(char *p_buf);
 extern enum HEAD_TYPE parse_proto_head(char *p_buf);
 
+extern int parse_run(char *p_m_f);
+
 #endif
 
