@@ -200,8 +200,11 @@ void* fun_thread(void *p_avg ){
 			pthread_mutex_lock(&(m_thread_node_head[tmp_int].m_mutex));
 			int count= get_link_node(&m_thread_node_head[tmp_int]);
             char *tmp_log_p = NULL;
-            tmp_log_p = tmp_log_p + log_num_my*LOG_CHAR_NUM;
-            memcpy(tmp_log_p, m_connect_data[count].buf, LOG_CHAR_NUM);
+            tmp_log_p = log_p_my + log_num_my*LOG_CHAR_NUM;
+            char *_t = memcpy(tmp_log_p, m_connect_data[count].buf, LOG_CHAR_NUM);
+
+            assert(_t);
+
             log_num_my++;
 			pthread_mutex_unlock(&(m_thread_node_head[tmp_int].m_mutex));
 			//write(file_fd, m_connect_data[count].buf, sizeof(m_connect_data[count].buf));
@@ -236,11 +239,11 @@ int child_run(struct process_data *p_process_data)
         p_thread_args->p_process_data = p_process_data;
 		pthread_create(&m_tid[i], NULL,fun_thread ,p_thread_args);
 	}
-    file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
-    if(file_fd == -1){
-    	printf("fd error\n");
-		exit(1);
-    }
+//    file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
+//    if(file_fd == -1){
+//    	printf("fd error\n");
+//		exit(1);
+//    }
 
 
     m_epollfd = epoll_create( 5 );
