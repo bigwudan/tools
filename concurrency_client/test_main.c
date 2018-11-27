@@ -33,7 +33,7 @@ int m_stop = 1;
 int m_idx = -1;
 struct thread_node_head m_thread_node_head[THREAD_NUM];	
 //int concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-int concurrent_num = 2;
+int concurrent_num = 0;
 int file_fd=0;
 int log_fd = 0;
 int log_num_my = 0;
@@ -41,7 +41,7 @@ int log_num_my = 0;
 char *log_p = NULL;
 char *log_p_my = NULL;
 
-struct connect_data m_connect_data[4];
+struct connect_data *m_connect_data;
 //中断任务
 void sig_handler( int sig )
 {
@@ -223,7 +223,6 @@ void* fun_thread(void *p_avg ){
 
 int child_run(struct process_data *p_process_data)
 {
-
     log_p_my = log_p + m_idx*LOG_CHAR_NUM*concurrent_num;
 
 	int tot_rev = 0;
@@ -388,6 +387,11 @@ log_mmap()
 int main(int argc, char **argv)
 {
     concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
+	
+	m_connect_data = (struct connect_data *)calloc(concurrent_num, sizeof(struct connect_data ));
+	
+	assert(m_connect_data != NULL);
+
 	int tmp_num =PROCESS_NUM ;
     log_mmap();
     struct process_data process_data_list[PROCESS_NUM];
@@ -415,7 +419,6 @@ int main(int argc, char **argv)
             continue;
         }else{
             //error
-            exit(0);
         }
     }
 
