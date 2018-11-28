@@ -37,6 +37,7 @@ int concurrent_num = 0;
 int file_fd=0;
 int log_fd = 0;
 int log_num_my = 0;
+int debug = 1;
 
 char *log_p = NULL;
 char *log_p_my = NULL;
@@ -158,8 +159,10 @@ int father_run(struct process_data *p_process_data)
     		}
         }
     }
-    int log_num = LOG_CHAR_NUM * CONCURRENCY_NUM + 200;    
-    munmap(log_p, log_num+1);
+    if(debug == 1){
+        int log_num = LOG_CHAR_NUM * CONCURRENCY_NUM + 200;    
+        munmap(log_p, log_num+1);
+    }
     printf("suc_num=%d\n", suc_num);
 	printf("father over\n");
 	exit(1);
@@ -199,11 +202,12 @@ void* fun_thread(void *p_avg ){
 		if(p_node){
 			pthread_mutex_lock(&(m_thread_node_head[tmp_int].m_mutex));
 			int count= get_link_node(&m_thread_node_head[tmp_int]);
-            char *tmp_log_p = NULL;
-            tmp_log_p = log_p_my + log_num_my*LOG_CHAR_NUM;
-            char *_t = memcpy(tmp_log_p, m_connect_data[count].buf, LOG_CHAR_NUM);
-
-            assert(_t);
+            if(debug == 1){
+                char *tmp_log_p = NULL;
+                tmp_log_p = log_p_my + log_num_my*LOG_CHAR_NUM;
+                char *_t = memcpy(tmp_log_p, m_connect_data[count].buf, LOG_CHAR_NUM);
+                assert(_t);
+            }
 
             log_num_my++;
 			pthread_mutex_unlock(&(m_thread_node_head[tmp_int].m_mutex));
@@ -238,11 +242,6 @@ int child_run(struct process_data *p_process_data)
         p_thread_args->p_process_data = p_process_data;
 		pthread_create(&m_tid[i], NULL,fun_thread ,p_thread_args);
 	}
-//    file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
-//    if(file_fd == -1){
-//    	printf("fd error\n");
-//		exit(1);
-//    }
 
 
     m_epollfd = epoll_create( 5 );
@@ -274,6 +273,9 @@ int child_run(struct process_data *p_process_data)
     server_address.sin_port = htons(PORT);
     for(int i=0; i <concurrent_num; i++){
             m_connect_data[i].fd = socket( PF_INET, SOCK_STREAM, 0 );
+            if(m_connect_data[i].fd <= 0){
+                perror("socket_error");
+            }
             if(m_connect_data[i].fd> 0 ){
                 if ( connect( m_connect_data[i].fd, ( struct sockaddr* )&server_address, sizeof( server_address ) ) < 0 )
                 {
@@ -295,6 +297,7 @@ int child_run(struct process_data *p_process_data)
 				epoll_ctl(m_epollfd, EPOLL_CTL_ADD, m_connect_data[i].fd, &m_epoll_event);
 			}
     }
+    printf("connnect over\n");
     struct epoll_event events[ 10000 ];
     int number = 0;        
     int flag_count = 0;
@@ -393,7 +396,8 @@ int main(int argc, char **argv)
 	assert(m_connect_data != NULL);
 
 	int tmp_num =PROCESS_NUM ;
-    log_mmap();
+    if(debug == 1)
+        log_mmap();
     struct process_data process_data_list[PROCESS_NUM];
     for(int i=0; i<PROCESS_NUM ; i++){
         process_data_list[i].pid = 0;
