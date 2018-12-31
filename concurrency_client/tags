@@ -1,0 +1,129 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BAD_HEAD_TYPE	parse_header_fsm.h	/^enum HEAD_TYPE{HTTP_HEAD_TYPE, PROTOCOL_HEAD_TYPE, BAD_HEAD_TYPE, HTTP_BODY_TYPE };$/;"	e	enum:HEAD_TYPE
+CONCURRENCY_CLIENT_H	concurrency_client.h	2;"	d
+CONCURRENCY_NUM	config.h	8;"	d
+CONFIG_H	config.h	2;"	d
+ERROR_STATES	concurrency_client.h	/^enum LOG_STATES{ OK_STATES, ERROR_STATES, EXPIRED_STATES };$/;"	e	enum:LOG_STATES
+EVENT_PROCESS_H	event_process.h	2;"	d
+EXPIRED_STATES	concurrency_client.h	/^enum LOG_STATES{ OK_STATES, ERROR_STATES, EXPIRED_STATES };$/;"	e	enum:LOG_STATES
+EXPIRED_TIME	config.h	6;"	d
+HEAD_TYPE	parse_header_fsm.h	/^enum HEAD_TYPE{HTTP_HEAD_TYPE, PROTOCOL_HEAD_TYPE, BAD_HEAD_TYPE, HTTP_BODY_TYPE };$/;"	g
+HEAD_VAL_TYPE	parse_header_fsm.h	/^enum HEAD_VAL_TYPE { STRING, INT };$/;"	g
+HTTP_BODY_TYPE	parse_header_fsm.h	/^enum HEAD_TYPE{HTTP_HEAD_TYPE, PROTOCOL_HEAD_TYPE, BAD_HEAD_TYPE, HTTP_BODY_TYPE };$/;"	e	enum:HEAD_TYPE
+HTTP_HEAD_TYPE	parse_header_fsm.h	/^enum HEAD_TYPE{HTTP_HEAD_TYPE, PROTOCOL_HEAD_TYPE, BAD_HEAD_TYPE, HTTP_BODY_TYPE };$/;"	e	enum:HEAD_TYPE
+INT	parse_header_fsm.h	/^enum HEAD_VAL_TYPE { STRING, INT };$/;"	e	enum:HEAD_VAL_TYPE
+IP	config.h	9;"	d
+LINE_BAD	parse_header_fsm.h	/^enum LINE_STATE{LINE_OK, LINE_ING, LINE_BAD  };$/;"	e	enum:LINE_STATE
+LINE_ING	parse_header_fsm.h	/^enum LINE_STATE{LINE_OK, LINE_ING, LINE_BAD  };$/;"	e	enum:LINE_STATE
+LINE_OK	parse_header_fsm.h	/^enum LINE_STATE{LINE_OK, LINE_ING, LINE_BAD  };$/;"	e	enum:LINE_STATE
+LINE_STATE	parse_header_fsm.h	/^enum LINE_STATE{LINE_OK, LINE_ING, LINE_BAD  };$/;"	g
+LOG_CHAR_NUM	config.h	11;"	d
+LOG_STATES	concurrency_client.h	/^enum LOG_STATES{ OK_STATES, ERROR_STATES, EXPIRED_STATES };$/;"	g
+N	time_wheel.h	5;"	d
+OK_STATES	concurrency_client.h	/^enum LOG_STATES{ OK_STATES, ERROR_STATES, EXPIRED_STATES };$/;"	e	enum:LOG_STATES
+PARSE_HEADER_FSM_H	parse_header_fsm.h	2;"	d
+PIPE_FD	event_process.h	/^enum event_type{SOCK_FD, SIG_FD, PIPE_FD};$/;"	e	enum:event_type
+PORT	config.h	10;"	d
+PROCESS_NUM	config.h	4;"	d
+PROTOCOL_HEAD_TYPE	parse_header_fsm.h	/^enum HEAD_TYPE{HTTP_HEAD_TYPE, PROTOCOL_HEAD_TYPE, BAD_HEAD_TYPE, HTTP_BODY_TYPE };$/;"	e	enum:HEAD_TYPE
+SI	time_wheel.h	6;"	d
+SIG_FD	event_process.h	/^enum event_type{SOCK_FD, SIG_FD, PIPE_FD};$/;"	e	enum:event_type
+SOCK_FD	event_process.h	/^enum event_type{SOCK_FD, SIG_FD, PIPE_FD};$/;"	e	enum:event_type
+STATES	concurrency_client.h	/^enum STATES{ WAIT, WORK, STOPPING, STOP};$/;"	g
+STOP	concurrency_client.h	/^enum STATES{ WAIT, WORK, STOPPING, STOP};$/;"	e	enum:STATES
+STOPPING	concurrency_client.h	/^enum STATES{ WAIT, WORK, STOPPING, STOP};$/;"	e	enum:STATES
+STRING	parse_header_fsm.h	/^enum HEAD_VAL_TYPE { STRING, INT };$/;"	e	enum:HEAD_VAL_TYPE
+THREAD_NUM	config.h	5;"	d
+THREAD_TASK_NUM	config.h	7;"	d
+TIME_WHEEL_H	time_wheel.h	2;"	d
+WAIT	concurrency_client.h	/^enum STATES{ WAIT, WORK, STOPPING, STOP};$/;"	e	enum:STATES
+WORK	concurrency_client.h	/^enum STATES{ WAIT, WORK, STOPPING, STOP};$/;"	e	enum:STATES
+addfd	event_process.c	/^void addfd( int epollfd, struct event_msg *p_event_msg  , unsigned int events )$/;"	f
+addsig	event_process.c	/^ void addsig( int sig, void( handler )(int), int restart )$/;"	f
+beg_time	concurrency_client.h	/^    int beg_time;$/;"	m	struct:connect_data
+buf	concurrency_client.h	/^    char buf[1024];$/;"	m	struct:connect_data
+child_run	test_main.c	/^int child_run(struct process_data *p_process_data)$/;"	f
+concurrent_num	test_main.c	/^int concurrent_num = 0;$/;"	v
+connect_data	concurrency_client.h	/^struct connect_data{$/;"	s
+count	concurrency_client.h	/^    int count;$/;"	m	struct:connect_data
+count	event_process.h	/^	int count;$/;"	m	struct:thread_node
+count	event_process.h	/^    int count; $/;"	m	struct:event_msg
+count	time_wheel.h	/^	int count;$/;"	m	struct:tw_timer
+event_msg	event_process.h	/^struct event_msg{$/;"	s
+event_type	event_process.h	/^enum event_type{SOCK_FD, SIG_FD, PIPE_FD};$/;"	g
+father_run	test_main.c	/^int father_run(struct process_data *p_process_data)$/;"	f
+fd	concurrency_client.h	/^    int fd;$/;"	m	struct:connect_data
+fd	event_process.h	/^    int fd; \/\/文件句柄$/;"	m	struct:event_msg
+file_fd	test_main.c	/^int file_fd=0;$/;"	v
+fun_thread	test_main.c	/^void* fun_thread(void *p_avg ){$/;"	f
+get_link_node	test_main.c	/^int get_link_node(struct thread_node_head *p_head)$/;"	f
+head_param	parse_header_fsm.h	/^struct head_param{$/;"	s
+head_param_list	parse_header_fsm.c	/^struct head_param head_param_list[] = {$/;"	v	typeref:struct:head_param
+head_value_variant	parse_header_fsm.h	/^union head_value_variant{$/;"	u
+i	concurrency_client.h	/^    int i;$/;"	m	struct:thread_args
+i_val	parse_header_fsm.h	/^    int i_val;$/;"	m	union:head_value_variant
+insert_link_node	test_main.c	/^void insert_link_node(struct thread_node_head *p_head, int count)$/;"	f
+len	parse_header_fsm.h	/^    int len;$/;"	m	struct:head_param
+log_fd	test_main.c	/^int log_fd = 0;$/;"	v
+log_mmap	test_main.c	/^log_mmap()$/;"	f
+log_num_my	test_main.c	/^int log_num_my = 0;$/;"	v
+log_p	test_main.c	/^char *log_p = NULL;$/;"	v
+log_p_my	test_main.c	/^char *log_p_my = NULL;$/;"	v
+m_connect_data	test_main.c	/^struct connect_data *m_connect_data;$/;"	v	typeref:struct:connect_data
+m_epollfd	test_main.c	/^int m_epollfd;$/;"	v
+m_event_msg	concurrency_client.h	/^    struct event_msg m_event_msg;$/;"	m	struct:connect_data	typeref:struct:connect_data::event_msg
+m_event_type	event_process.h	/^    enum event_type m_event_type ; $/;"	m	struct:event_msg	typeref:enum:event_msg::event_type
+m_idx	test_main.c	/^int m_idx = -1;$/;"	v
+m_mutex	event_process.h	/^	pthread_mutex_t m_mutex;$/;"	m	struct:thread_node_head
+m_stop	test_main.c	/^int m_stop = 1;$/;"	v
+m_thread_node_head	test_main.c	/^struct thread_node_head m_thread_node_head[THREAD_NUM];	$/;"	v	typeref:struct:thread_node_head
+main	main.c	/^int main(){$/;"	f
+main	test_main.c	/^int main(int argc, char **argv)$/;"	f
+main	tw_main.c	/^int main()$/;"	f
+p_1_request	config.h	/^char *p_1_request = "GET \/index.html HTTP\/1.1\\r\\nHost: www.bigwudan.com\\r\\nConnection: keep-alive\\r\\nCache-Control: max-age=0\\r\\nUpgrade-Insecure-Requests: 1\\r\\nUser-Agent: Mozilla\/5.0 (Windows NT 10.0; WOW64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/67.0.3396.87 Safari\/537.36\\r\\nAccept: text\/html,application\/xhtml+xml,application\/xml;q=0.9,image\/webp,image\/apng,*\/*;q=0.8\\r\\nAccept-Encoding: gzip, deflate\\r\\nAccept-Language: zh-CN,zh;q=0.9\\r\\n\\r\\nxxxxxxxxxxx";$/;"	v
+p_2_request	config.h	/^char *p_2_request = "GET \/index.php?id=%d HTTP\/1.1\\r\\nHost: www.bigwudan.com\\r\\n\\r\\nxxxxxxxxxxx";$/;"	v
+p_c_val	parse_header_fsm.h	/^    char *p_c_val;$/;"	m	union:head_value_variant
+p_header	time_wheel.h	/^    struct tw_timer_header *p_header;$/;"	m	struct:tw_timer	typeref:struct:tw_timer::tw_timer_header
+p_m_buf	main.c	/^char p_m_buf[] = "HTTP\/1.1 200 OK\\r\\nDate: Mon, 19 Nov 2018 01:01:37 GM\\r\\nServer: Apache\/2.4.6 (CentOS) PHP\/5.4.16\\r\\nX-Powered-By: PHP\/5.4.16\\r\\nContent-Length: 30\\r\\nContent-Type: text\/html; charset=UTF-8\\r\\n\\r\\nint(1542589297)string(1)";$/;"	v
+p_name	parse_header_fsm.h	/^    char *p_name;$/;"	m	struct:head_param
+p_next	event_process.h	/^	struct thread_node *p_next;$/;"	m	struct:thread_node	typeref:struct:thread_node::thread_node
+p_next	time_wheel.h	/^	struct tw_timer *p_next;$/;"	m	struct:tw_timer	typeref:struct:tw_timer::tw_timer
+p_next	time_wheel.h	/^	struct tw_timer *p_next;$/;"	m	struct:tw_timer_header	typeref:struct:tw_timer_header::tw_timer
+p_prev	time_wheel.h	/^	struct tw_timer *p_prev;$/;"	m	struct:tw_timer	typeref:struct:tw_timer::tw_timer
+p_process_data	concurrency_client.h	/^    struct process_data *p_process_data;$/;"	m	struct:thread_args	typeref:struct:thread_args::process_data
+p_request	config.h	/^char *p_request = "GET \/index.html HTTP\/1.1\\r\\nHost: www.bigwudan.com\\r\\nConnection: keep-alive\\r\\nCache-Control: max-age=0\\r\\nUpgrade-Insecure-Requests: 1\\r\\nUser-Agent: Mozilla\/5.0 (Windows NT 10.0; WOW64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/67.0.3396.87 Safari\/537.36\\r\\nAccept: text\/html,application\/xhtml+xml,application\/xml;q=0.9,image\/webp,image\/apng,*\/*;q=0.8\\r\\nAccept-Encoding: gzip, deflate\\r\\nAccept-Language: zh-CN,zh;q=0.9\\r\\nIf-None-Match: \\"10-57a9977776192\\"\\r\\nIf-Modified-Since: Wed, 14 Nov 2018 05:47:16 GMT\\r\\n\\r\\nxxxxxxxxxxx";$/;"	v
+p_thread_node	event_process.h	/^	struct thread_node *p_thread_node;$/;"	m	struct:thread_node_head	typeref:struct:thread_node_head::thread_node
+parse_http_head	parse_header_fsm.c	/^parse_http_head(char *p_buf){$/;"	f
+parse_line	parse_header_fsm.c	/^parse_line(char *p_buf, int *p_checked, int *p_readed, int *p_begline){$/;"	f
+parse_proto_head	parse_header_fsm.c	/^parse_proto_head(char *p_buf){$/;"	f
+parse_run	parse_header_fsm.c	/^parse_run(char *p_m_buf)$/;"	f
+pid	concurrency_client.h	/^    pid_t pid;$/;"	m	struct:process_data
+pipe_fd	concurrency_client.h	/^    int pipe_fd[2];$/;"	m	struct:process_data
+process_data	concurrency_client.h	/^struct process_data {$/;"	s
+removefd	event_process.c	/^void removefd( int epollfd, int fd )$/;"	f
+request	config.h	/^const char* request = "GET http:\/\/www.bigwudan.com\/index.html HTTP\/1.1\\r\\nConnection: keep-alive\\r\\n\\r\\nxxxxxxxxxxxx";$/;"	v
+rotation	time_wheel.h	/^	int rotation;$/;"	m	struct:tw_timer
+setnonblocking	event_process.c	/^int setnonblocking( int fd )$/;"	f
+sig_handler	test_main.c	/^void sig_handler( int sig )$/;"	f
+sig_pipefd	test_main.c	/^int sig_pipefd[2];$/;"	v
+slots	time_wheel.h	/^	int slots;$/;"	m	struct:tw_timer_header
+state	concurrency_client.h	/^    enum LOG_STATES state;$/;"	m	struct:connect_data	typeref:enum:connect_data::LOG_STATES
+state	concurrency_client.h	/^    enum STATES state;$/;"	m	struct:process_data	typeref:enum:process_data::STATES
+thread_args	concurrency_client.h	/^struct thread_args{$/;"	s
+thread_count	event_process.h	/^	int thread_count;$/;"	m	struct:thread_node_head
+thread_node	event_process.h	/^struct thread_node{$/;"	s
+thread_node_head	event_process.h	/^struct thread_node_head{$/;"	s
+timer	time_wheel.h	/^	int timer;$/;"	m	struct:tw_timer
+tw_timer	time_wheel.h	/^struct tw_timer{$/;"	s
+tw_timer_add	time_wheel.c	/^tw_timer_add(struct tw_timer_header *p_timer_header , int timer , const int cur)$/;"	f
+tw_timer_del	time_wheel.c	/^tw_timer_del(struct tw_timer *p_tw_timer)$/;"	f
+tw_timer_header	time_wheel.h	/^struct tw_timer_header{$/;"	s
+tw_timer_init	time_wheel.c	/^tw_timer_init(int *cur)$/;"	f
+val	parse_header_fsm.h	/^    union head_value_variant val;$/;"	m	struct:head_param	typeref:union:head_param::head_value_variant
+val_type	parse_header_fsm.h	/^    enum HEAD_VAL_TYPE val_type;$/;"	m	struct:head_param	typeref:enum:head_param::HEAD_VAL_TYPE
+wt_timer_wheel	time_wheel.c	/^wt_timer_wheel(struct tw_timer_header *p_tw_header, int *p_solts )$/;"	f

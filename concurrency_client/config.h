@@ -1,13 +1,13 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define PROCESS_NUM 2
-#define THREAD_NUM 5
+#define PROCESS_NUM 1
+#define THREAD_NUM 1
 #define EXPIRED_TIME 30
 #define THREAD_TASK_NUM 30
 #define CONCURRENCY_NUM 10
-#define IP "114.215.85.234"
-#define PORT 80
+#define IP "127.0.0.1"
+#define PORT 8080
 #define LOG_CHAR_NUM 200
 
 

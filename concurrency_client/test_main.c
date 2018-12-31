@@ -238,12 +238,6 @@ int child_run(struct process_data *p_process_data)
         p_thread_args->p_process_data = p_process_data;
 		pthread_create(&m_tid[i], NULL,fun_thread ,p_thread_args);
 	}
-//    file_fd = open("out.txt", O_CREAT|O_APPEND|O_RDWR);
-//    if(file_fd == -1){
-//    	printf("fd error\n");
-//		exit(1);
-//    }
-
 
     m_epollfd = epoll_create( 5 );
     assert( m_epollfd != -1 );
@@ -280,6 +274,7 @@ int child_run(struct process_data *p_process_data)
                     printf( "connection failed\n" );
                     printf("error = %d\n", errno);
                 }
+				printf("idx=%d\n", m_idx);
                 memset(tmp_buf, 0, sizeof(tmp_buf));
                 snprintf(tmp_buf, sizeof(tmp_buf), p_2_request, i);
                 write(m_connect_data[i].fd, tmp_buf, strlen(tmp_buf));
@@ -387,7 +382,7 @@ log_mmap()
 int main(int argc, char **argv)
 {
     concurrent_num = ceil(CONCURRENCY_NUM / PROCESS_NUM);
-	
+	concurrent_num = 1;	
 	m_connect_data = (struct connect_data *)calloc(concurrent_num, sizeof(struct connect_data ));
 	
 	assert(m_connect_data != NULL);
