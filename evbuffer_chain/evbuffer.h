@@ -11,8 +11,15 @@ extern "C" {
 #include <stdint.h>
 
 
+#define EV_UINT32_MAX ((unsigned int)0xffffffffUL)
 
 #define MIN_BUFFER_SIZE	512
+
+#define EVBUFFER_CHAIN_MAX EV_UINT32_MAX
+
+#define EVBUFFER_CHAIN_SIZE sizeof(struct evbuffer_chain)
+#define EVBUFFER_CHAIN_EXTRA(t, c) (t *)((struct evbuffer_chain *)(c) + 1)
+
 
 
 /** A single evbuffer callback for an evbuffer. This function will be invoked
