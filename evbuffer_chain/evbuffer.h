@@ -20,6 +20,15 @@ extern "C" {
 #define EVBUFFER_CHAIN_SIZE sizeof(struct evbuffer_chain)
 #define EVBUFFER_CHAIN_EXTRA(t, c) (t *)((struct evbuffer_chain *)(c) + 1)
 
+#define EVBUFFER_CHAIN_MAX_AUTO_SIZE 4096
+
+
+#define MAX_TO_COPY_IN_EXPAND 4096
+#define MAX_TO_REALIGN_IN_EXPAND 2048
+
+
+#define EV_UINT64_MAX ((((uint64_t)0xffffffffUL) << 32) | 0xffffffffUL)
+
 
 
 /** A single evbuffer callback for an evbuffer. This function will be invoked
@@ -177,7 +186,16 @@ int evbuffer_expand_fast_(struct evbuffer *, size_t, int);
 
 void evbuffer_invoke_callbacks_(struct evbuffer *buf);
 
+struct evbuffer_ptr {
+	ssize_t pos;
 
+	/* Do not alter or rely on the values of fields: they are for internal
+	 * use */
+	struct {
+		void *chain;
+		size_t pos_in_chain;
+	} internal_;
+};
 
 
 #ifdef __cplusplus
