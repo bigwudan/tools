@@ -20,6 +20,10 @@ extern "C" {
 #define EVBUFFER_CHAIN_SIZE sizeof(struct evbuffer_chain)
 #define EVBUFFER_CHAIN_EXTRA(t, c) (t *)((struct evbuffer_chain *)(c) + 1)
 
+#define CHAIN_SPACE_LEN(ch) ((ch)->flags  ? \
+	    0 : (ch)->buffer_len - ((ch)->misalign + (ch)->off))
+
+
 #define EVBUFFER_CHAIN_MAX_AUTO_SIZE 4096
 
 
