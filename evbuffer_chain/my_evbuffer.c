@@ -47,7 +47,7 @@ evbuffer_chain_new(size_t size)
         ndata = tot_len;
     }else{
         while(tot_len < size)
-            tot_len << 1;
+            tot_len <<= 1;
         ndata = tot_len;
     }
     chain = calloc(ndata, 1); 
@@ -127,7 +127,7 @@ struct evbuffer_chain *evbuffer_expand(struct evbuffer *buf,
     }
     
     //未初始化
-    if(buf->last == buf->first){
+    if(buf->first == NULL){
         struct evbuffer_chain *chain= evbuffer_chain_new(datlen);
         evbuffer_chain_insert(buf, chain);
         return chain;
@@ -148,27 +148,40 @@ struct evbuffer_chain *evbuffer_expand(struct evbuffer *buf,
         buf->last->misalign = 0; 
         return buf->last;
     }
-
-    //检查最后一个模块的数据值不值换到新的chain上面
-    if(buf->last->off < 2014 * 5 ){
+    if (buf->last->off < 2014 * 5 ){
         //找到last 上一个
         struct evbuffer_chain *next = buf->first;
         while(next && next->next != buf->last){
             next = next->next; 
         }
+        
+        //头节点
+        if(next == NULL){
+            //移动原来的数据
+            struct evbuffer_chain *res_chain = evbuffer_chain_new(buf->last->off+datlen);
+            if(buf->last->off != 0){
+                memmove(res_chain->buffer+res_chain->misalign, buf->last->buffer+buf->last->misalign, buf->last->off);
+            }
+            res_chain->off = buf->last->off;
+            //删除原来的连接
+            free(buf->last);
+            buf->first = buf->last = res_chain;
+            //移动原来的数据到新的chain
+            return res_chain;
+        
+        }else{
+            //移动原来的数据
+            struct evbuffer_chain *res_chain = evbuffer_chain_new(buf->last->off+datlen);
+            if(buf->last->off != 0)
+                memmove(res_chain->buffer+res_chain->misalign, buf->last->buffer+buf->last->misalign, buf->last->off);
+            res_chain->off = buf->last->off;
+            //删除原来的连接
+            free(buf->last);
+            next->next = res_chain;
+            //移动原来的数据到新的chain
+            return res_chain;
+        }
 
-        //移动原来的数据
-        struct evbuffer_chain *res_chain = evbuffer_chain_new(buf->last->off+datlen);
-        memmove(res_chain->buffer+res_chain->misalign, buf->last->buffer+buf->last->misalign, buf->last->off);
-
-        res_chain->off = buf->last->off;
-
-        //删除原来的连接
-        free(buf->last);
-        next->next = res_chain;
-        *buf->last_with_datap = res_chain;
-        //移动原来的数据到新的chain
-        return res_chain;
     }else{
         struct evbuffer_chain *res_chain = evbuffer_chain_new(buf->last->off+datlen);
         return res_chain; 
@@ -222,6 +235,19 @@ evbuffer_copyout(struct evbuffer *buf, void *data_out, size_t datlen)
 }
 
 
+//插入数据
+int
+evbuffer_add(struct evbuffer *buf, const void *data_in, size_t datlen)
+{
+    if(buf == NULL) return -1;
+    //首先判断是否有需要扩空间
+    struct evbuffer_chain *chain = evbuffer_expand(buf, datlen);  
+    if(chain == NULL) return -1;
+    memmove(chain->buffer+chain->misalign,  data_in, datlen );
+    chain->off += datlen;
+    return datlen;
+}
+
 
 //测试创建一个evbuffer,并且添加进去
 void test_insert(void **state) {  
@@ -261,15 +287,22 @@ void test_insert(void **state) {
     assert_int_equal(buf->last, buf_chain_3); 
     assert_int_equal(buf->last_with_datap, &buf->first); 
     assert_int_equal(buf->total_len, buf_chain_3->buffer_len);
+
+    //扩展空间 空间数量满足
+    struct evbuffer_chain *tmp_1 =  evbuffer_expand(buf, 230);
+
+    assert_int_equal(tmp_1, buf_chain_3); 
+
+    //扩展空间，  空间数量不足
+    struct evbuffer_chain *tmp_2 =  evbuffer_expand(buf, 1000);
+    assert_true(tmp_2);
+    char test[100] = {0};
+
+    int a = evbuffer_add(buf, test, 100);
+    printf("a=%d\n", a);
+
+
 }  
-
-//插入数据
-int
-evbuffer_add(struct evbuffer *buf, const void *data_in, size_t datlen)
-{
-
-
-}
 
 
 
