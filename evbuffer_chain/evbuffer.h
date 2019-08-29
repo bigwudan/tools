@@ -53,68 +53,18 @@ struct evbuffer_cb_entry {
 
 struct evbuffer_chain;
 struct evbuffer {
-	/** The first chain in this buffer's linked list of chains. */
 	struct evbuffer_chain *first;
-	/** The last chain in this buffer's linked list of chains. */
 	struct evbuffer_chain *last;
-
-	/** Pointer to the next pointer pointing at the 'last_with_data' chain.
-	 *
-	 * To unpack:
-	 *
-	 * The last_with_data chain is the last chain that has any data in it.
-	 * If all chains in the buffer are empty, it is the first chain.
-	 * If the buffer has no chains, it is NULL.
-	 *
-	 * The last_with_datap pointer points at _whatever 'next' pointer_
-	 * points at the last_with_datap chain.  If the last_with_data chain
-	 * is the first chain, or it is NULL, then the last_with_datap pointer
-	 * is &buf->first.
-	 */
 	struct evbuffer_chain **last_with_datap;
-
-	/** Total amount of bytes stored in all chains.*/
 	size_t total_len;
-
-	/** Number of bytes we have added to the buffer since we last tried to
-	 * invoke callbacks. */
 	size_t n_add_for_cb;
-	/** Number of bytes we have removed from the buffer since we last
-	 * tried to invoke callbacks. */
 	size_t n_del_for_cb;
-
-
-	/** True iff we should free the lock field when we free this
-	 * evbuffer. */
 	unsigned own_lock : 1;
-	/** True iff we should not allow changes to the front of the buffer
-	 * (drains or prepends). */
 	unsigned freeze_start : 1;
-	/** True iff we should not allow changes to the end of the buffer
-	 * (appends) */
 	unsigned freeze_end : 1;
-	/** True iff this evbuffer's callbacks are not invoked immediately
-	 * upon a change in the buffer, but instead are deferred to be invoked
-	 * from the event_base's loop.	Useful for preventing enormous stack
-	 * overflows when we have mutually recursive callbacks, and for
-	 * serializing callbacks in a single thread. */
 	unsigned deferred_cbs : 1;
-
-	/** Zero or more EVBUFFER_FLAG_* bits */
 	uint32_t flags;
-
-
-
-	/** A reference count on this evbuffer.	 When the reference count
-	 * reaches 0, the buffer is destroyed.	Manipulated with
-	 * evbuffer_incref and evbuffer_decref_and_unlock and
-	 * evbuffer_free. */
 	int refcnt;
-
-
-
-
-
 };
 
 
