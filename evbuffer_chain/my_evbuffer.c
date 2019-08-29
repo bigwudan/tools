@@ -148,7 +148,7 @@ struct evbuffer_chain *evbuffer_expand(struct evbuffer *buf,
         buf->last->misalign = 0; 
         return buf->last;
     }
-    if (buf->last->off < 2014 * 5 ){
+    if (buf->last->off < 100 ){
         //找到last 上一个
         struct evbuffer_chain *next = buf->first;
         while(next && next->next != buf->last){
@@ -184,6 +184,8 @@ struct evbuffer_chain *evbuffer_expand(struct evbuffer *buf,
 
     }else{
         struct evbuffer_chain *res_chain = evbuffer_chain_new(buf->last->off+datlen);
+        buf->last = res_chain;
+       (*(buf->last_with_datap))->next = res_chain;
         return res_chain; 
     }
 }
@@ -245,6 +247,8 @@ evbuffer_add(struct evbuffer *buf, const void *data_in, size_t datlen)
     if(chain == NULL) return -1;
     memmove(chain->buffer+chain->misalign,  data_in, datlen );
     chain->off += datlen;
+    buf->last_with_datap = &(buf->last);
+
     return datlen;
 }
 
@@ -296,11 +300,15 @@ void test_insert(void **state) {
     //扩展空间，  空间数量不足
     struct evbuffer_chain *tmp_2 =  evbuffer_expand(buf, 1000);
     assert_true(tmp_2);
-    char test[100] = {0};
+    char test[300] = {1};
 
-    int a = evbuffer_add(buf, test, 100);
+    int a = evbuffer_add(buf, test, 300);
     printf("a=%d\n", a);
+    
+    char test1[2000] = {2};
 
+    a = evbuffer_add(buf, test1, sizeof(test1));
+    printf("a=%d\n", a);
 
 }  
 
