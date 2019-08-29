@@ -182,28 +182,6 @@ evbuffer_drain(struct evbuffer *buf, size_t len)
     return remain;
 }
 
-//拷贝数据 不删除
-size_t
-evbuffer_copyout(struct evbuffer *buf, void *data_out, size_t datlen)
-{
-    struct evbuffer_chain *next = buf->first;
-    size_t remain = datlen;
-    void *p = data_out;
-    //向前剔除
-    while(next && remain != 0){
-        if(remain >= next->off){
-            memmove(p, next->buffer+next->misalign, next->off);
-            p = p + next->off;
-            remain = remain - next->off;
-        }else{
-            memmove(p, next->buffer+next->misalign, next->off);
-            remain = 0;
-        } 
-        next = next->next;
-    }    
-    return remain;
-}
-
 
 
 int main()
