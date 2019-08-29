@@ -41,6 +41,7 @@ evbuffer_copyout_from	evbuffer.c	/^evbuffer_copyout_from(struct evbuffer *buf, c
 evbuffer_decref_and_unlock_	evbuffer.c	/^evbuffer_decref_and_unlock_(struct evbuffer *buffer)$/;"	f
 evbuffer_drain	evbuffer.c	/^evbuffer_drain(struct evbuffer *buf, size_t len)$/;"	f
 evbuffer_expand	evbuffer.c	/^evbuffer_expand(struct evbuffer *buf, size_t datlen)$/;"	f
+evbuffer_expand	my_evbuffer.c	/^struct evbuffer_chain *evbuffer_expand(struct evbuffer *buf,$/;"	f
 evbuffer_expand_singlechain	evbuffer.c	/^evbuffer_expand_singlechain(struct evbuffer *buf, size_t datlen)$/;"	f	file:
 evbuffer_free	evbuffer.c	/^evbuffer_free(struct evbuffer *buffer)$/;"	f
 evbuffer_free_all_chains	evbuffer.c	/^evbuffer_free_all_chains(struct evbuffer_chain *chain)$/;"	f	file:

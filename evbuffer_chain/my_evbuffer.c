@@ -100,6 +100,64 @@ evbuffer_chain_insert(struct evbuffer *buf,
 
 }
 
+//扩大内存
+struct evbuffer_chain *evbuffer_expand(struct evbuffer *buf,
+            size_t datlen)
+{
+    //查看最大缓存限制
+    if(buf->total_len + datlen >= EV_UINT64_MAX){
+        return NULL;
+    }
+    
+    //未初始化
+    if(buf->last == buf->first){
+        struct evbuffer_chain *chain= evbuffer_chain_new(datlen);
+        evbuffer_chain_insert(buf, chain);
+        return chain;
+    }
+   
+    //最后一个链表长度，剩余的可用量
+    size_t remain = buf->last->buffer_len - buf->last->misalign - buf->last->off;
+    //不需要移动，就满足长度
+    if(remain >= datlen){
+        return buf->last;
+    }
+    
+    //看能不能通过mis移动满足条件
+    remain = remain+buf->last->misalign;
+    if(remain >= datlen){
+        //移动数据
+        memmove(buf->last->buffer, buf->last->buffer + buf->last->misalign, buf->last->off);
+        buf->last->misalign = 0; 
+        return buf->last;
+    }
+
+    //检查最后一个模块的数据值不值换到新的chain上面
+    if(buf->last->off < 2014 * 5 ){
+        //找到last 上一个
+        struct evbuffer_chain *next = buf->first;
+        while(next && next->next != buf->last){
+            next = next->next; 
+        }
+
+        //移动原来的数据
+        struct evbuffer_chain *res_chain = evbuffer_chain_new(buf->last->off+datlen);
+        memmove(res_chain->buffer+res_chain->misalign, buf->last->buffer+buf->last->misalign, buf->last->off);
+
+        res_chain->off = buf->last->off;
+
+        //删除原来的连接
+        free(buf->last);
+        next->next = res_chain;
+        *buf->last_with_datap = res_chain;
+        //移动原来的数据到新的chain
+        return res_chain;
+    }else{
+        struct evbuffer_chain *res_chain = evbuffer_chain_new(buf->last->off+datlen);
+        return res_chain; 
+    }
+}
+
 
 
 
