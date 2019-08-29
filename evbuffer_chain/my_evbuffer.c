@@ -7,6 +7,14 @@
 #include <unistd.h>
 #include <limits.h>
 
+#include <stdarg.h>  
+#include <stddef.h>  
+#include <setjmp.h>  
+
+
+#include <google/cmockery.h>
+
+
 
 #include "evbuffer.h"
 
@@ -51,15 +59,17 @@ evbuffer_chain_new(size_t size)
 }
 
 
-//释放在他后面的所有数据
+//释放在他和他后面的所有数据
 static void
-evbuffer_chain_free_before(struct evbuffer_chain *buf)
+evbuffer_chain_free_before(struct evbuffer_chain *buf,
+        struct evbuffer *evbuf)
 {
     struct evbuffer_chain *next = buf; 
     struct evbuffer_chain *tmp = NULL;
     while( next  ){
         tmp = next;
         next = next->next;
+        evbuf->total_len -= tmp->buffer_len;
         free(tmp);
     }
 }
@@ -78,23 +88,30 @@ evbuffer_chain_insert(struct evbuffer *buf,
         buf->total_len = chain->buffer_len;
     }else{
         struct evbuffer_chain *old = NULL;
-        struct evbuffer_chain *next = NULL;
         struct evbuffer_chain *tmp = NULL;
-        struct evbuffer_chain *head = buf->first;
-        //找到第一个数据未空
-        while(next->off !=0 && next){
+        struct evbuffer_chain *next = buf->first;
+        //找到第一个数据=空
+        while( next &&  next->off !=0 ){
             old = next;
             next = next->next;
         }
         //释放所有未空的数据
         if(next){
-            evbuffer_chain_free_before(next);
-            buf->last_with_datap = &old;
-            old->next = chain;
-            buf->last = chain;
+            evbuffer_chain_free_before(next, buf);
+            //头节点
+            if(old == NULL){
+                buf->first = chain;
+                buf->last = chain;
+            }else{
+                old->next = chain;
+                buf->last = chain;
+            }
+            buf->total_len += chain->buffer_len;
+            //需要 从新计算total_len
         }else{
             buf->last->next = chain;
             buf->last = chain;
+            buf->total_len += chain->buffer_len;
         } 
     }
 
@@ -206,10 +223,67 @@ evbuffer_copyout(struct evbuffer *buf, void *data_out, size_t datlen)
 
 
 
-int main()
+//测试创建一个evbuffer,并且添加进去
+void test_insert(void **state) {  
+    //生成一个evbuffer 
+    struct evbuffer *buf = evbuffer_new();
+    assert_true(buf);
+    //生成一个evbuffer_chain
+    struct evbuffer_chain *buf_chain_1 = evbuffer_chain_new(1);
+    assert_true(buf_chain_1);
+
+    struct evbuffer_chain *buf_chain_2 = evbuffer_chain_new(2);
+    assert_true(buf_chain_2);
+
+    struct evbuffer_chain *buf_chain_3 = evbuffer_chain_new(3);
+    assert_true(buf_chain_3);
+
+    //插入一个空表
+    evbuffer_chain_insert(buf, buf_chain_1);
+    assert_int_equal(buf->first, buf_chain_1); 
+    assert_int_equal(buf->last, buf_chain_1); 
+    assert_int_equal(buf->last_with_datap, &buf->first); 
+    assert_int_equal(buf->total_len, buf_chain_1->buffer_len);
+    
+    //继续插入第二章表
+
+    evbuffer_chain_insert(buf, buf_chain_2);
+
+    assert_int_equal(buf->first, buf_chain_2); 
+    assert_int_equal(buf->last, buf_chain_2); 
+    assert_int_equal(buf->last_with_datap, &buf->first); 
+    assert_int_equal(buf->total_len,  buf_chain_2->buffer_len);
+
+    //继续插入第3章表
+
+    evbuffer_chain_insert(buf, buf_chain_3);
+    assert_int_equal(buf->first, buf_chain_3); 
+    assert_int_equal(buf->last, buf_chain_3); 
+    assert_int_equal(buf->last_with_datap, &buf->first); 
+    assert_int_equal(buf->total_len, buf_chain_3->buffer_len);
+}  
+
+//插入数据
+int
+evbuffer_add(struct evbuffer *buf, const void *data_in, size_t datlen)
 {
 
-    return 1;
+
+}
+
+
+
+
+int main()
+{
+    const UnitTest tests[] = {  
+        unit_test(test_insert),  
+
+    };  
+    return run_tests(tests);  
+
+
+
 
 
 }

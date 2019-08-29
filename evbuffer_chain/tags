@@ -24,11 +24,12 @@ chain	evbuffer.h	/^		void *chain;$/;"	m	struct:evbuffer_ptr::__anon1
 deferred_cbs	evbuffer.h	/^	unsigned deferred_cbs : 1;$/;"	m	struct:evbuffer
 evbuffer	evbuffer.h	/^struct evbuffer {$/;"	s
 evbuffer_add	evbuffer.c	/^evbuffer_add(struct evbuffer *buf, const void *data_in, size_t datlen)$/;"	f
+evbuffer_add	my_evbuffer.c	/^evbuffer_add(struct evbuffer *buf, const void *data_in, size_t datlen)$/;"	f
 evbuffer_cb_entry	evbuffer.h	/^struct evbuffer_cb_entry {$/;"	s
 evbuffer_chain	evbuffer.h	/^struct evbuffer_chain {$/;"	s
 evbuffer_chain_align	evbuffer.c	/^evbuffer_chain_align(struct evbuffer_chain *chain)$/;"	f	file:
 evbuffer_chain_free	evbuffer.c	/^evbuffer_chain_free(struct evbuffer_chain *chain)$/;"	f	file:
-evbuffer_chain_free_before	my_evbuffer.c	/^evbuffer_chain_free_before(struct evbuffer_chain *buf)$/;"	f	file:
+evbuffer_chain_free_before	my_evbuffer.c	/^evbuffer_chain_free_before(struct evbuffer_chain *buf,$/;"	f	file:
 evbuffer_chain_insert	evbuffer.c	/^evbuffer_chain_insert(struct evbuffer *buf,$/;"	f	file:
 evbuffer_chain_insert	my_evbuffer.c	/^evbuffer_chain_insert(struct evbuffer *buf,$/;"	f	file:
 evbuffer_chain_insert_new	evbuffer.c	/^evbuffer_chain_insert_new(struct evbuffer *buf, size_t datlen)$/;"	f	file:
@@ -77,4 +78,5 @@ pos	evbuffer.h	/^	ssize_t pos;$/;"	m	struct:evbuffer_ptr
 pos_in_chain	evbuffer.h	/^		size_t pos_in_chain;$/;"	m	struct:evbuffer_ptr::__anon1
 refcnt	evbuffer.h	/^	int refcnt;$/;"	m	struct:evbuffer
 refcnt	evbuffer.h	/^	int refcnt;$/;"	m	struct:evbuffer_chain
+test_insert	my_evbuffer.c	/^void test_insert(void **state) {  $/;"	f
 total_len	evbuffer.h	/^	size_t total_len;$/;"	m	struct:evbuffer
