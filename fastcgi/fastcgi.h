@@ -84,11 +84,11 @@ int fastcgi_assgin_header_tobuf(fcgi_header *header, unsigned char *buf);
 
 int fastcgi_assgin_beginrequestbody_tobuf(fcgi_beginrequestbody *body, unsigned char *buf);
 
-
 //组合键值对body
 int fastcgi_assgin_kvrequestbody_tobuf(struct kv_head *head, unsigned char *buf, int *npad);
 
-
+//组合stdin body
+int fastcgi_assgin_stdinbody_tobuf(unsigned char *dst, int *npad, const unsigned char *src, const int ndata);
 
 
 

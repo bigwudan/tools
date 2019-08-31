@@ -37,7 +37,6 @@ fastcgi_assgin_kvrequestbody_tobuf(struct kv_head *head, unsigned char *buf, int
 	int mod = 0;
 	struct kv_list* tmp_kv;
 	TAILQ_FOREACH(tmp_kv, head, next) {
-		printf("k=%s,v=%s\n", tmp_kv->key, tmp_kv->value);
 		//key 长度
 		k_len = strlen(tmp_kv->key);
 		if(k_len > 127){
@@ -79,5 +78,21 @@ fastcgi_assgin_kvrequestbody_tobuf(struct kv_head *head, unsigned char *buf, int
 }
 
 
+//组合stdin body
+int
+fastcgi_assgin_stdinbody_tobuf(unsigned char *dst, int *npad, const unsigned char *src, const int ndata)
+{
+    memmove(dst, src, ndata  );
+    int tot = ndata;
+    int mod = ndata % 8;
+    if(mod == 0){
+        return tot;
+    }else{
+        *npad = 8 - mod;
+         tot+= *npad;
+        memset(dst + ndata, 0, *npad   );
+        return tot;
+    }
+}
 
 
