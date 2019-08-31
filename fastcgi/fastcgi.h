@@ -1,5 +1,7 @@
 #ifndef _FASTCGI_H_
 #define _FASTCGI_H_
+#include <sys/queue.h>
+
 
 #include "wl_buffer.h"
 
@@ -65,6 +67,17 @@ typedef struct
 	unsigned char reserved[3];
 }FCGI_EndRequestBody;
 
+//keyvalue节点
+struct kv_list{
+	char *key;
+	char *value;
+
+	TAILQ_ENTRY(kv_list) next;
+};
+
+TAILQ_HEAD(kv_head, kv_list);
+
+
 
 //组合抬头文件
 int fastcgi_assgin_header_tobuf(fcgi_header *header, unsigned char *buf);
@@ -72,6 +85,8 @@ int fastcgi_assgin_header_tobuf(fcgi_header *header, unsigned char *buf);
 int fastcgi_assgin_beginrequestbody_tobuf(fcgi_beginrequestbody *body, unsigned char *buf);
 
 
+//组合键值对body
+int fastcgi_assgin_kvrequestbody_tobuf(struct kv_head *head, unsigned char *buf, int *npad);
 
 
 
