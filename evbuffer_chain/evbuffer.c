@@ -40,9 +40,6 @@ evbuffer_chain_new(size_t size)
 
     chain->buffer_len = to_alloc - EVBUFFER_CHAIN_SIZE;
 
-    /* this way we can manipulate the buffer to different addresses,
-     * which is required for mmap for example.
-     */
     chain->buffer = EVBUFFER_CHAIN_EXTRA(unsigned char, chain);
 
     chain->refcnt = 1;

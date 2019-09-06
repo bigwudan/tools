@@ -248,7 +248,6 @@ evbuffer_add(struct evbuffer *buf, const void *data_in, size_t datlen)
     memmove(chain->buffer+chain->misalign,  data_in, datlen );
     chain->off += datlen;
     buf->last_with_datap = &(buf->last);
-
     return datlen;
 }
 
