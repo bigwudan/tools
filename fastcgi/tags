@@ -1,0 +1,74 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+FCGI_ABORT_REQUEST	fastcgi.h	/^	FCGI_ABORT_REQUEST      =  2, \/* [in]  (not supported)             *\/$/;"	e	enum:_fcgi_request_type
+FCGI_AUTHORIZER	fastcgi.h	/^	FCGI_AUTHORIZER = 2,$/;"	e	enum:_fcgi_role
+FCGI_BEGIN_REQUEST	fastcgi.h	/^	FCGI_BEGIN_REQUEST      =  1, \/* [in]                              *\/$/;"	e	enum:_fcgi_request_type
+FCGI_DATA	fastcgi.h	/^	FCGI_DATA               =  8, \/* [in]  filter data (not supported) *\/$/;"	e	enum:_fcgi_request_type
+FCGI_END_REQUEST	fastcgi.h	/^	FCGI_END_REQUEST        =  3, \/* [out]                             *\/$/;"	e	enum:_fcgi_request_type
+FCGI_EndRequestBody	fastcgi.h	/^}FCGI_EndRequestBody;$/;"	t	typeref:struct:__anon1
+FCGI_FILTER	fastcgi.h	/^	FCGI_FILTER     = 3$/;"	e	enum:_fcgi_role
+FCGI_GET_VALUES	fastcgi.h	/^	FCGI_GET_VALUES         =  9, \/* [in]                              *\/$/;"	e	enum:_fcgi_request_type
+FCGI_GET_VALUES_RESULT	fastcgi.h	/^	FCGI_GET_VALUES_RESULT  = 10  \/* [out]                             *\/$/;"	e	enum:_fcgi_request_type
+FCGI_PARAMS	fastcgi.h	/^	FCGI_PARAMS             =  4, \/* [in]  environment variables       *\/$/;"	e	enum:_fcgi_request_type
+FCGI_RESPONDER	fastcgi.h	/^	FCGI_RESPONDER  = 1,$/;"	e	enum:_fcgi_role
+FCGI_STDERR	fastcgi.h	/^	FCGI_STDERR             =  7, \/* [out] errors                      *\/$/;"	e	enum:_fcgi_request_type
+FCGI_STDIN	fastcgi.h	/^	FCGI_STDIN              =  5, \/* [in]  post data                   *\/$/;"	e	enum:_fcgi_request_type
+FCGI_STDOUT	fastcgi.h	/^	FCGI_STDOUT             =  6, \/* [out] response                    *\/$/;"	e	enum:_fcgi_request_type
+SWAP	wl_buffer.c	25;"	d	file:
+WL_SIZE_MAX	wl_buffer.c	41;"	d	file:
+_FASTCGI_H_	fastcgi.h	2;"	d
+_WL_BUFFER_H_	wl_buffer.h	2;"	d
+_fcgi_beginrequestbody	fastcgi.h	/^typedef struct _fcgi_beginrequestbody$/;"	s
+_fcgi_end_request	fastcgi.h	/^typedef struct _fcgi_end_request {$/;"	s
+_fcgi_header	fastcgi.h	/^typedef struct _fcgi_header {$/;"	s
+_fcgi_request_type	fastcgi.h	/^typedef enum _fcgi_request_type {$/;"	g
+_fcgi_role	fastcgi.h	/^typedef enum _fcgi_role {$/;"	g
+appStatusB0	fastcgi.h	/^	unsigned char appStatusB0; \/\/ 组件是应用级别的状态码$/;"	m	struct:_fcgi_end_request
+appStatusB0	fastcgi.h	/^	unsigned char appStatusB0;$/;"	m	struct:__anon1
+appStatusB1	fastcgi.h	/^	unsigned char appStatusB1; \/\/ 组件是应用级别的状态码$/;"	m	struct:_fcgi_end_request
+appStatusB1	fastcgi.h	/^	unsigned char appStatusB1;$/;"	m	struct:__anon1
+appStatusB2	fastcgi.h	/^	unsigned char appStatusB2; \/\/ 组件是应用级别的状态码$/;"	m	struct:_fcgi_end_request
+appStatusB2	fastcgi.h	/^	unsigned char appStatusB2;$/;"	m	struct:__anon1
+appStatusB3	fastcgi.h	/^	unsigned char appStatusB3;      \/\/结束状态，0为正常$/;"	m	struct:__anon1
+appStatusB3	fastcgi.h	/^	unsigned char appStatusB3; \/\/ 组件是应用级别的状态码$/;"	m	struct:_fcgi_end_request
+buffer	wl_buffer.h	/^    uint8_t *buffer;$/;"	m	struct:wl_evbuffer
+contentLengthB0	fastcgi.h	/^	unsigned char contentLengthB0; \/\/ 记录的contentData组件的字节数$/;"	m	struct:_fcgi_header
+contentLengthB1	fastcgi.h	/^	unsigned char contentLengthB1; \/\/ 记录的contentData组件的字节数$/;"	m	struct:_fcgi_header
+fastcgi_assgin_beginrequestbody_tobuf	fastcgi.c	/^fastcgi_assgin_beginrequestbody_tobuf(fcgi_beginrequestbody *body, unsigned char *buf)$/;"	f
+fastcgi_assgin_header_tobuf	fastcgi.c	/^fastcgi_assgin_header_tobuf(fcgi_header *header, unsigned char *buf)$/;"	f
+fcgi_beginrequestbody	fastcgi.h	/^}fcgi_beginrequestbody;$/;"	t	typeref:struct:_fcgi_beginrequestbody
+fcgi_end_request	fastcgi.h	/^} fcgi_end_request;$/;"	t	typeref:struct:_fcgi_end_request
+fcgi_header	fastcgi.h	/^} fcgi_header;$/;"	t	typeref:struct:_fcgi_header
+fcgi_request_type	fastcgi.h	/^} fcgi_request_type;$/;"	t	typeref:enum:_fcgi_request_type
+fcgi_role	fastcgi.h	/^} fcgi_role;$/;"	t	typeref:enum:_fcgi_role
+flags	fastcgi.h	/^	unsigned char flags;        \/\/确定php-fpm处理完一次请求之后是否关闭$/;"	m	struct:_fcgi_beginrequestbody
+main	test.c	/^int main()$/;"	f
+misalign	wl_buffer.h	/^    uint32_t misalign;$/;"	m	struct:wl_evbuffer
+off	wl_buffer.h	/^    uint32_t off;$/;"	m	struct:wl_evbuffer
+orig_buffer	wl_buffer.h	/^    uint8_t *orig_buffer;$/;"	m	struct:wl_evbuffer
+paddingLength	fastcgi.h	/^	unsigned char paddingLength;$/;"	m	struct:_fcgi_header
+protocolStatus	fastcgi.h	/^	unsigned char protocolStatus;   \/\/协议状态$/;"	m	struct:__anon1
+protocolStatus	fastcgi.h	/^	unsigned char protocolStatus; \/\/ 组件是协议级别的状态码$/;"	m	struct:_fcgi_end_request
+requestIdB0	fastcgi.h	/^	unsigned char requestIdB0; \/\/ 标识记录所属的FastCGI请求$/;"	m	struct:_fcgi_header
+requestIdB1	fastcgi.h	/^	unsigned char requestIdB1; \/\/ 标识记录所属的FastCGI请求$/;"	m	struct:_fcgi_header
+reserved	fastcgi.h	/^	unsigned char reserved;$/;"	m	struct:_fcgi_header
+reserved	fastcgi.h	/^	unsigned char reserved[3];$/;"	m	struct:__anon1
+reserved	fastcgi.h	/^	unsigned char reserved[3];$/;"	m	struct:_fcgi_end_request
+reserved	fastcgi.h	/^	unsigned char reserved[5];  \/\/保留字段$/;"	m	struct:_fcgi_beginrequestbody
+roleB0	fastcgi.h	/^	unsigned char roleB0;$/;"	m	struct:_fcgi_beginrequestbody
+roleB1	fastcgi.h	/^	unsigned char roleB1;       \/\/web服务器所期望php-fpm扮演的角色，具体取值下面有$/;"	m	struct:_fcgi_beginrequestbody
+test_head	test.c	/^void test_head(void **state) $/;"	f
+totallen	wl_buffer.h	/^    uint32_t totallen;$/;"	m	struct:wl_evbuffer
+type	fastcgi.h	/^	unsigned char type; \/\/ 标识FastCGI记录类型，也就是记录执行的一般职能$/;"	m	struct:_fcgi_header
+version	fastcgi.h	/^	unsigned char version; \/\/ 标识FastCGI协议版本$/;"	m	struct:_fcgi_header
+wl_evbuffer	wl_buffer.h	/^struct wl_evbuffer {$/;"	s
+wl_evbuffer_add	wl_buffer.c	/^wl_evbuffer_add(struct wl_evbuffer *buf, const void *data, size_t datlen)$/;"	f
+wl_evbuffer_align	wl_buffer.c	/^wl_evbuffer_align(struct wl_evbuffer *buf)$/;"	f	file:
+wl_evbuffer_drain	wl_buffer.c	/^void wl_evbuffer_drain(struct wl_evbuffer *buf, size_t len)$/;"	f
+wl_evbuffer_expand	wl_buffer.c	/^wl_evbuffer_expand(struct wl_evbuffer *buf, size_t datlen)$/;"	f
+wl_evbuffer_free	wl_buffer.c	/^wl_evbuffer_free(struct wl_evbuffer *buffer)$/;"	f
+wl_evbuffer_new	wl_buffer.c	/^wl_evbuffer_new(void)$/;"	f
