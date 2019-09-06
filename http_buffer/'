@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define ARRAY_IDX 16
+
+typedef struct{
+    char **data; //存数据的地方
+    size_t *sort;//存数据顺序的数组
+    size_t used; //已经使用的长度
+    size_t size;//总长度
+
+
+
+}buff_array;
+
+//初始化
+buff_array *
+buff_init()
+{
+    buff_array *p_buf = calloc(1, sizeof(buff_array));
+    if(p_buf == NULL) return NULL;
+   
+    //指针指针地址
+    p_buf->data = calloc(ARRAY_IDX, sizeof(char));
+    if(p_buf->data == NULL) return NULL;
+
+    
+
+    return p_buf;
+}
+
+
+int main()
+{
+    printf("wudan\n");
+
+    return 0;
+}
+
+
+
+
