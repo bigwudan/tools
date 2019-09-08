@@ -157,6 +157,12 @@ buff_del_key(buff_array *p_buff,const char *key)
         memmove(p_buff->data+data_idx, p_buff->data+data_idx+1, (p_buff->used - (data_idx +1))*sizeof(char *)  );
         //去掉sort
         memmove(p_buff->sort+idx, p_buff->sort+idx+1, (p_buff->used - (idx+1))*sizeof(size_t) ) ;
+
+        //后续-1
+        for(int i=0; i < p_buff->used- idx; i++){
+            *(p_buff->sort+idx+i) = *(p_buff->sort + idx+i) - 1;
+        }
+
         p_buff->used--;
         return 0;
     }else{
