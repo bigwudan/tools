@@ -8,6 +8,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <sys/queue.h>
+
+
+struct _node_list {  
+    char buf[250];  
+    TAILQ_ENTRY(_node_list)  next;  
+
+};  
+
+
+TAILQ_HEAD(node_head, _node_list);
 
 
 
@@ -156,7 +167,59 @@ buff_del_key(buff_array *p_buff, char *key)
 }
 
 
+int
+_test_bufdayu(buff_array *p_buf, int ndata)
+{
+    int idx = 0;
+    int idx_next = 0;
+    for(int i =0; i < p_buf->used-1; i++){
+        idx = p_buf->sort[i];
+        idx_next = p_buf->sort[i+1];
+        if(strcmp(p_buf->data[idx], p_buf->data[idx_next]) >0 ){
+            return -1;
+        }
+    }
+    assert_int_equal(p_buf->used, ndata);
+    return 0;
+}
+
+void test_new(void **state){
+
+    int flag = 0;
+    struct node_head head;
+    TAILQ_INIT(&head);
+    struct _node_list *tmp_node = NULL;
+
+    char *pp_str[] = {"11", "22", "33", "44", "55"};
+    size_t tot = sizeof(pp_str)/sizeof(char *);
+    for(int i=0; i<tot; i++){
+        tmp_node = calloc(1, sizeof(struct _node_list));
+        memmove(tmp_node->buf, pp_str[i], strlen(pp_str[i])*sizeof(char) );
+        TAILQ_INSERT_TAIL(&head, tmp_node, next);
+
+    }
+
+    buff_array *p_buf = buff_init();
+    assert_true(p_buf);            
+    TAILQ_FOREACH(tmp_node, &head, next){
+        buff_insert(p_buf, tmp_node->buf);
+    }
+
+
+
+    assert_int_equal(p_buf->used, tot);
+
+    buff_del_key(p_buf, "33");
+
+    flag = _test_bufdayu(p_buf, tot-1);
+    printf("flag=%d\n", flag);
+
+
+}
+
 void test_sub(void **state) {  
+
+
     int flag = 0;
     buff_array *p_buf = buff_init();
     assert_true(p_buf);            
@@ -186,7 +249,13 @@ void test_sub(void **state) {
     assert_int_equal(p_buf->used, 4);
     assert_string_equal(p_buf->data[3], test4);
     assert_int_equal(p_buf->sort[3], 3);
+    
+    flag = _test_bufdayu(p_buf, 4);
 
+    assert_int_equal(flag, 0);
+
+
+    return ;
 
     //第二个测试用例
     char *test5 = "35";
@@ -214,7 +283,8 @@ void test_sub(void **state) {
 int main()
 {
     const UnitTest tests[] = {  
-        unit_test(test_sub)  
+        //unit_test(test_sub)  
+        unit_test(test_new)  
 
     };  
     return run_tests(tests);  
