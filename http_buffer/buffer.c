@@ -144,7 +144,7 @@ buff_printf(buff_array *p_buf)
 
 //删除key
 int
-buff_del_key(buff_array *p_buff, char *key)
+buff_del_key(buff_array *p_buff,const char *key)
 {
     int idx = 0;
     int data_idx = 0;
@@ -183,6 +183,51 @@ _test_bufdayu(buff_array *p_buf, int ndata)
     return 0;
 }
 
+//删除
+void
+_test_del(buff_array *p_buf, struct node_head *head, const char *key)
+{
+
+    buff_del_key(p_buf, key);
+    struct _node_list *tmp_node = NULL;
+    struct _node_list *tmp_item = NULL;
+//删除一个元素
+    printf("Deleting item with value 3: ");
+    for(tmp_node = TAILQ_FIRST(head); tmp_node != NULL; tmp_node = tmp_item) {
+        if ( strcmp(tmp_node->buf, key) == 0) {
+            //删除一个元素
+            TAILQ_REMOVE(head, tmp_item, next);
+            //释放不需要的内存单元
+            free(tmp_node);
+            break;
+        }
+        tmp_item = TAILQ_NEXT(tmp_node, next);
+    }
+
+
+
+}
+
+//对比数据
+int
+_test_cmp_serial_head_buf(buff_array *p_buf, struct node_head *head   )
+{
+
+	struct _node_list *item = NULL; 
+	int i =0;
+	int idx = 0;
+	char *tmp = NULL;
+    TAILQ_FOREACH(item, head, next) {
+					
+		idx =  p_buf->sort[i++];
+		tmp = p_buf->data[idx];
+
+		assert_int_equal(strcmp(tmp, item->buf), 0);
+	
+    }
+	return i;
+}
+
 void test_new(void **state){
 
     int flag = 0;
@@ -209,9 +254,13 @@ void test_new(void **state){
 
     assert_int_equal(p_buf->used, tot);
 
-    buff_del_key(p_buf, "33");
+    //buff_del_key(p_buf, "33");
+	_test_del(p_buf, &head, "33");	
 
     flag = _test_bufdayu(p_buf, tot-1);
+
+	_test_cmp_serial_head_buf(p_buf, &head);
+
     printf("flag=%d\n", flag);
 
 
