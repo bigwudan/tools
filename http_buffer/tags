@@ -4,6 +4,7 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+<<<<<<< HEAD
 DATA_UNSET	array.h	/^        DATA_UNSET;$/;"	m	struct:data_unset
 DATA_UNSET	array.h	10;"	d
 _ARRAY_H_	array.h	2;"	d
@@ -18,3 +19,22 @@ main	test_main.c	/^int main()$/;"	f
 size	array.h	/^    size_t size;$/;"	m	struct:__anon1
 sorted	array.h	/^    size_t *sorted;$/;"	m	struct:__anon1
 used	array.h	/^    size_t used; \/* <= SSIZE_MAX *\/$/;"	m	struct:__anon1
+=======
+ARRAY_IDX	buffer.c	26;"	d	file:
+_node_list	buffer.c	/^struct _node_list {  $/;"	s	file:
+_test_bufdayu	buffer.c	/^_test_bufdayu(buff_array *p_buf, int ndata)$/;"	f
+buf	buffer.c	/^    char buf[250];  $/;"	m	struct:_node_list	file:
+buff_array	buffer.c	/^}buff_array;$/;"	t	typeref:struct:__anon1	file:
+buff_del_key	buffer.c	/^buff_del_key(buff_array *p_buff, char *key)$/;"	f
+buff_find_key	buffer.c	/^buff_find_key(const buff_array *p_buff, const char *key, int *idx)$/;"	f
+buff_init	buffer.c	/^buff_init()$/;"	f
+buff_insert	buffer.c	/^buff_insert(buff_array *p_arr, char *key )$/;"	f
+buff_printf	buffer.c	/^buff_printf(buff_array *p_buf)$/;"	f
+data	buffer.c	/^    char **data; \/\/存数据的地方$/;"	m	struct:__anon1	file:
+main	buffer.c	/^int main()$/;"	f
+size	buffer.c	/^    size_t size;\/\/总长度$/;"	m	struct:__anon1	file:
+sort	buffer.c	/^    size_t *sort;\/\/存数据顺序的数组$/;"	m	struct:__anon1	file:
+test_new	buffer.c	/^void test_new(void **state){$/;"	f
+test_sub	buffer.c	/^void test_sub(void **state) {  $/;"	f
+used	buffer.c	/^    size_t used; \/\/已经使用的长度$/;"	m	struct:__anon1	file:
+>>>>>>> a51f0c587aac9f256bd945d062b46843edda7a68

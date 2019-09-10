@@ -77,6 +77,13 @@ struct kv_list{
 
 TAILQ_HEAD(kv_head, kv_list);
 
+//分析头
+struct fastcgi_node{
+    
+
+
+
+}
 
 
 //组合抬头文件
