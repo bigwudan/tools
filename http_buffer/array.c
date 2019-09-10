@@ -27,8 +27,8 @@ array_insert_unique(array *a, data_unset *entry)
 }
 
 //查找数据,并且插入数据
-static 
-data_unset **array_find_or_insert(array *a, data_unset *entry) 
+data_unset **
+array_find_or_insert(array *a, data_unset *entry) 
 {
     size_t ndx, pos, j;
     /* try to find the entry */
@@ -68,7 +68,7 @@ data_unset **array_find_or_insert(array *a, data_unset *entry)
 
 
 //查找数据
-static size_t 
+size_t 
 array_get_index(const array *a, const char *key, size_t keylen, size_t *rndx) {
     size_t lower = 0, upper = a->used;
 
@@ -115,8 +115,42 @@ free_data_unset(data_unset *p)
     free(p);
 }
 
+//打印数据
+void
+test_printf(array *p)
+{
+    data_unset *p_data = NULL;
+    for(int i=0; i < (p->used); i++){
+        p_data =   p->data[p->sorted[i]];
+        printf("key=%s,value=%s\n", p_data->key, p_data->value);
+    }
 
+}
 
+//通过key找到data_unset
+data_unset *
+get_data_unset_by_key(array *p, char *key )
+{
+    int flag = 0;
+    size_t ndx = 0;
+    flag = array_get_index(p, key, strlen(key), &ndx);
+    if(flag == -1) return NULL;
+    return p->data[p->sorted[ndx]];
+}
+
+//释放array
+void
+free_array(array *p)
+{
+    data_unset *p_data = NULL;
+    for(int i=0; i < (p->used); i++){
+        p_data =   p->data[i];
+        free_data_unset(p_data);
+    }
+    free(p->data);
+    free(p->sorted);
+    free(p);
+}
 
 
 
