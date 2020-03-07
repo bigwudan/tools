@@ -1,0 +1,17 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+_LINKED_H	linked.h	2;"	d
+create_linked_list	linked.c	/^int create_linked_list(struct linked_list * p_linked_list)$/;"	f
+insert_linked_node	linked.c	/^int insert_linked_node(struct linked_list * p_linked_list, char *p_val )$/;"	f
+linked	linked.h	/^typedef struct linked$/;"	s
+linked_list	linked.h	/^struct linked_list$/;"	s
+linked_node	linked.h	/^}linked_node;$/;"	t	typeref:struct:linked
+main	test.c	/^int main()$/;"	f
+p_next	linked.h	/^	struct linked_node *p_next;$/;"	m	struct:linked	typeref:struct:linked::linked_node
+p_top	linked.h	/^	linked_node *p_top;$/;"	m	struct:linked_list
+p_value	linked.h	/^	char *p_value;$/;"	m	struct:linked
+show_node_list	linked.c	/^void show_node_list(struct linked_list * p_list)$/;"	f

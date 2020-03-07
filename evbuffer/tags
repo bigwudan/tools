@@ -1,0 +1,52 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+EVBUFFER_CHAIN_EXTRA	evbuffer.h	12;"	d
+EVBUFFER_CHAIN_MAX	evbuffer.h	8;"	d
+EVBUFFER_CHAIN_MAX_AUTO_SIZE	evbuffer.c	131;"	d	file:
+EVBUFFER_CHAIN_SIZE	evbuffer.h	10;"	d
+EVBUFFER_DANGLING	evbuffer.h	86;"	d
+EVBUFFER_FILESEGMENT	evbuffer.h	75;"	d
+EVBUFFER_IMMUTABLE	evbuffer.h	78;"	d
+EVBUFFER_MEM_PINNED_ANY	evbuffer.h	83;"	d
+EVBUFFER_MEM_PINNED_R	evbuffer.h	81;"	d
+EVBUFFER_MEM_PINNED_W	evbuffer.h	82;"	d
+EVBUFFER_MULTICAST	evbuffer.h	88;"	d
+EVBUFFER_REFERENCE	evbuffer.h	77;"	d
+EVBUFFER_SENDFILE	evbuffer.h	76;"	d
+GETEVBUFFER	evbuffer.c	8;"	d	file:
+MAX_CHIAN	evbuffer.c	7;"	d	file:
+MAX_TO_COPY_IN_EXPAND	evbuffer.c	110;"	d	file:
+MAX_TO_REALIGN_IN_EXPAND	evbuffer.c	111;"	d	file:
+_BUFFER_H_	evbuffer.h	2;"	d
+buffer	evbuffer.h	/^    unsigned char *buffer;$/;"	m	struct:evbuffer_chain
+buffer_len	evbuffer.h	/^    size_t buffer_len;$/;"	m	struct:evbuffer_chain
+cb_queue	evbuffer.h	/^	struct event_base *cb_queue;$/;"	m	struct:evbuffer	typeref:struct:evbuffer::event_base
+evbuffer	evbuffer.h	/^struct evbuffer {$/;"	s
+evbuffer_add	evbuffer.c	/^evbuffer_add(struct evbuffer *buf, const void *data_in, size_t datlen)$/;"	f
+evbuffer_chain	evbuffer.h	/^struct evbuffer_chain {$/;"	s
+evbuffer_chain_align	evbuffer.c	/^evbuffer_chain_align(struct evbuffer_chain *chain)$/;"	f	file:
+evbuffer_chain_free	evbuffer.c	/^evbuffer_chain_free(struct evbuffer_chain *chain){$/;"	f	file:
+evbuffer_chain_insert	evbuffer.c	/^evbuffer_chain_insert(struct evbuffer *buf,$/;"	f	file:
+evbuffer_chain_new	evbuffer.c	/^evbuffer_chain_new(size_t size)$/;"	f	file:
+evbuffer_chain_should_realign	evbuffer.c	/^evbuffer_chain_should_realign(struct evbuffer_chain *chain,$/;"	f	file:
+evbuffer_free_all_chains	evbuffer.c	/^evbuffer_free_all_chains(struct evbuffer_chain *chain)$/;"	f	file:
+evbuffer_free_trailing_empty_chains	evbuffer.c	/^evbuffer_free_trailing_empty_chains(struct evbuffer *buf)$/;"	f	file:
+evbuffer_new	evbuffer.c	/^evbuffer_new(void)$/;"	f
+first	evbuffer.h	/^	struct evbuffer_chain *first;$/;"	m	struct:evbuffer	typeref:struct:evbuffer::evbuffer_chain
+flags	evbuffer.h	/^	uint32_t flags;$/;"	m	struct:evbuffer
+flags	evbuffer.h	/^    unsigned flags;$/;"	m	struct:evbuffer_chain
+last	evbuffer.h	/^	struct evbuffer_chain *last;$/;"	m	struct:evbuffer	typeref:struct:evbuffer::evbuffer_chain
+last_with_datap	evbuffer.h	/^	struct evbuffer_chain **last_with_datap;$/;"	m	struct:evbuffer	typeref:struct:evbuffer::evbuffer_chain
+main	evbuffer.c	/^int main()$/;"	f
+misalign	evbuffer.h	/^    ssize_t misalign;$/;"	m	struct:evbuffer_chain
+n_add_for_cb	evbuffer.h	/^	size_t n_add_for_cb;$/;"	m	struct:evbuffer
+n_del_for_cb	evbuffer.h	/^	size_t n_del_for_cb;$/;"	m	struct:evbuffer
+next	evbuffer.h	/^    struct evbuffer_chain *next;$/;"	m	struct:evbuffer_chain	typeref:struct:evbuffer_chain::evbuffer_chain
+off	evbuffer.h	/^    size_t off;$/;"	m	struct:evbuffer_chain
+refcnt	evbuffer.h	/^	int refcnt;$/;"	m	struct:evbuffer
+refcnt	evbuffer.h	/^    int refcnt;$/;"	m	struct:evbuffer_chain
+total_len	evbuffer.h	/^	size_t total_len;$/;"	m	struct:evbuffer
