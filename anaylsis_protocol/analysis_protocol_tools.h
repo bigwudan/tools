@@ -1,0 +1,4 @@
+#ifndef _ANALYSIS_PROTOCOL_TOOLS_H
+#define _ANALYSIS_PROTOCOL_TOOLS_H
+
+#endif

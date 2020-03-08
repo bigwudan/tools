@@ -26,12 +26,33 @@ join_cache_data(struct analysis_protocol_base_tag *base, void *data, uint8_t len
     return 0;
 }
 
-//分析协议数据,是否读到一个完整的帧
+//分析协议数据,是否读到一个完整的帧 0未读到 1已经读到
 uint8_t 
 analy_frame_func(struct analysis_protocol_base_tag *base)
 {
     return 0;
 }
+
+//发送命令然后写入命令队列
+uint8_t
+analysis_protocol_send_cmd( analysis_protocol_base *base, analysis_protocol_cmd_frame *cmd_frame   )
+{
+
+
+
+}
+
+
+//轮训发送cmd 缓存 看是否需要从新发送
+void
+analysis_protocol_polling_cmd_frame(analysis_protocol_base *base)
+{
+
+
+
+}
+
+
 
 
 

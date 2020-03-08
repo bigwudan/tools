@@ -11,6 +11,8 @@
 struct analysis_protocol_cmd_frame_tag;
 //前置声明
 struct analysis_protocol_base_tag; 
+//前置声明
+struct analysis_protocol_cmd_frame_head_tag;
 
 //回调函数
 typedef void (*analysis_protocol_bc)(struct analysis_protocol_base_tag * , void *);
@@ -55,7 +57,9 @@ typedef struct analysis_protocol_base_tag
 
     //帧缓存
     frame_cache *frame_cache_p;
-
+    //缓存当前时间
+    struct timeval curr_cache_time;
+    
     
     
 
@@ -77,10 +81,10 @@ typedef struct analysis_protocol_cmd_frame_tag
    uint8_t repeat_num;
     
    //链表前一个
-   struct analysis_protocol_frame *pre_frame;
+   struct analysis_protocol_cmd_frame *pre_frame;
    
    //链表后一个
-   struct analysis_protocol_frame *next_fame;
+   struct analysis_protocol_cmd_frame *next_frame;
 
 
 
@@ -94,8 +98,8 @@ typedef struct analysis_protocol_cmd_frame_head_tag
     uint8_t frame_tot;
     //第一个元素的地址
     analysis_protocol_cmd_frame *frame_first;
-
-
+    //最后一个元素的地址
+    analysis_protocol_cmd_frame *frame_last;
 
 } analysis_protocol_cmd_frame_head;
 
