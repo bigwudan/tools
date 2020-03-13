@@ -29,11 +29,21 @@ struct analysis_protocol_send_frame_list_tag
     uint8_t repeat_max; //最大重发次数
     uint8_t state; //自己定义状态
     uint8_t data[FRAME_SEND_DATA]; //保存的命令数据
+    uint8_t data_len; //数据长度
     struct timeval last_send_time;//最后发送的时间
     uint8_t repeat_during ; //重发时间间隔
     TAILQ_ENTRY(analysis_protocol_send_frame_list_tag)  next; //下一个节点  
 
 };
+
+//发送的命令的缓缓列表
+struct analysis_protocol_send_frame_to_dest_tag
+{
+    uint8_t data[FRAME_SEND_DATA]; //保存的命令
+    uint8_t data_len; //命令长度
+    TAILQ_ENTRY(analysis_protocol_send_frame_to_dest_tag)  next; //下一个节点  
+};
+
 
 
 //分析数据回调函数
@@ -64,8 +74,12 @@ struct analysis_protocol_base_tag
     self_process_frame_tag self_process_frame; 
 
     //发送命令缓存头
-    TAILQ_HEAD(frame_send_head_tag, analysis_protocol_send_frame_list_tag)   head;
+    TAILQ_HEAD(frame_send_head_tag, analysis_protocol_send_frame_list_tag)   send_frame_head;
+    
+    //发送命令到中断缓存
+    TAILQ_HEAD(frame_send_dest_head_tag, analysis_protocol_send_frame_to_dest_tag)   send_frame_dest_head;
 
+    
     
 
 }; 

@@ -15,7 +15,8 @@ analysis_protocol_init()
     //赋值给链表
     analysis_protocol_base.chain_list = &chain_list;
     //初始化发送命令
-    TAILQ_INIT(&analysis_protocol_base.head);  
+    TAILQ_INIT(&analysis_protocol_base.send_frame_head);  
+    TAILQ_INIT(&analysis_protocol_base.send_frame_dest_head);  
 }
 
 
