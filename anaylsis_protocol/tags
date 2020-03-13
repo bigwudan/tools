@@ -4,65 +4,135 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-FRAME_DATA_NUM	analysis_protocol.h	7;"	d
+CIRCLEQ_EMPTY	queue.h	559;"	d
+CIRCLEQ_ENTRY	queue.h	479;"	d
+CIRCLEQ_FIRST	queue.h	560;"	d
+CIRCLEQ_FOREACH	queue.h	546;"	d
+CIRCLEQ_FOREACH_REVERSE	queue.h	551;"	d
+CIRCLEQ_HEAD	queue.h	470;"	d
+CIRCLEQ_HEAD_INITIALIZER	queue.h	476;"	d
+CIRCLEQ_INIT	queue.h	488;"	d
+CIRCLEQ_INSERT_AFTER	queue.h	493;"	d
+CIRCLEQ_INSERT_BEFORE	queue.h	503;"	d
+CIRCLEQ_INSERT_HEAD	queue.h	513;"	d
+CIRCLEQ_INSERT_TAIL	queue.h	523;"	d
+CIRCLEQ_LAST	queue.h	561;"	d
+CIRCLEQ_LOOP_NEXT	queue.h	565;"	d
+CIRCLEQ_LOOP_PREV	queue.h	569;"	d
+CIRCLEQ_NEXT	queue.h	562;"	d
+CIRCLEQ_PREV	queue.h	563;"	d
+CIRCLEQ_REMOVE	queue.h	533;"	d
+FRAME_RECV_CACHE_MAX	analysis_protocol.h	9;"	d
+FRAME_SEND_DATA	analysis_protocol.h	10;"	d
+LIST_EMPTY	queue.h	142;"	d
+LIST_ENTRY	queue.h	92;"	d
+LIST_FIRST	queue.h	143;"	d
+LIST_FOREACH	queue.h	134;"	d
+LIST_HEAD	queue.h	84;"	d
+LIST_HEAD_INITIALIZER	queue.h	89;"	d
+LIST_INIT	queue.h	101;"	d
+LIST_INSERT_AFTER	queue.h	105;"	d
+LIST_INSERT_BEFORE	queue.h	113;"	d
+LIST_INSERT_HEAD	queue.h	120;"	d
+LIST_NEXT	queue.h	144;"	d
+LIST_REMOVE	queue.h	127;"	d
 MAX_CHAIN_NUM	analysis_protocol_tools.h	6;"	d
-MAX_RECV_NUM	analysis_protocol.h	8;"	d
+SIMPLEQ_EMPTY	queue.h	359;"	d
+SIMPLEQ_ENTRY	queue.h	302;"	d
+SIMPLEQ_FIRST	queue.h	360;"	d
+SIMPLEQ_FOREACH	queue.h	351;"	d
+SIMPLEQ_HEAD	queue.h	293;"	d
+SIMPLEQ_HEAD_INITIALIZER	queue.h	299;"	d
+SIMPLEQ_INIT	queue.h	310;"	d
+SIMPLEQ_INSERT_AFTER	queue.h	327;"	d
+SIMPLEQ_INSERT_HEAD	queue.h	315;"	d
+SIMPLEQ_INSERT_TAIL	queue.h	321;"	d
+SIMPLEQ_NEXT	queue.h	361;"	d
+SIMPLEQ_REMOVE	queue.h	338;"	d
+SIMPLEQ_REMOVE_HEAD	queue.h	333;"	d
+SLIST_EMPTY	queue.h	203;"	d
+SLIST_ENTRY	queue.h	158;"	d
+SLIST_FIRST	queue.h	204;"	d
+SLIST_FOREACH	queue.h	197;"	d
+SLIST_HEAD	queue.h	150;"	d
+SLIST_HEAD_INITIALIZER	queue.h	155;"	d
+SLIST_INIT	queue.h	166;"	d
+SLIST_INSERT_AFTER	queue.h	170;"	d
+SLIST_INSERT_HEAD	queue.h	175;"	d
+SLIST_NEXT	queue.h	205;"	d
+SLIST_REMOVE	queue.h	184;"	d
+SLIST_REMOVE_HEAD	queue.h	180;"	d
+STAILQ_CONCAT	queue.h	274;"	d
+STAILQ_EMPTY	queue.h	285;"	d
+STAILQ_ENTRY	queue.h	220;"	d
+STAILQ_FIRST	queue.h	286;"	d
+STAILQ_FOREACH	queue.h	269;"	d
+STAILQ_HEAD	queue.h	211;"	d
+STAILQ_HEAD_INITIALIZER	queue.h	217;"	d
+STAILQ_INIT	queue.h	228;"	d
+STAILQ_INSERT_AFTER	queue.h	245;"	d
+STAILQ_INSERT_HEAD	queue.h	233;"	d
+STAILQ_INSERT_TAIL	queue.h	239;"	d
+STAILQ_NEXT	queue.h	287;"	d
+STAILQ_REMOVE	queue.h	256;"	d
+STAILQ_REMOVE_HEAD	queue.h	251;"	d
+TAILQ_CONCAT	queue.h	445;"	d
+TAILQ_EMPTY	queue.h	457;"	d
+TAILQ_ENTRY	queue.h	382;"	d
+TAILQ_FIRST	queue.h	458;"	d
+TAILQ_FOREACH	queue.h	435;"	d
+TAILQ_FOREACH_REVERSE	queue.h	440;"	d
+TAILQ_HEAD	queue.h	372;"	d
+TAILQ_HEAD_INITIALIZER	queue.h	374;"	d
+TAILQ_INIT	queue.h	387;"	d
+TAILQ_INSERT_AFTER	queue.h	409;"	d
+TAILQ_INSERT_BEFORE	queue.h	419;"	d
+TAILQ_INSERT_HEAD	queue.h	392;"	d
+TAILQ_INSERT_TAIL	queue.h	402;"	d
+TAILQ_LAST	queue.h	461;"	d
+TAILQ_NEXT	queue.h	459;"	d
+TAILQ_PREV	queue.h	463;"	d
+TAILQ_REMOVE	queue.h	426;"	d
 _ANALYSIS_PROTOCOL_H_	analysis_protocol.h	2;"	d
 _ANALYSIS_PROTOCOL_TOOLS_H	analysis_protocol_tools.h	2;"	d
-analy_frame_func	analysis_protocol.c	/^analy_frame_func(struct analysis_protocol_base_tag *base)$/;"	f
-analy_frame_func	analysis_protocol.h	/^    uint8_t (*analy_frame_func)(struct analysis_protocol_base_tag *base);$/;"	m	struct:analysis_protocol_base_tag
-analysis_protocol_base	analysis_protocol.h	/^} analysis_protocol_base;$/;"	t	typeref:struct:analysis_protocol_base_tag
-analysis_protocol_base_tag	analysis_protocol.h	/^typedef struct analysis_protocol_base_tag$/;"	s
-analysis_protocol_bc	analysis_protocol.h	/^typedef void (*analysis_protocol_bc)(struct analysis_protocol_base_tag * , void *);$/;"	t
-analysis_protocol_cmd_frame	analysis_protocol.h	/^} analysis_protocol_cmd_frame;$/;"	t	typeref:struct:analysis_protocol_cmd_frame_tag
-analysis_protocol_cmd_frame_head	analysis_protocol.h	/^} analysis_protocol_cmd_frame_head;$/;"	t	typeref:struct:analysis_protocol_cmd_frame_head_tag
-analysis_protocol_cmd_frame_head_tag	analysis_protocol.h	/^typedef struct analysis_protocol_cmd_frame_head_tag$/;"	s
-analysis_protocol_cmd_frame_tag	analysis_protocol.h	/^typedef struct analysis_protocol_cmd_frame_tag$/;"	s
+_SYS_QUEUE_H_	queue.h	33;"	d
+_TAILQ_ENTRY	queue.h	377;"	d
+_TAILQ_HEAD	queue.h	367;"	d
+analysis_protocol_base	analysis_protocol.c	/^struct analysis_protocol_base_tag analysis_protocol_base;$/;"	v	typeref:struct:analysis_protocol_base_tag
+analysis_protocol_base_tag	analysis_protocol.h	/^struct analysis_protocol_base_tag$/;"	s
+analysis_protocol_frame_recv_cache	analysis_protocol.h	/^struct analysis_protocol_frame_recv_cache$/;"	s
 analysis_protocol_init	analysis_protocol.c	/^analysis_protocol_init()$/;"	f
-analysis_protocol_polling_cmd_frame	analysis_protocol.c	/^analysis_protocol_polling_cmd_frame(analysis_protocol_base *base)$/;"	f
-analysis_protocol_send_cmd	analysis_protocol.c	/^analysis_protocol_send_cmd( analysis_protocol_base *base, analysis_protocol_cmd_frame *cmd_frame   )$/;"	f
+analysis_protocol_read_chain_list	analysis_protocol.c	/^analysis_protocol_read_chain_list(struct chain_list_tag *chain_list, uint8_t *src, uint8_t len )$/;"	f
+analysis_protocol_send_frame_list_tag	analysis_protocol.h	/^struct analysis_protocol_send_frame_list_tag$/;"	s
+analysis_protocol_write_chain_list	analysis_protocol.c	/^analysis_protocol_write_chain_list(struct chain_list_tag *chain_list, uint8_t *src, uint8_t len )$/;"	f
 buf	analysis_protocol_tools.h	/^	uint8_t buf[MAX_CHAIN_NUM];$/;"	m	struct:chain_list_tag
+chain_list	analysis_protocol.c	/^struct chain_list_tag chain_list;$/;"	v	typeref:struct:chain_list_tag
+chain_list	analysis_protocol.h	/^    struct chain_list_tag *chain_list;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::chain_list_tag
 chain_list	main.c	/^struct chain_list_tag chain_list;$/;"	v	typeref:struct:chain_list_tag
 chain_list_tag	analysis_protocol_tools.h	/^struct chain_list_tag{$/;"	s
-cmd	analysis_protocol.h	/^   uint8_t cmd;$/;"	m	struct:analysis_protocol_cmd_frame_tag
-cmd_frame_head	analysis_protocol.h	/^    struct analysis_protocol_cmd_frame_head_tag *cmd_frame_head;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::analysis_protocol_cmd_frame_head_tag
-cmd_frame_head_g	analysis_protocol.c	/^static analysis_protocol_cmd_frame_head cmd_frame_head_g;$/;"	v	file:
 count	analysis_protocol_tools.h	/^	uint8_t count; \/\/当前数量$/;"	m	struct:chain_list_tag
 create_chain_list	analysis_protocol_tools.h	18;"	d
 curr_cache_time	analysis_protocol.h	/^    struct timeval curr_cache_time;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::timeval
-data	analysis_protocol.h	/^    uint8_t data[MAX_RECV_NUM];\/\/缓存数据$/;"	m	struct:frame_cache_tag
-data	analysis_protocol.h	/^    uint8_t data[MAX_RECV_NUM];\/\/缓存数据$/;"	m	struct:recv_cache_data_tag
-data_len	analysis_protocol.h	/^    uint8_t data_len; \/\/数据长度$/;"	m	struct:recv_cache_data_tag
-frame_cache	analysis_protocol.h	/^}frame_cache;$/;"	t	typeref:struct:frame_cache_tag
-frame_cache_g	analysis_protocol.c	/^frame_cache frame_cache_g;$/;"	v
-frame_cache_p	analysis_protocol.h	/^    frame_cache *frame_cache_p;$/;"	m	struct:analysis_protocol_base_tag
-frame_cache_tag	analysis_protocol.h	/^typedef struct frame_cache_tag{$/;"	s
-frame_data	analysis_protocol.h	/^   uint8_t frame_data[FRAME_DATA_NUM];$/;"	m	struct:analysis_protocol_cmd_frame_tag
-frame_first	analysis_protocol.h	/^    analysis_protocol_cmd_frame *frame_first;$/;"	m	struct:analysis_protocol_cmd_frame_head_tag
-frame_last	analysis_protocol.h	/^    analysis_protocol_cmd_frame *frame_last;$/;"	m	struct:analysis_protocol_cmd_frame_head_tag
-frame_tot	analysis_protocol.h	/^    uint8_t frame_tot;$/;"	m	struct:analysis_protocol_cmd_frame_head_tag
+data	analysis_protocol.h	/^    uint8_t data[FRAME_RECV_CACHE_MAX]; \/\/缓存数据$/;"	m	struct:analysis_protocol_frame_recv_cache
+data	analysis_protocol.h	/^    uint8_t data[FRAME_SEND_DATA]; \/\/保存的命令数据$/;"	m	struct:analysis_protocol_send_frame_list_tag
+frame_recv_cache	analysis_protocol.h	/^    struct analysis_protocol_frame_recv_cache frame_recv_cache;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::analysis_protocol_frame_recv_cache
+frame_recv_fun	analysis_protocol.h	/^    frame_recv_fun_tag frame_recv_fun;$/;"	m	struct:analysis_protocol_base_tag
+frame_recv_fun_tag	analysis_protocol.h	/^typedef uint8_t (*frame_recv_fun_tag)(struct analysis_protocol_base_tag *); $/;"	t
 front	analysis_protocol_tools.h	/^	uint8_t front; \/\/头结点$/;"	m	struct:chain_list_tag
+head	analysis_protocol.h	/^    TAILQ_HEAD(frame_send_head_tag, analysis_protocol_send_frame_list_tag)   head;$/;"	m	struct:analysis_protocol_base_tag
 in_chain_list	analysis_protocol_tools.h	31;"	d
 is_empty_chain_list	analysis_protocol_tools.h	21;"	d
 is_full_chain_list	analysis_protocol_tools.h	26;"	d
-join_cache_data	analysis_protocol.c	/^join_cache_data(struct analysis_protocol_base_tag *base, void *data, uint8_t len)$/;"	f
-join_cache_data_func	analysis_protocol.h	/^    uint8_t (*join_cache_data_func)(struct analysis_protocol_base_tag *base, void *data, uint8_t len);$/;"	m	struct:analysis_protocol_base_tag
-join_cmd_frame_list	analysis_protocol.h	/^    void (*join_cmd_frame_list)(struct analysis_protocol_base_tag *base , struct analysis_protocol_cmd_frame_tag *data  );$/;"	m	struct:analysis_protocol_base_tag
-last_time	analysis_protocol.h	/^   struct timeval last_time;$/;"	m	struct:analysis_protocol_cmd_frame_tag	typeref:struct:analysis_protocol_cmd_frame_tag::timeval
+last_send_time	analysis_protocol.h	/^    struct timeval last_send_time;\/\/最后发送的时间$/;"	m	struct:analysis_protocol_send_frame_list_tag	typeref:struct:analysis_protocol_send_frame_list_tag::timeval
 main	main.c	/^int main()$/;"	f
-next_frame	analysis_protocol.h	/^   struct analysis_protocol_cmd_frame *next_frame;$/;"	m	struct:analysis_protocol_cmd_frame_tag	typeref:struct:analysis_protocol_cmd_frame_tag::analysis_protocol_cmd_frame
+next	analysis_protocol.h	/^    TAILQ_ENTRY(analysis_protocol_send_frame_list_tag)  next; \/\/下一个节点  $/;"	m	struct:analysis_protocol_send_frame_list_tag
 out_chain_list	analysis_protocol_tools.h	34;"	d
-pre_frame	analysis_protocol.h	/^   struct analysis_protocol_cmd_frame *pre_frame;$/;"	m	struct:analysis_protocol_cmd_frame_tag	typeref:struct:analysis_protocol_cmd_frame_tag::analysis_protocol_cmd_frame
-protocol_base_g	analysis_protocol.c	/^static analysis_protocol_base protocol_base_g;$/;"	v	file:
 rear	analysis_protocol_tools.h	/^	uint8_t rear; \/\/尾结点$/;"	m	struct:chain_list_tag
-recv_cache_data	analysis_protocol.h	/^}recv_cache_data;$/;"	t	typeref:struct:recv_cache_data_tag
-recv_cache_data_g	analysis_protocol.c	/^recv_cache_data recv_cache_data_g;$/;"	v
-recv_cache_data_p	analysis_protocol.h	/^    recv_cache_data *recv_cache_data_p;$/;"	m	struct:analysis_protocol_base_tag
-recv_cache_data_tag	analysis_protocol.h	/^typedef struct recv_cache_data_tag{$/;"	s
-repeat_num	analysis_protocol.h	/^   uint8_t repeat_num;$/;"	m	struct:analysis_protocol_cmd_frame_tag
-repeat_s	analysis_protocol.h	/^   uint8_t repeat_s;$/;"	m	struct:analysis_protocol_cmd_frame_tag
-send_cmd_frame	analysis_protocol.h	/^    uint8_t (*send_cmd_frame)(struct analysis_protocol_base_tag *base);$/;"	m	struct:analysis_protocol_base_tag
-tot_len	analysis_protocol.h	/^    uint8_t tot_len; \/\/整个长度$/;"	m	struct:recv_cache_data_tag
-tot_len	analysis_protocol.h	/^    uint8_t tot_len;\/\/整个长度$/;"	m	struct:frame_cache_tag
-use_len	analysis_protocol.h	/^    uint8_t use_len; \/\/已经使用的长度$/;"	m	struct:recv_cache_data_tag
-use_len	analysis_protocol.h	/^    uint8_t use_len;\/\/已经使用的数据$/;"	m	struct:frame_cache_tag
+repeat_during	analysis_protocol.h	/^    uint8_t repeat_during ; \/\/重发时间间隔$/;"	m	struct:analysis_protocol_send_frame_list_tag
+repeat_max	analysis_protocol.h	/^    uint8_t repeat_max; \/\/最大重发次数$/;"	m	struct:analysis_protocol_send_frame_list_tag
+repeat_num	analysis_protocol.h	/^    uint8_t repeat_num; \/\/重发次数$/;"	m	struct:analysis_protocol_send_frame_list_tag
+self_process_frame	analysis_protocol.h	/^    self_process_frame_tag self_process_frame; $/;"	m	struct:analysis_protocol_base_tag
+self_process_frame_tag	analysis_protocol.h	/^typedef uint8_t (*self_process_frame_tag)(struct analysis_protocol_base_tag *, void *);$/;"	t
+state	analysis_protocol.h	/^    uint8_t state; \/\/自己定义状态$/;"	m	struct:analysis_protocol_send_frame_list_tag
+tot_len	analysis_protocol.h	/^    uint8_t tot_len; \/\/总数据的长度$/;"	m	struct:analysis_protocol_frame_recv_cache
+use_len	analysis_protocol.h	/^    uint8_t use_len; \/\/已经使用的长度$/;"	m	struct:analysis_protocol_frame_recv_cache

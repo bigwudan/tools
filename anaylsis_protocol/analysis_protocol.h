@@ -3,105 +3,81 @@
 
 #include <stdint.h>
 #include <sys/time.h>
+#include "analysis_protocol_tools.h"
+#include "queue.h"
 
-#define FRAME_DATA_NUM 100
-#define MAX_RECV_NUM 20
+#define FRAME_RECV_CACHE_MAX 50
+#define FRAME_SEND_DATA 50
 
 //前置声明
-struct analysis_protocol_cmd_frame_tag;
-//前置声明
-struct analysis_protocol_base_tag; 
-//前置声明
-struct analysis_protocol_cmd_frame_head_tag;
+struct analysis_protocol_base_tag;
 
-//回调函数
-typedef void (*analysis_protocol_bc)(struct analysis_protocol_base_tag * , void *);
-
-//接受到的数据缓存
-typedef struct recv_cache_data_tag{
-    uint8_t data[MAX_RECV_NUM];//缓存数据
+//接受到数据的缓存
+struct analysis_protocol_frame_recv_cache
+{
+    uint8_t data[FRAME_RECV_CACHE_MAX]; //缓存数据
+    uint8_t tot_len; //总数据的长度
     uint8_t use_len; //已经使用的长度
-    uint8_t data_len; //数据长度
-    uint8_t tot_len; //整个长度
+
+};
 
 
-}recv_cache_data;
+//发送的命令缓存
+struct analysis_protocol_send_frame_list_tag
+{
+    uint8_t repeat_num; //重发次数
+    uint8_t repeat_max; //最大重发次数
+    uint8_t state; //自己定义状态
+    uint8_t data[FRAME_SEND_DATA]; //保存的命令数据
+    struct timeval last_send_time;//最后发送的时间
+    uint8_t repeat_during ; //重发时间间隔
+    TAILQ_ENTRY(analysis_protocol_send_frame_list_tag)  next; //下一个节点  
 
-//帧缓存
-typedef struct frame_cache_tag{
-    uint8_t data[MAX_RECV_NUM];//缓存数据
-    uint8_t use_len;//已经使用的数据
-    uint8_t tot_len;//整个长度
+};
 
 
-}frame_cache;
+//分析数据回调函数
+typedef uint8_t (*frame_recv_fun_tag)(struct analysis_protocol_base_tag *); 
+
+//用户自己解析，逻辑运算然后写入等待列表
+typedef uint8_t (*self_process_frame_tag)(struct analysis_protocol_base_tag *, void *);
+
+
 
 
 //解析数据基础结构
-typedef struct analysis_protocol_base_tag
+struct analysis_protocol_base_tag
 {
-    //从外设接受的数据加入缓存
-    uint8_t (*join_cache_data_func)(struct analysis_protocol_base_tag *base, void *data, uint8_t len);
-    //分析协议数据,是否读到一个完整的帧 0 正常 1 一个完整的
-    uint8_t (*analy_frame_func)(struct analysis_protocol_base_tag *base);
-    //发送命令,这里是写入队列
-    void (*join_cmd_frame_list)(struct analysis_protocol_base_tag *base , struct analysis_protocol_cmd_frame_tag *data  );
-    //发送命令,从链表中发送
-    uint8_t (*send_cmd_frame)(struct analysis_protocol_base_tag *base);
-
-    //发送命令链表头
-    struct analysis_protocol_cmd_frame_head_tag *cmd_frame_head;
-    
-    //接受缓存结构
-    recv_cache_data *recv_cache_data_p;
-
-    //帧缓存
-    frame_cache *frame_cache_p;
     //缓存当前时间
     struct timeval curr_cache_time;
     
+    //环形链表
+    struct chain_list_tag *chain_list;
     
+    //帧的数据缓存
+    struct analysis_protocol_frame_recv_cache frame_recv_cache;
+    
+    //回调函数，解析接受到数据，并且存入帧，返回0正在等待，返回1得到一个完整帧
+    frame_recv_fun_tag frame_recv_fun;
+    
+    //用户自己解析，并且判断是否需要写入等待回复，写入缓存列表
+    self_process_frame_tag self_process_frame; 
+
+    //发送命令缓存头
+    TAILQ_HEAD(frame_send_head_tag, analysis_protocol_send_frame_list_tag)   head;
+
     
 
-} analysis_protocol_base;
+}; 
 
 
-//帧的数据
-typedef struct analysis_protocol_cmd_frame_tag
-{
-   //发送的数据 
-   uint8_t frame_data[FRAME_DATA_NUM];
-   //命令
-   uint8_t cmd;
-   //最后一次发送的时间戳
-   struct timeval last_time;
-   //延迟多少S重发
-   uint8_t repeat_s;
-   //重试次数
-   uint8_t repeat_num;
-    
-   //链表前一个
-   struct analysis_protocol_cmd_frame *pre_frame;
-   
-   //链表后一个
-   struct analysis_protocol_cmd_frame *next_frame;
+//写入的数据，返回已经写入字节数
+uint8_t analysis_protocol_write_chain_list(struct chain_list_tag *chain_list, uint8_t *src, uint8_t len );
 
 
+//读出的数据，返回已经写入字节数
+uint8_t analysis_protocol_read_chain_list(struct chain_list_tag *chain_list, uint8_t *src, uint8_t len );
 
-} analysis_protocol_cmd_frame;
-
-
-//帧的头部
-typedef struct analysis_protocol_cmd_frame_head_tag
-{
-    //多少帧
-    uint8_t frame_tot;
-    //第一个元素的地址
-    analysis_protocol_cmd_frame *frame_first;
-    //最后一个元素的地址
-    analysis_protocol_cmd_frame *frame_last;
-
-} analysis_protocol_cmd_frame_head;
 
 
 
