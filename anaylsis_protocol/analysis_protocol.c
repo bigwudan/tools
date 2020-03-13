@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include "analysis_protocol.h"
 #include "analysis_protocol_tools.h"
 
@@ -61,3 +62,40 @@ analysis_protocol_read_chain_list(struct chain_list_tag *chain_list, uint8_t *sr
     }
     return send_len;
 }
+
+//超时重发,对超过时间没有确认的数据，在一次重发
+void
+analysis_protocol_overtime_send(struct analysis_protocol_base_tag *base )
+{
+    //便利整个缓存命令链表
+    struct analysis_protocol_send_frame_list_tag *send_frame;
+    struct analysis_protocol_send_frame_list_tag *tmp_send_frame;
+    struct analysis_protocol_send_frame_to_dest_tag *tmp_frame_dest;
+    
+    //获得一个元素
+    send_frame = TAILQ_FIRST(&base->send_frame_head);
+    while(send_frame){
+        tmp_send_frame = send_frame;
+        send_frame = TAILQ_NEXT(send_frame, next);
+        //判断是否超过重发次
+        if(tmp_send_frame->repeat_num++ >= tmp_send_frame->repeat_max){
+            TAILQ_REMOVE(&base->send_frame_head, tmp_send_frame, next);   
+            SELF_FREE(tmp_send_frame);
+        }else{
+            //是否到达超时时间
+            if(base->curr_cache_time.tv_sec >= (tmp_send_frame->last_send_time.tv_sec + tmp_send_frame->repeat_during ) ){
+                //加入重发 
+                tmp_frame_dest = (struct analysis_protocol_send_frame_to_dest_tag *)SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_to_dest_tag));
+                memmove(tmp_frame_dest->data, tmp_send_frame->data, tmp_send_frame->data_len);
+                //插入数据
+                TAILQ_INSERT_TAIL(&base->send_frame_dest_head, tmp_frame_dest, next);
+                //更改时间
+                memmove(&tmp_send_frame->last_send_time, &base->curr_cache_time, sizeof(struct timeval));
+            } 
+        }
+    }    
+    return ;
+}
+
+
+

@@ -9,6 +9,9 @@
 #define FRAME_RECV_CACHE_MAX 50
 #define FRAME_SEND_DATA 50
 
+#define SELF_MALLOC(num) malloc(num) 
+#define SELF_FREE(p) free(p)
+
 //前置声明
 struct analysis_protocol_base_tag;
 
@@ -52,6 +55,8 @@ typedef uint8_t (*frame_recv_fun_tag)(struct analysis_protocol_base_tag *);
 //用户自己解析，逻辑运算然后写入等待列表
 typedef uint8_t (*self_process_frame_tag)(struct analysis_protocol_base_tag *, void *);
 
+//发送串口发送信息
+typedef uint8_t (*send_func_tag)(struct analysis_protocol_base_tag *);
 
 
 
@@ -78,6 +83,8 @@ struct analysis_protocol_base_tag
     
     //发送命令到中断缓存
     TAILQ_HEAD(frame_send_dest_head_tag, analysis_protocol_send_frame_to_dest_tag)   send_frame_dest_head;
+    //发送数据
+    send_func_tag send_func;
 
     
     
