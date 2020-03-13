@@ -60,6 +60,24 @@ typedef uint8_t (*send_func_tag)(struct analysis_protocol_base_tag *);
 
 
 
+struct yingxue_frame_tag{
+    uint8_t data1;
+    uint8_t data2;
+    uint8_t data3;
+
+};
+
+struct wifi_frame_tag{
+    uint8_t wifi_1;
+    uint8_t wifi_2;
+
+
+};
+
+
+enum analysis_protocol_state_tag{ YINGXUE, WIFI  };
+
+
 //解析数据基础结构
 struct analysis_protocol_base_tag
 {
@@ -85,8 +103,10 @@ struct analysis_protocol_base_tag
     TAILQ_HEAD(frame_send_dest_head_tag, analysis_protocol_send_frame_to_dest_tag)   send_frame_dest_head;
     //发送数据
     send_func_tag send_func;
-
     
+    //收到帧指针
+    void *recv_frame;
+    enum analysis_protocol_state_tag state; 
     
 
 }; 
@@ -99,6 +119,9 @@ uint8_t analysis_protocol_write_chain_list(struct chain_list_tag *chain_list, ui
 //读出的数据，返回已经写入字节数
 uint8_t analysis_protocol_read_chain_list(struct chain_list_tag *chain_list, uint8_t *src, uint8_t len );
 
+
+//初始化
+struct analysis_protocol_base_tag * analysis_protocol_init( void *arg );
 
 
 

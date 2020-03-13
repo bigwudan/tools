@@ -3,21 +3,36 @@
 #include "analysis_protocol.h"
 #include "analysis_protocol_tools.h"
 
-struct chain_list_tag chain_list;
 
-struct analysis_protocol_base_tag analysis_protocol_base;
 
 //初始化
-void 
-analysis_protocol_init()
+struct analysis_protocol_base_tag * 
+analysis_protocol_init( void *arg )
 {
+    struct analysis_protocol_base_tag *base = malloc(sizeof(struct analysis_protocol_base_tag));
+
     //初始化
-    memset(&analysis_protocol_base, 0, sizeof(struct analysis_protocol_base_tag));    
+    memset(base, 0, sizeof(struct analysis_protocol_base_tag));    
+    //初始化樱雪
+    if((uint8_t)arg == 0){
+        base->recv_frame =  malloc( sizeof(struct yingxue_frame_tag));
+        base->state = YINGXUE;
+
+    }else{
+        base->recv_frame = malloc(sizeof(struct wifi_frame_tag));
+        base->state = WIFI;
+    }
+    
+    base->chain_list= malloc(sizeof(struct chain_list_tag)); 
+
+
+    //初始化链表
+    create_chain_list(base->chain_list);
     //赋值给链表
-    analysis_protocol_base.chain_list = &chain_list;
     //初始化发送命令
-    TAILQ_INIT(&analysis_protocol_base.send_frame_head);  
-    TAILQ_INIT(&analysis_protocol_base.send_frame_dest_head);  
+    TAILQ_INIT(&base->send_frame_head);  
+    TAILQ_INIT(&base->send_frame_dest_head);  
+    return base;
 }
 
 

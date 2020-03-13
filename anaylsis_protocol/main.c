@@ -1,49 +1,27 @@
 #include <stdio.h>
 #include <string.h>
+#include "analysis_protocol.h"
 #include "analysis_protocol_tools.h"
 
-struct chain_list_tag chain_list;
+extern struct analysis_protocol_base_tag analysis_protocol_base;
+
+
 
 int main()
 {
-    create_chain_list((&chain_list));
-    int max = 10;
-    int flag = 0;
-    uint8_t data = 0x00;
+    struct analysis_protocol_base_tag *base_yingxue = analysis_protocol_init((void *)0); 
+   // struct analysis_protocol_base_tag *base_wifi = analysis_protocol_init((void *)1);
 
-    for(int i =0; i <10; i++){
-        //判断是否满
-        is_full_chain_list( (&chain_list) , flag );
-        if(flag != 0){
-            in_chain_list( (&chain_list), i ); 
-            printf("add i=%d \n", i);
-        }else{
-            printf("just full i=%d \n", i);
-        }
-    }
+    struct yingxue_frame_tag *yingxue =  (struct yingxue_frame_tag *)(base_yingxue->recv_frame);
 
-    
-    for(int i=0; i< 10; i++){
-        //是否有数据
-        is_empty_chain_list( (&chain_list), flag);
-        if( flag !=0 ){
-            out_chain_list((&chain_list), data);
-            printf("data=0x%02X\n", data);
-
-        
-        }else{
-        
-            printf("over\n");
-        }
+    yingxue->data1 = 1;
+    yingxue->data2 = 2;
+    yingxue->data3 = 3;
 
 
-
-    
-    
-    }
-
-
-
+    struct wifi_frame_tag *wifi = (struct wifi_frame_tag *)(base_yingxue->recv_frame);
+    wifi->wifi_1 = 1;
+    wifi->wifi_2 = 2;
 
 
     printf("wudan\n");
