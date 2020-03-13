@@ -5,8 +5,10 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 FRAME_DATA_NUM	analysis_protocol.h	7;"	d
+MAX_CHAIN_NUM	analysis_protocol_tools.h	6;"	d
 MAX_RECV_NUM	analysis_protocol.h	8;"	d
 _ANALYSIS_PROTOCOL_H_	analysis_protocol.h	2;"	d
+_ANALYSIS_PROTOCOL_TOOLS_H	analysis_protocol_tools.h	2;"	d
 analy_frame_func	analysis_protocol.c	/^analy_frame_func(struct analysis_protocol_base_tag *base)$/;"	f
 analy_frame_func	analysis_protocol.h	/^    uint8_t (*analy_frame_func)(struct analysis_protocol_base_tag *base);$/;"	m	struct:analysis_protocol_base_tag
 analysis_protocol_base	analysis_protocol.h	/^} analysis_protocol_base;$/;"	t	typeref:struct:analysis_protocol_base_tag
@@ -17,9 +19,17 @@ analysis_protocol_cmd_frame_head	analysis_protocol.h	/^} analysis_protocol_cmd_f
 analysis_protocol_cmd_frame_head_tag	analysis_protocol.h	/^typedef struct analysis_protocol_cmd_frame_head_tag$/;"	s
 analysis_protocol_cmd_frame_tag	analysis_protocol.h	/^typedef struct analysis_protocol_cmd_frame_tag$/;"	s
 analysis_protocol_init	analysis_protocol.c	/^analysis_protocol_init()$/;"	f
+analysis_protocol_polling_cmd_frame	analysis_protocol.c	/^analysis_protocol_polling_cmd_frame(analysis_protocol_base *base)$/;"	f
+analysis_protocol_send_cmd	analysis_protocol.c	/^analysis_protocol_send_cmd( analysis_protocol_base *base, analysis_protocol_cmd_frame *cmd_frame   )$/;"	f
+buf	analysis_protocol_tools.h	/^	uint8_t buf[MAX_CHAIN_NUM];$/;"	m	struct:chain_list_tag
+chain_list	main.c	/^struct chain_list_tag chain_list;$/;"	v	typeref:struct:chain_list_tag
+chain_list_tag	analysis_protocol_tools.h	/^struct chain_list_tag{$/;"	s
 cmd	analysis_protocol.h	/^   uint8_t cmd;$/;"	m	struct:analysis_protocol_cmd_frame_tag
 cmd_frame_head	analysis_protocol.h	/^    struct analysis_protocol_cmd_frame_head_tag *cmd_frame_head;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::analysis_protocol_cmd_frame_head_tag
 cmd_frame_head_g	analysis_protocol.c	/^static analysis_protocol_cmd_frame_head cmd_frame_head_g;$/;"	v	file:
+count	analysis_protocol_tools.h	/^	uint8_t count; \/\/当前数量$/;"	m	struct:chain_list_tag
+create_chain_list	analysis_protocol_tools.h	18;"	d
+curr_cache_time	analysis_protocol.h	/^    struct timeval curr_cache_time;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::timeval
 data	analysis_protocol.h	/^    uint8_t data[MAX_RECV_NUM];\/\/缓存数据$/;"	m	struct:frame_cache_tag
 data	analysis_protocol.h	/^    uint8_t data[MAX_RECV_NUM];\/\/缓存数据$/;"	m	struct:recv_cache_data_tag
 data_len	analysis_protocol.h	/^    uint8_t data_len; \/\/数据长度$/;"	m	struct:recv_cache_data_tag
@@ -29,15 +39,22 @@ frame_cache_p	analysis_protocol.h	/^    frame_cache *frame_cache_p;$/;"	m	struct
 frame_cache_tag	analysis_protocol.h	/^typedef struct frame_cache_tag{$/;"	s
 frame_data	analysis_protocol.h	/^   uint8_t frame_data[FRAME_DATA_NUM];$/;"	m	struct:analysis_protocol_cmd_frame_tag
 frame_first	analysis_protocol.h	/^    analysis_protocol_cmd_frame *frame_first;$/;"	m	struct:analysis_protocol_cmd_frame_head_tag
+frame_last	analysis_protocol.h	/^    analysis_protocol_cmd_frame *frame_last;$/;"	m	struct:analysis_protocol_cmd_frame_head_tag
 frame_tot	analysis_protocol.h	/^    uint8_t frame_tot;$/;"	m	struct:analysis_protocol_cmd_frame_head_tag
+front	analysis_protocol_tools.h	/^	uint8_t front; \/\/头结点$/;"	m	struct:chain_list_tag
+in_chain_list	analysis_protocol_tools.h	31;"	d
+is_empty_chain_list	analysis_protocol_tools.h	21;"	d
+is_full_chain_list	analysis_protocol_tools.h	26;"	d
 join_cache_data	analysis_protocol.c	/^join_cache_data(struct analysis_protocol_base_tag *base, void *data, uint8_t len)$/;"	f
 join_cache_data_func	analysis_protocol.h	/^    uint8_t (*join_cache_data_func)(struct analysis_protocol_base_tag *base, void *data, uint8_t len);$/;"	m	struct:analysis_protocol_base_tag
 join_cmd_frame_list	analysis_protocol.h	/^    void (*join_cmd_frame_list)(struct analysis_protocol_base_tag *base , struct analysis_protocol_cmd_frame_tag *data  );$/;"	m	struct:analysis_protocol_base_tag
 last_time	analysis_protocol.h	/^   struct timeval last_time;$/;"	m	struct:analysis_protocol_cmd_frame_tag	typeref:struct:analysis_protocol_cmd_frame_tag::timeval
 main	main.c	/^int main()$/;"	f
-next_fame	analysis_protocol.h	/^   struct analysis_protocol_frame *next_fame;$/;"	m	struct:analysis_protocol_cmd_frame_tag	typeref:struct:analysis_protocol_cmd_frame_tag::analysis_protocol_frame
-pre_frame	analysis_protocol.h	/^   struct analysis_protocol_frame *pre_frame;$/;"	m	struct:analysis_protocol_cmd_frame_tag	typeref:struct:analysis_protocol_cmd_frame_tag::analysis_protocol_frame
+next_frame	analysis_protocol.h	/^   struct analysis_protocol_cmd_frame *next_frame;$/;"	m	struct:analysis_protocol_cmd_frame_tag	typeref:struct:analysis_protocol_cmd_frame_tag::analysis_protocol_cmd_frame
+out_chain_list	analysis_protocol_tools.h	34;"	d
+pre_frame	analysis_protocol.h	/^   struct analysis_protocol_cmd_frame *pre_frame;$/;"	m	struct:analysis_protocol_cmd_frame_tag	typeref:struct:analysis_protocol_cmd_frame_tag::analysis_protocol_cmd_frame
 protocol_base_g	analysis_protocol.c	/^static analysis_protocol_base protocol_base_g;$/;"	v	file:
+rear	analysis_protocol_tools.h	/^	uint8_t rear; \/\/尾结点$/;"	m	struct:chain_list_tag
 recv_cache_data	analysis_protocol.h	/^}recv_cache_data;$/;"	t	typeref:struct:recv_cache_data_tag
 recv_cache_data_g	analysis_protocol.c	/^recv_cache_data recv_cache_data_g;$/;"	v
 recv_cache_data_p	analysis_protocol.h	/^    recv_cache_data *recv_cache_data_p;$/;"	m	struct:analysis_protocol_base_tag
