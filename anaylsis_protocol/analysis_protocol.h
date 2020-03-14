@@ -1,3 +1,23 @@
+
+/*
+1 调用analysis_protocol_write_chain_list 把串口来的数据写入环形缓存
+
+2 自定义接受数据写入 缓存帧 get_recv_frame_bc ,从环形缓存中，
+  取出数据，判断是否得到一个完整帧，并存入缓存recv_frame. 完整的帧 返回1 
+  
+  
+3 process_recv_frame_bc 分析一个完整的帧， 1是否加入返回命令 2是否加入需要重复发送
+
+5  check_reply_send_frame_bc  判断是否有重发的数据在链表里面
+
+5 是否需要超时发送
+
+4 run_send_frame_bc  发送数据 
+
+
+*/
+
+
 #ifndef _ANALYSIS_PROTOCOL_H_
 #define _ANALYSIS_PROTOCOL_H_
 
