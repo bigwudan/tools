@@ -7,7 +7,7 @@
 
 
 uint8_t 
-yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base)
+yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)
 {
     uint8_t flag = 0; //是否有数据
     uint8_t data = 0x00;//保存的数据
@@ -48,15 +48,14 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
     memmove(send_frame_dest, send_dest->data, send_dest->data_len);
     send_frame_dest->data_len = send_dest->data_len;
     TAILQ_INSERT_TAIL(&base->send_frame_dest_head, send_frame_dest, next );
-    base->send_func(base);
-        
+    return 0;    
 
 }
 
 
 //底层发送数据
 uint8_t
-send_func_bc(struct analysis_protocol_base_tag *base)
+send_func_bc(struct analysis_protocol_base_tag *base, void *arg)
 {
     struct analysis_protocol_send_frame_to_dest_tag *send;
     send = TAILQ_FIRST(&base->send_frame_dest_head);
@@ -81,20 +80,24 @@ void test_fun( struct analysis_protocol_base_tag *base )
     printf("len=0x%02X\n", len);
     
     //运行分析数据看是否得到一个完整的数据
-    len = base->frame_recv_fun(base);
+    len = base->get_recv_frame_bc(base, NULL);
     if(len == 1){
-        base->self_process_frame(base, NULL);
+        base->process_recv_frame_bc(base, NULL);
+        //检查是否需要重复
+        
+
 
     }
 
     //查看是否需要超时
     analysis_protocol_overtime_send(base);
-
+	//发送
+	base->run_send_frame_bc(base, NULL);
 
 }
 
 
-uint8_t check_reply_func(struct analysis_protocol_base_tag *base)
+uint8_t check_reply_func(struct analysis_protocol_base_tag *base, void *arg)
 {
     printf("check\n");
     return 0;

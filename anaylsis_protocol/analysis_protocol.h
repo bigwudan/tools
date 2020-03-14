@@ -15,15 +15,6 @@
 //前置声明
 struct analysis_protocol_base_tag;
 
-//接受到数据的缓存
-struct analysis_protocol_frame_recv_cache
-{
-    uint8_t data[FRAME_RECV_CACHE_MAX]; //缓存数据
-    uint8_t tot_len; //总数据的长度
-    uint8_t use_len; //已经使用的长度
-
-};
-
 
 //发送的命令缓存
 struct analysis_protocol_send_frame_list_tag
@@ -49,17 +40,10 @@ struct analysis_protocol_send_frame_to_dest_tag
 
 
 
-//分析数据回调函数
-typedef uint8_t (*frame_recv_fun_tag)(struct analysis_protocol_base_tag *); 
 
-//用户自己解析，逻辑运算然后写入等待列表
-typedef uint8_t (*self_process_frame_tag)(struct analysis_protocol_base_tag *, void *);
+//普通返回函数
+typedef uint8_t (*base_callback)(struct analysis_protocol_base_tag *, void *);
 
-//发送串口发送信息
-typedef uint8_t (*send_func_tag)(struct analysis_protocol_base_tag *);
-
-//判断收到的数据，已经在回复中，确定重复的发送的数据
-typedef uint8_t (*check_reply_func_tag)(struct analysis_protocol_base_tag *);
 
 
 
@@ -90,25 +74,22 @@ struct analysis_protocol_base_tag
     //环形链表
     struct chain_list_tag *chain_list;
     
-    //帧的数据缓存
-    struct analysis_protocol_frame_recv_cache frame_recv_cache;
+
+	//从环形缓存中取出数据，判断是否得到一个完整帧，然后填充recv_frame. 完整的帧返回1 ， 未完整返回0
+	base_callback get_recv_frame_bc; 
+	//用户从recv_frame中，调用自己的逻辑分析。 1 下发命令 2 下发的命令，是需要得到回复
+	base_callback process_recv_frame_bc;
+	//收到的帧里面，是否是回复指令,是，就从重复列表中移除。
+	base_callback check_reply_send_frame_bc;
+	//发送列表中发送数据
+	base_callback run_send_frame_bc;
     
-    //回调函数，解析接受到数据，并且存入帧，返回0正在等待，返回1得到一个完整帧
-    frame_recv_fun_tag frame_recv_fun;
-    
-    //用户自己解析，并且判断是否需要写入等待回复，写入缓存列表
-    self_process_frame_tag self_process_frame; 
 
     //发送命令缓存头
     TAILQ_HEAD(frame_send_head_tag, analysis_protocol_send_frame_list_tag)   send_frame_head;
     
     //发送命令到中断缓存
     TAILQ_HEAD(frame_send_dest_head_tag, analysis_protocol_send_frame_to_dest_tag)   send_frame_dest_head;
-    //发送数据
-    send_func_tag send_func;
-
-    //检查回复
-    check_reply_func_tag check_replay_func;
     
     //收到帧指针
     void *recv_frame;
@@ -128,7 +109,14 @@ uint8_t analysis_protocol_read_chain_list(struct chain_list_tag *chain_list, uin
 
 
 //初始化
-struct analysis_protocol_base_tag * analysis_protocol_init( void *arg, frame_recv_fun_tag frame_recv_bc, self_process_frame_tag self_process_bc, send_func_tag send_func_bc, check_reply_func_tag check_reply_fun );
+struct analysis_protocol_base_tag * 
+analysis_protocol_init( 
+						void *arg, 
+						base_callback get_recv_frame_bc, 
+						base_callback process_recv_frame_bc, 
+						base_callback run_send_frame_bc, 
+						base_callback check_reply_send_frame_bc );
+
 
 
 

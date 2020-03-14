@@ -6,12 +6,23 @@
 
 
 //初始化
+/*
+//从环形缓存中取出数据，判断是否得到一个完整帧，然后填充recv_frame. 完整的帧返回1 ， 未完整返回0
+base_callback get_recv_frame_bc; 
+//用户从recv_frame中，调用自己的逻辑分析。 1 下发命令 2 下发的命令，是需要得到回复
+base_callback process_recv_frame_bc;
+//收到的帧里面，是否是回复指令,是，就从重复列表中移除。
+base_callback check_reply_send_frame_bc;
+//发送列表中发送数据
+base_callback run_send_frame_bc
+*/
 struct analysis_protocol_base_tag * 
-analysis_protocol_init( void *arg, frame_recv_fun_tag frame_recv_bc,
-                        self_process_frame_tag self_process_bc,
-                        send_func_tag send_func_bc,
-                        check_reply_func_tag check_reply_fun
-                        )
+analysis_protocol_init(                                                                                                                                               
+					   void *arg,                                             
+					   base_callback get_recv_frame_bc, 
+					   base_callback process_recv_frame_bc,                   
+					   base_callback run_send_frame_bc, 
+					   base_callback check_reply_send_frame_bc )      
 {
     struct analysis_protocol_base_tag *base = malloc(sizeof(struct analysis_protocol_base_tag));
 
@@ -36,10 +47,10 @@ analysis_protocol_init( void *arg, frame_recv_fun_tag frame_recv_bc,
     //初始化发送命令
     TAILQ_INIT(&base->send_frame_head);  
     TAILQ_INIT(&base->send_frame_dest_head);  
-    base->frame_recv_fun = frame_recv_bc;
-    base->self_process_frame = self_process_bc;
-    base->send_func = send_func_bc;
-    base->check_replay_func = check_reply_fun;
+	base->get_recv_frame_bc = get_recv_frame_bc;
+	base->process_recv_frame_bc = process_recv_frame_bc;                   
+	base->run_send_frame_bc = run_send_frame_bc; 
+	base->check_reply_send_frame_bc = check_reply_send_frame_bc;      
 
     return base;
 }
