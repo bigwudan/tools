@@ -95,31 +95,36 @@ TAILQ_LAST	queue.h	461;"	d
 TAILQ_NEXT	queue.h	459;"	d
 TAILQ_PREV	queue.h	463;"	d
 TAILQ_REMOVE	queue.h	426;"	d
+WIFI	analysis_protocol.h	/^enum analysis_protocol_state_tag{ YINGXUE, WIFI  };$/;"	e	enum:analysis_protocol_state_tag
+YINGXUE	analysis_protocol.h	/^enum analysis_protocol_state_tag{ YINGXUE, WIFI  };$/;"	e	enum:analysis_protocol_state_tag
 _ANALYSIS_PROTOCOL_H_	analysis_protocol.h	2;"	d
 _ANALYSIS_PROTOCOL_TOOLS_H	analysis_protocol_tools.h	2;"	d
 _SYS_QUEUE_H_	queue.h	33;"	d
 _TAILQ_ENTRY	queue.h	377;"	d
 _TAILQ_HEAD	queue.h	367;"	d
-analysis_protocol_base	analysis_protocol.c	/^struct analysis_protocol_base_tag analysis_protocol_base;$/;"	v	typeref:struct:analysis_protocol_base_tag
 analysis_protocol_base_tag	analysis_protocol.h	/^struct analysis_protocol_base_tag$/;"	s
 analysis_protocol_frame_recv_cache	analysis_protocol.h	/^struct analysis_protocol_frame_recv_cache$/;"	s
-analysis_protocol_init	analysis_protocol.c	/^analysis_protocol_init()$/;"	f
+analysis_protocol_init	analysis_protocol.c	/^analysis_protocol_init( void *arg, frame_recv_fun_tag frame_recv_bc,$/;"	f
 analysis_protocol_overtime_send	analysis_protocol.c	/^analysis_protocol_overtime_send(struct analysis_protocol_base_tag *base )$/;"	f
 analysis_protocol_read_chain_list	analysis_protocol.c	/^analysis_protocol_read_chain_list(struct chain_list_tag *chain_list, uint8_t *src, uint8_t len )$/;"	f
 analysis_protocol_send_frame_list_tag	analysis_protocol.h	/^struct analysis_protocol_send_frame_list_tag$/;"	s
 analysis_protocol_send_frame_to_dest_tag	analysis_protocol.h	/^struct analysis_protocol_send_frame_to_dest_tag$/;"	s
+analysis_protocol_state_tag	analysis_protocol.h	/^enum analysis_protocol_state_tag{ YINGXUE, WIFI  };$/;"	g
 analysis_protocol_write_chain_list	analysis_protocol.c	/^analysis_protocol_write_chain_list(struct chain_list_tag *chain_list, uint8_t *src, uint8_t len )$/;"	f
 buf	analysis_protocol_tools.h	/^	uint8_t buf[MAX_CHAIN_NUM];$/;"	m	struct:chain_list_tag
-chain_list	analysis_protocol.c	/^struct chain_list_tag chain_list;$/;"	v	typeref:struct:chain_list_tag
 chain_list	analysis_protocol.h	/^    struct chain_list_tag *chain_list;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::chain_list_tag
-chain_list	main.c	/^struct chain_list_tag chain_list;$/;"	v	typeref:struct:chain_list_tag
 chain_list_tag	analysis_protocol_tools.h	/^struct chain_list_tag{$/;"	s
+check_replay_func	analysis_protocol.h	/^    check_reply_func_tag check_replay_func;$/;"	m	struct:analysis_protocol_base_tag
+check_reply_func_tag	analysis_protocol.h	/^typedef uint8_t (*check_reply_func_tag)(struct analysis_protocol_base_tag *);$/;"	t
 count	analysis_protocol_tools.h	/^	uint8_t count; \/\/当前数量$/;"	m	struct:chain_list_tag
 create_chain_list	analysis_protocol_tools.h	18;"	d
 curr_cache_time	analysis_protocol.h	/^    struct timeval curr_cache_time;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::timeval
+data	analysis_protocol.h	/^    uint8_t data[50];$/;"	m	struct:yingxue_frame_tag
 data	analysis_protocol.h	/^    uint8_t data[FRAME_RECV_CACHE_MAX]; \/\/缓存数据$/;"	m	struct:analysis_protocol_frame_recv_cache
 data	analysis_protocol.h	/^    uint8_t data[FRAME_SEND_DATA]; \/\/保存的命令$/;"	m	struct:analysis_protocol_send_frame_to_dest_tag
 data	analysis_protocol.h	/^    uint8_t data[FRAME_SEND_DATA]; \/\/保存的命令数据$/;"	m	struct:analysis_protocol_send_frame_list_tag
+data2	analysis_protocol.h	/^    uint8_t data2;$/;"	m	struct:yingxue_frame_tag
+data3	analysis_protocol.h	/^    uint8_t data3;$/;"	m	struct:yingxue_frame_tag
 data_len	analysis_protocol.h	/^    uint8_t data_len; \/\/命令长度$/;"	m	struct:analysis_protocol_send_frame_to_dest_tag
 data_len	analysis_protocol.h	/^    uint8_t data_len; \/\/数据长度$/;"	m	struct:analysis_protocol_send_frame_list_tag
 frame_recv_cache	analysis_protocol.h	/^    struct analysis_protocol_frame_recv_cache frame_recv_cache;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::analysis_protocol_frame_recv_cache
@@ -135,6 +140,7 @@ next	analysis_protocol.h	/^    TAILQ_ENTRY(analysis_protocol_send_frame_list_tag
 next	analysis_protocol.h	/^    TAILQ_ENTRY(analysis_protocol_send_frame_to_dest_tag)  next; \/\/下一个节点  $/;"	m	struct:analysis_protocol_send_frame_to_dest_tag
 out_chain_list	analysis_protocol_tools.h	34;"	d
 rear	analysis_protocol_tools.h	/^	uint8_t rear; \/\/尾结点$/;"	m	struct:chain_list_tag
+recv_frame	analysis_protocol.h	/^    void *recv_frame;$/;"	m	struct:analysis_protocol_base_tag
 repeat_during	analysis_protocol.h	/^    uint8_t repeat_during ; \/\/重发时间间隔$/;"	m	struct:analysis_protocol_send_frame_list_tag
 repeat_max	analysis_protocol.h	/^    uint8_t repeat_max; \/\/最大重发次数$/;"	m	struct:analysis_protocol_send_frame_list_tag
 repeat_num	analysis_protocol.h	/^    uint8_t repeat_num; \/\/重发次数$/;"	m	struct:analysis_protocol_send_frame_list_tag
@@ -143,7 +149,16 @@ self_process_frame_tag	analysis_protocol.h	/^typedef uint8_t (*self_process_fram
 send_frame_dest_head	analysis_protocol.h	/^    TAILQ_HEAD(frame_send_dest_head_tag, analysis_protocol_send_frame_to_dest_tag)   send_frame_dest_head;$/;"	m	struct:analysis_protocol_base_tag
 send_frame_head	analysis_protocol.h	/^    TAILQ_HEAD(frame_send_head_tag, analysis_protocol_send_frame_list_tag)   send_frame_head;$/;"	m	struct:analysis_protocol_base_tag
 send_func	analysis_protocol.h	/^    send_func_tag send_func;$/;"	m	struct:analysis_protocol_base_tag
+send_func_bc	main.c	/^send_func_bc(struct analysis_protocol_base_tag *base)$/;"	f
 send_func_tag	analysis_protocol.h	/^typedef uint8_t (*send_func_tag)(struct analysis_protocol_base_tag *);$/;"	t
+state	analysis_protocol.h	/^    enum analysis_protocol_state_tag state; $/;"	m	struct:analysis_protocol_base_tag	typeref:enum:analysis_protocol_base_tag::analysis_protocol_state_tag
 state	analysis_protocol.h	/^    uint8_t state; \/\/自己定义状态$/;"	m	struct:analysis_protocol_send_frame_list_tag
+test_fun	main.c	/^void test_fun( struct analysis_protocol_base_tag *base )$/;"	f
 tot_len	analysis_protocol.h	/^    uint8_t tot_len; \/\/总数据的长度$/;"	m	struct:analysis_protocol_frame_recv_cache
 use_len	analysis_protocol.h	/^    uint8_t use_len; \/\/已经使用的长度$/;"	m	struct:analysis_protocol_frame_recv_cache
+wifi_1	analysis_protocol.h	/^    uint8_t wifi_1;$/;"	m	struct:wifi_frame_tag
+wifi_2	analysis_protocol.h	/^    uint8_t wifi_2;$/;"	m	struct:wifi_frame_tag
+wifi_frame_tag	analysis_protocol.h	/^struct wifi_frame_tag{$/;"	s
+yingxue_frame_recv_fun	main.c	/^yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base)$/;"	f
+yingxue_frame_tag	analysis_protocol.h	/^struct yingxue_frame_tag{$/;"	s
+yingxue_process_frame	main.c	/^yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)$/;"	f

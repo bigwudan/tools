@@ -87,17 +87,26 @@ void test_fun( struct analysis_protocol_base_tag *base )
 
     }
 
-
+    //查看是否需要超时
+    analysis_protocol_overtime_send(base);
 
 
 }
 
 
+uint8_t check_reply_func(struct analysis_protocol_base_tag *base)
+{
+    printf("check\n");
+    return 0;
+
+}
 
 
 int main()
 {
-    struct analysis_protocol_base_tag *base_yingxue = analysis_protocol_init((void *)0, yingxue_frame_recv_fun, yingxue_process_frame, send_func_bc ); 
+    struct analysis_protocol_base_tag *base_yingxue = analysis_protocol_init((void *)0, yingxue_frame_recv_fun, 
+                                                                             yingxue_process_frame, send_func_bc, check_reply_func ); 
+
     test_fun(base_yingxue);
 
 

@@ -58,6 +58,9 @@ typedef uint8_t (*self_process_frame_tag)(struct analysis_protocol_base_tag *, v
 //发送串口发送信息
 typedef uint8_t (*send_func_tag)(struct analysis_protocol_base_tag *);
 
+//判断收到的数据，已经在回复中，确定重复的发送的数据
+typedef uint8_t (*check_reply_func_tag)(struct analysis_protocol_base_tag *);
+
 
 
 struct yingxue_frame_tag{
@@ -103,6 +106,9 @@ struct analysis_protocol_base_tag
     TAILQ_HEAD(frame_send_dest_head_tag, analysis_protocol_send_frame_to_dest_tag)   send_frame_dest_head;
     //发送数据
     send_func_tag send_func;
+
+    //检查回复
+    check_reply_func_tag check_replay_func;
     
     //收到帧指针
     void *recv_frame;
@@ -122,10 +128,12 @@ uint8_t analysis_protocol_read_chain_list(struct chain_list_tag *chain_list, uin
 
 
 //初始化
-struct analysis_protocol_base_tag * analysis_protocol_init( void *arg, frame_recv_fun_tag frame_recv_bc, self_process_frame_tag self_process_bc, send_func_tag send_func_bc );
+struct analysis_protocol_base_tag * analysis_protocol_init( void *arg, frame_recv_fun_tag frame_recv_bc, self_process_frame_tag self_process_bc, send_func_tag send_func_bc, check_reply_func_tag check_reply_fun );
 
 
 
+//超时重发,对超过时间没有确认的数据，在一次重发
+void analysis_protocol_overtime_send(struct analysis_protocol_base_tag *base );
 
 
 #endif

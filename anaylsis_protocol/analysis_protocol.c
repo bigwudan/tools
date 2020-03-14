@@ -9,7 +9,8 @@
 struct analysis_protocol_base_tag * 
 analysis_protocol_init( void *arg, frame_recv_fun_tag frame_recv_bc,
                         self_process_frame_tag self_process_bc,
-                        send_func_tag send_func_bc
+                        send_func_tag send_func_bc,
+                        check_reply_func_tag check_reply_fun
                         )
 {
     struct analysis_protocol_base_tag *base = malloc(sizeof(struct analysis_protocol_base_tag));
@@ -38,6 +39,7 @@ analysis_protocol_init( void *arg, frame_recv_fun_tag frame_recv_bc,
     base->frame_recv_fun = frame_recv_bc;
     base->self_process_frame = self_process_bc;
     base->send_func = send_func_bc;
+    base->check_replay_func = check_reply_fun;
 
     return base;
 }
