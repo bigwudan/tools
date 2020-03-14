@@ -1,6 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <time.h>
+#include <netinet/tcp.h> // for TCP_NODELAY
+#include <arpa/inet.h>
+
+
 #include "analysis_protocol.h"
 #include "analysis_protocol_tools.h"
 
@@ -142,6 +154,44 @@ void test_fun( struct analysis_protocol_base_tag *base )
 
 int main()
 {
+	struct sockaddr_in serv;
+	int flag = 0;
+
+	memset(&serv, 0, sizeof(serv));
+	serv.sin_family = AF_INET;
+	serv.sin_port = htons(1885);
+	serv.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	int socketfd = 0;
+
+	socketfd =  socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK|SOCK_CLOEXEC, 0);
+
+	flag = bind(socketfd, &serv, sizeof(serv));
+	if(flag != 0){
+		printf("flag = %d\n", flag);
+		exit(1);
+	}
+
+
+	listen(socketfd, 5);
+	if(flag != 0){
+		printf("flag = %d\n", flag);
+		exit(1);
+	}
+
+	int sfd = 0;
+
+	socklen_t addrlen = 0;
+	struct sockaddr_storage addr;
+	unsigned int socklen = sizeof(addr);
+	memset(&addr, 0, sizeof(struct sockaddr_storage));
+
+	sfd = accept(socketfd, (struct sockaddr *)&addr, &addrlen);
+	while(1){
+		printf("sfd=%d\n", sfd);
+	}		
+
+
     struct analysis_protocol_base_tag *base_yingxue = analysis_protocol_init((void *)0, yingxue_frame_recv_fun, 
                                                                              yingxue_process_frame, send_func_bc, check_reply_func ); 
 
