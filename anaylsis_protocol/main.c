@@ -23,16 +23,32 @@ yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)
     uint8_t flag = 0; //是否有数据
     uint8_t data = 0x00;//保存的数据
     uint8_t len =0;//长度
+	uint8_t res = 0;
     struct chain_list_tag *chain = base->chain_list;
     struct yingxue_frame_tag *yingxue = (struct yingxue_frame_tag *)base->recv_frame;
     do{
         is_empty_chain_list(chain, flag);
         if(flag == 0) break;
         out_chain_list(chain, data);
-        yingxue->data[len++] = data;
-		yingxue->len++;
+		//
+		if(yingxue->len == 0){
+			if(data != 0xEA){
+				continue;
+			}			
+			yingxue->data[len++] = data;
+			yingxue->len++;
+		}else{
+			yingxue->data[len++] = data;
+			yingxue->len++;
+			if(yingxue->len == 17){
+				res = 1;
+				break;
+			}
+	
+		}
+
     }while(flag);
-    return 1;
+    return res;
 }
 
 //得到一个完整的数据，然后分析，最后判断是否写入缓存
@@ -70,18 +86,15 @@ send_func_bc(struct analysis_protocol_base_tag *base, void *arg)
 {
     struct analysis_protocol_send_frame_to_dest_tag *send;
     send = TAILQ_FIRST(&base->send_frame_dest_head);
-
-    TAILQ_REMOVE(&base->send_frame_dest_head, send, next); 
-	
-	printf("send:");
-	for(int i=0; i < send->data_len; i++){
-		printf("0x%02X ", send->data[i]);
-
+	if(send){
+		TAILQ_REMOVE(&base->send_frame_dest_head, send, next); 
+		printf("send:");
+		for(int i=0; i < send->data_len; i++){
+			printf("0x%02X ", send->data[i]);
+		}
+		printf("\r\n");
+		SELF_FREE(send);
 	}
-	printf("\r\n");
-
-	SELF_FREE(send);
-
     return 0;
 }
 
@@ -109,7 +122,10 @@ void test_fun( struct analysis_protocol_base_tag *base )
     
     //运行分析数据看是否得到一个完整的数据
     len = base->get_recv_frame_bc(base, NULL);
+	printf("len=%d\n", len);
+
     if(len == 1){
+		printf("rec finish\n");
         base->process_recv_frame_bc(base, NULL);
         //检查是否需要重复
 		check_reply_func(base, NULL);	
