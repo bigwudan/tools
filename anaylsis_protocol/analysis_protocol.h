@@ -68,9 +68,8 @@ typedef uint8_t (*base_callback)(struct analysis_protocol_base_tag *, void *);
 
 
 struct yingxue_frame_tag{
-    uint8_t data[50];
-    uint8_t data2;
-    uint8_t data3;
+    uint8_t data[17];
+    uint8_t len;
 
 };
 

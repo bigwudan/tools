@@ -121,6 +121,8 @@ analysis_protocol_overtime_send(struct analysis_protocol_base_tag *base )
             if(base->curr_cache_time.tv_sec >= (tmp_send_frame->last_send_time.tv_sec + tmp_send_frame->repeat_during ) ){
                 //加入重发 
                 tmp_frame_dest = (struct analysis_protocol_send_frame_to_dest_tag *)SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_to_dest_tag));
+
+				tmp_frame_dest->data_len = tmp_send_frame->data_len;
                 memmove(tmp_frame_dest->data, tmp_send_frame->data, tmp_send_frame->data_len);
                 //插入数据
                 TAILQ_INSERT_TAIL(&base->send_frame_dest_head, tmp_frame_dest, next);

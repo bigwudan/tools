@@ -6,13 +6,16 @@
 
 
 
-unsigned char test_buf[68] = {
+unsigned char test_buf[] = {
 	//[0][0] //[0][1]                                                 //erno
 	0xEA, 0x1B, 0x10, 0x4D, 0x00, 0x00, 0x00, 0x2D, 0x10, 0x00, 0x00, 0x00, 0x41, 0x00, 0x00, 0x79, 0x53,
-	0xEA, 0x1B, 0x11, 0x01, 0x00, 0x00, 0x00, 0x1E, 0x0A, 0x2A, 0x28, 0x26, 0x2A, 0x00, 0x00, 0x48, 0x35,
+/*	0xEA, 0x1B, 0x11, 0x01, 0x00, 0x00, 0x00, 0x1E, 0x0A, 0x2A, 0x28, 0x26, 0x2A, 0x00, 0x00, 0x48, 0x35,
 	0xEA, 0x1B, 0x12, 0x00, 0xCD, 0x80, 0x9E, 0x1E, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x03, 0x05, 0x4B,
-	0xEA, 0x1B, 0x13, 0x00, 0x00, 0x05, 0x40, 0x50, 0x00, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBE, 0x5F,
+	0xEA, 0x1B, 0x13, 0x00, 0x00, 0x05, 0x40, 0x50, 0x00, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBE, 0x5F,*/
 };
+
+uint8_t ack_buf[] = {0xEB, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0x2A};
+
 
 uint8_t 
 yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)
@@ -26,8 +29,8 @@ yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)
         is_empty_chain_list(chain, flag);
         if(flag == 0) break;
         out_chain_list(chain, data);
-        printf("rec=0x%02X\n ", data);
         yingxue->data[len++] = data;
+		yingxue->len++;
     }while(flag);
     return 1;
 }
@@ -37,14 +40,14 @@ uint8_t
 yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
 {
    //写入写入缓存
-    printf("wudan\n");
     //是否加入检查重试的队列
     struct analysis_protocol_send_frame_list_tag *send_dest = SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_list_tag));
     send_dest->repeat_max = 2;
     send_dest->repeat_num = 1;
-    send_dest->data[0]  = 0x1;
-    send_dest->data[1] = 0x2;
-    send_dest->data_len = 2;
+
+	memmove(send_dest->data, ack_buf, sizeof(ack_buf) );
+
+    send_dest->data_len = sizeof(ack_buf);
     gettimeofday(&send_dest->last_send_time,NULL);
     send_dest->repeat_during = 2;
     TAILQ_INSERT_TAIL(&base->send_frame_head, send_dest, next);
@@ -69,22 +72,39 @@ send_func_bc(struct analysis_protocol_base_tag *base, void *arg)
     send = TAILQ_FIRST(&base->send_frame_dest_head);
 
     TAILQ_REMOVE(&base->send_frame_dest_head, send, next); 
+	
+	printf("send:");
+	for(int i=0; i < send->data_len; i++){
+		printf("0x%02X ", send->data[i]);
 
-    printf("send uart\n");
+	}
+	printf("\r\n");
+
+	SELF_FREE(send);
 
     return 0;
 }
 
 
+uint8_t check_reply_func(struct analysis_protocol_base_tag *base, void *arg)
+{
+	//移除一个
+	struct analysis_protocol_send_frame_list_tag *tmp = TAILQ_FIRST(&base->send_frame_head);	
+	if(tmp){
+		TAILQ_REMOVE(&base->send_frame_head, tmp, next);		
+		SELF_FREE(tmp);
+	}
+    return 0;
+
+}
 
 //测试
 void test_fun( struct analysis_protocol_base_tag *base )
 {
     //读的数据写入数据库
-    uint8_t buffer[] = {0x11, 0x22, 0x33};
     uint8_t len = 0;
     //写入缓存
-    len = analysis_protocol_write_chain_list(base->chain_list, buffer, sizeof(buffer));
+    len = analysis_protocol_write_chain_list(base->chain_list, test_buf, sizeof(test_buf));
     printf("len=0x%02X\n", len);
     
     //运行分析数据看是否得到一个完整的数据
@@ -92,25 +112,16 @@ void test_fun( struct analysis_protocol_base_tag *base )
     if(len == 1){
         base->process_recv_frame_bc(base, NULL);
         //检查是否需要重复
-        
-
-
+		check_reply_func(base, NULL);	
     }
-
-    //查看是否需要超时
-    analysis_protocol_overtime_send(base);
 	//发送
 	base->run_send_frame_bc(base, NULL);
+    //查看是否需要超时
+    analysis_protocol_overtime_send(base);
 
 }
 
 
-uint8_t check_reply_func(struct analysis_protocol_base_tag *base, void *arg)
-{
-    printf("check\n");
-    return 0;
-
-}
 
 
 int main()
