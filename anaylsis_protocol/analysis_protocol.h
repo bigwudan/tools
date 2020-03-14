@@ -61,7 +61,7 @@ typedef uint8_t (*send_func_tag)(struct analysis_protocol_base_tag *);
 
 
 struct yingxue_frame_tag{
-    uint8_t data1;
+    uint8_t data[50];
     uint8_t data2;
     uint8_t data3;
 
@@ -106,6 +106,7 @@ struct analysis_protocol_base_tag
     
     //收到帧指针
     void *recv_frame;
+    //帧类型
     enum analysis_protocol_state_tag state; 
     
 
@@ -121,7 +122,7 @@ uint8_t analysis_protocol_read_chain_list(struct chain_list_tag *chain_list, uin
 
 
 //初始化
-struct analysis_protocol_base_tag * analysis_protocol_init( void *arg );
+struct analysis_protocol_base_tag * analysis_protocol_init( void *arg, frame_recv_fun_tag frame_recv_bc, self_process_frame_tag self_process_bc, send_func_tag send_func_bc );
 
 
 

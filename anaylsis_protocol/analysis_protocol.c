@@ -7,7 +7,10 @@
 
 //初始化
 struct analysis_protocol_base_tag * 
-analysis_protocol_init( void *arg )
+analysis_protocol_init( void *arg, frame_recv_fun_tag frame_recv_bc,
+                        self_process_frame_tag self_process_bc,
+                        send_func_tag send_func_bc
+                        )
 {
     struct analysis_protocol_base_tag *base = malloc(sizeof(struct analysis_protocol_base_tag));
 
@@ -32,6 +35,10 @@ analysis_protocol_init( void *arg )
     //初始化发送命令
     TAILQ_INIT(&base->send_frame_head);  
     TAILQ_INIT(&base->send_frame_dest_head);  
+    base->frame_recv_fun = frame_recv_bc;
+    base->self_process_frame = self_process_bc;
+    base->send_func = send_func_bc;
+
     return base;
 }
 
