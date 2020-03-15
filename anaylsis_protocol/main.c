@@ -136,8 +136,7 @@ void test_fun( struct analysis_protocol_base_tag *base )
     while(1){
         //写入缓存
         gettimeofday(&base->curr_cache_time, NULL);
-
-        sleep(2);
+        sleep(1);
         len = read(client_fd_g, recv_buf, sizeof(recv_buf));
         if(len > 0 ){
             //写入缓存

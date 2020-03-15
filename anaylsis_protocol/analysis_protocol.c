@@ -106,29 +106,28 @@ analysis_protocol_overtime_send(struct analysis_protocol_base_tag *base )
     struct analysis_protocol_send_frame_list_tag *send_frame;
     struct analysis_protocol_send_frame_list_tag *tmp_send_frame;
     struct analysis_protocol_send_frame_to_dest_tag *tmp_frame_dest;
-    
     //获得一个元素
     send_frame = TAILQ_FIRST(&base->send_frame_head);
     while(send_frame){
         tmp_send_frame = send_frame;
         send_frame = TAILQ_NEXT(send_frame, next);
         //判断是否超过重发次
-        if(tmp_send_frame->repeat_num++ > tmp_send_frame->repeat_max){
+        if(tmp_send_frame->repeat_num > tmp_send_frame->repeat_max){
             TAILQ_REMOVE(&base->send_frame_head, tmp_send_frame, next);   
             SELF_FREE(tmp_send_frame);
         }else{
             //是否到达超时时间
             if(base->curr_cache_time.tv_sec >= (tmp_send_frame->last_send_time.tv_sec + tmp_send_frame->repeat_during ) ){
+                tmp_send_frame->repeat_num++;
                 //加入重发 
                 tmp_frame_dest = (struct analysis_protocol_send_frame_to_dest_tag *)SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_to_dest_tag));
-
 				tmp_frame_dest->data_len = tmp_send_frame->data_len;
                 memmove(tmp_frame_dest->data, tmp_send_frame->data, tmp_send_frame->data_len);
                 //插入数据
                 TAILQ_INSERT_TAIL(&base->send_frame_dest_head, tmp_frame_dest, next);
                 //更改时间
                 memmove(&tmp_send_frame->last_send_time, &base->curr_cache_time, sizeof(struct timeval));
-            } 
+            }
         }
     }    
     return ;
