@@ -28,7 +28,7 @@ unsigned char test_buf[] = {
 };
 
 uint8_t ack_buf[] = {0xEB, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0x2A};
-
+uint8_t reply[] =  {0xAA, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0xFF};
 
 uint8_t 
 yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)
@@ -68,25 +68,30 @@ yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)
 uint8_t
 yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
 {
-   //写入写入缓存
-    //是否加入检查重试的队列
-    struct analysis_protocol_send_frame_list_tag *send_dest = SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_list_tag));
-    send_dest->repeat_max = 2;
-    send_dest->repeat_num = 1;
 
-	memmove(send_dest->data, ack_buf, sizeof(ack_buf) );
+    //如果是第二帧加入回复缓存
+    struct yingxue_frame_tag *yingxue_frame = (struct yingxue_frame_tag *)base->recv_frame; 
+    if(yingxue_frame->data[2] == 0x11){
+        printf("write cache\n");
+        //写入写入缓存
+        //是否加入检查重试的队列
+        struct analysis_protocol_send_frame_list_tag *send_dest = SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_list_tag));
+        send_dest->repeat_max = 2;
+        send_dest->repeat_num = 1;
 
-    send_dest->data_len = sizeof(ack_buf);
-    gettimeofday(&send_dest->last_send_time,NULL);
-    send_dest->repeat_during = 2;
-    TAILQ_INSERT_TAIL(&base->send_frame_head, send_dest, next);
+        memmove(send_dest->data, ack_buf, sizeof(ack_buf) );
+
+        send_dest->data_len = sizeof(ack_buf);
+        gettimeofday(&send_dest->last_send_time,NULL);
+        send_dest->repeat_during = 2;
+        TAILQ_INSERT_TAIL(&base->send_frame_head, send_dest, next);
+    }    
     //加入发送列表
-
     struct analysis_protocol_send_frame_to_dest_tag *send_frame_dest = 
         SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_to_dest_tag));
 
-    memmove(send_frame_dest, send_dest->data, send_dest->data_len);
-    send_frame_dest->data_len = send_dest->data_len;
+    memmove(send_frame_dest, ack_buf, sizeof(ack_buf));
+    send_frame_dest->data_len = sizeof(ack_buf);
     TAILQ_INSERT_TAIL(&base->send_frame_dest_head, send_frame_dest, next );
     return 0;    
 
@@ -129,7 +134,10 @@ void test_fun( struct analysis_protocol_base_tag *base )
     uint8_t recv_buf[100] = {0};
 
     while(1){
-        sleep(1);
+        //写入缓存
+        gettimeofday(&base->curr_cache_time, NULL);
+
+        sleep(2);
         len = read(client_fd_g, recv_buf, sizeof(recv_buf));
         if(len > 0 ){
             //写入缓存
@@ -142,12 +150,19 @@ void test_fun( struct analysis_protocol_base_tag *base )
                 printf("rec finish\n");
                 base->process_recv_frame_bc(base, NULL);
                 //检查是否需要重复
-                check_reply_func(base, NULL);	
+                //check_reply_func(base, NULL);	
             }
             //发送
             base->run_send_frame_bc(base, NULL);
             //查看是否需要超时
             analysis_protocol_overtime_send(base);
+        }else{
+
+            //发送
+            base->run_send_frame_bc(base, NULL);
+            //查看是否需要超时
+            analysis_protocol_overtime_send(base);
+
         }
 
     }
