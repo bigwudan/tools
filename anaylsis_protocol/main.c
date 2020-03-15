@@ -140,7 +140,7 @@ void test_fun( struct analysis_protocol_base_tag *base )
         len = read(client_fd_g, recv_buf, sizeof(recv_buf));
         if(len > 0 ){
             //写入缓存
-            flag = analysis_protocol_write_chain_list(base->chain_list, recv_buf, sizeof(recv_buf));
+            flag = analysis_protocol_write_chain_list(base->chain_list, recv_buf, len);
             printf("recv frame_len=0x%02X\n", flag);
             //运行分析数据看是否得到一个完整的数据
             flag = base->get_recv_frame_bc(base, NULL);
@@ -229,19 +229,33 @@ run_net()
 
 
 
+void
+test_unit(struct analysis_protocol_base_tag *base )
+{
+    int flag = 0;
+    uint8_t buf[] = {0xEA, 0x1b, 0x11, 0x4d};
+
+    flag = analysis_protocol_write_chain_list(base->chain_list, buf, sizeof(buf));
+
+    flag = base->get_recv_frame_bc(base, NULL);
+    printf("finish frame state=%d\n", flag);
+    printf("flag=%d\n", flag);
+    
+    uint8_t buf_1[] = {   0x00, 0x00, 0x00, 0x2d, 0x10, 0x00, 0x00, 0x00, 0x41, 0x00, 0x00, 0x79, 0x53 };
+
+    flag = analysis_protocol_write_chain_list(base->chain_list, buf_1, sizeof(buf_1));
+
+    flag = base->get_recv_frame_bc(base, NULL);
+    printf("finish frame state=%d\n", flag);
+    printf("flag=%d\n", flag);
+
+}
+
 int main()
 {
-
-
-
     base_yingxue = analysis_protocol_init((void *)0, yingxue_frame_recv_fun, yingxue_process_frame, send_func_bc, check_reply_func ); 
-
-    //test_fun(base_yingxue);
+    //test_unit(base_yingxue);
     run_net();
-    
-
-
     printf("wudan\n");
-
 
 }
