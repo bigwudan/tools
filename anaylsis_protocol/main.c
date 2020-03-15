@@ -16,7 +16,8 @@
 #include "analysis_protocol.h"
 #include "analysis_protocol_tools.h"
 
-
+struct analysis_protocol_base_tag *base_yingxue;
+int client_fd_g = 0;
 
 unsigned char test_buf[] = {
 	//[0][0] //[0][1]                                                 //erno
@@ -100,11 +101,7 @@ send_func_bc(struct analysis_protocol_base_tag *base, void *arg)
     send = TAILQ_FIRST(&base->send_frame_dest_head);
 	if(send){
 		TAILQ_REMOVE(&base->send_frame_dest_head, send, next); 
-		printf("send:");
-		for(int i=0; i < send->data_len; i++){
-			printf("0x%02X ", send->data[i]);
-		}
-		printf("\r\n");
+        write(client_fd_g, send->data, send->data_len);
 		SELF_FREE(send);
 	}
     return 0;
@@ -127,25 +124,91 @@ uint8_t check_reply_func(struct analysis_protocol_base_tag *base, void *arg)
 void test_fun( struct analysis_protocol_base_tag *base )
 {
     //读的数据写入数据库
-    uint8_t len = 0;
-    //写入缓存
-    len = analysis_protocol_write_chain_list(base->chain_list, test_buf, sizeof(test_buf));
-    printf("len=0x%02X\n", len);
-    
-    //运行分析数据看是否得到一个完整的数据
-    len = base->get_recv_frame_bc(base, NULL);
-	printf("len=%d\n", len);
+    int8_t len = 0;
+    uint8_t flag = 0;
+    uint8_t recv_buf[100] = {0};
 
-    if(len == 1){
-		printf("rec finish\n");
-        base->process_recv_frame_bc(base, NULL);
-        //检查是否需要重复
-		check_reply_func(base, NULL);	
+    while(1){
+        sleep(1);
+        len = read(client_fd_g, recv_buf, sizeof(recv_buf));
+        if(len > 0 ){
+            //写入缓存
+            flag = analysis_protocol_write_chain_list(base->chain_list, recv_buf, sizeof(recv_buf));
+            printf("recv frame_len=0x%02X\n", flag);
+            //运行分析数据看是否得到一个完整的数据
+            flag = base->get_recv_frame_bc(base, NULL);
+            printf("finish frame state=%d\n", flag);
+            if(flag == 1){
+                printf("rec finish\n");
+                base->process_recv_frame_bc(base, NULL);
+                //检查是否需要重复
+                check_reply_func(base, NULL);	
+            }
+            //发送
+            base->run_send_frame_bc(base, NULL);
+            //查看是否需要超时
+            analysis_protocol_overtime_send(base);
+        }
+
     }
-	//发送
-	base->run_send_frame_bc(base, NULL);
-    //查看是否需要超时
-    analysis_protocol_overtime_send(base);
+
+}
+
+
+int
+run_net()
+{
+    int client_sock = 0;
+    int flag = 0;
+    int on = 1;
+    int clien_len = sizeof(struct sockaddr);    
+    int serv_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    flag = setsockopt(serv_sock, SOL_SOCKET, SO_REUSEADDR, (void *)&on, sizeof(on));
+    if(flag !=0){
+        printf("err reuseaddr\n");
+        exit(1);
+
+    }
+
+    //创建sockaddr_in结构体变量
+    struct sockaddr_in serv_addr;
+    memset(&serv_addr, 0, sizeof(serv_addr));  //每个字节都用0填充
+    serv_addr.sin_family = AF_INET;  //使用IPv4地址
+    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);  //具体的IP地址
+    serv_addr.sin_port = htons(1234);  //端口
+    ////将套接字和IP、端口绑定
+    flag  = bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+    if(flag < 0 ){
+        printf("err bind\n");
+        exit(1);
+    }
+
+    flag = listen(serv_sock, 5);
+    if(flag <0){
+        printf("err listen\n");
+        exit(1);
+    }
+
+
+    int len = 0;
+    uint8_t test_buf1[100] = {0};
+
+    while(1){
+
+        client_sock = accept(serv_sock, (struct sockaddr*)&serv_addr, &clien_len);
+        if(client_sock >0){
+            printf("client=%d\n", client_sock);
+            if (fcntl(client_sock, F_SETFL, fcntl(client_sock, F_GETFL) | O_NONBLOCK) < 0) {
+                perror("setting O_NONBLOCK");
+                close(client_sock);
+                exit(1);
+            }
+            client_fd_g = client_sock;            
+
+            test_fun(base_yingxue);
+        }
+    }
 
 }
 
@@ -154,50 +217,14 @@ void test_fun( struct analysis_protocol_base_tag *base )
 
 int main()
 {
-	struct sockaddr_in serv;
-	int flag = 0;
-
-	memset(&serv, 0, sizeof(serv));
-	serv.sin_family = AF_INET;
-	serv.sin_port = htons(1885);
-	serv.sin_addr.s_addr = htonl(INADDR_ANY);
-
-	int socketfd = 0;
-
-	socketfd =  socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK|SOCK_CLOEXEC, 0);
-
-	flag = bind(socketfd, &serv, sizeof(serv));
-	if(flag != 0){
-		printf("flag = %d\n", flag);
-		exit(1);
-	}
 
 
-	listen(socketfd, 5);
-	if(flag != 0){
-		printf("flag = %d\n", flag);
-		exit(1);
-	}
 
-	int sfd = 0;
+    base_yingxue = analysis_protocol_init((void *)0, yingxue_frame_recv_fun, yingxue_process_frame, send_func_bc, check_reply_func ); 
 
-	socklen_t addrlen = 0;
-	struct sockaddr_storage addr;
-	unsigned int socklen = sizeof(addr);
-	memset(&addr, 0, sizeof(struct sockaddr_storage));
-
-	sfd = accept(socketfd, (struct sockaddr *)&addr, &addrlen);
-	while(1){
-		printf("sfd=%d\n", sfd);
-	}		
-
-
-    struct analysis_protocol_base_tag *base_yingxue = analysis_protocol_init((void *)0, yingxue_frame_recv_fun, 
-                                                                             yingxue_process_frame, send_func_bc, check_reply_func ); 
-
-    test_fun(base_yingxue);
-
-
+    //test_fun(base_yingxue);
+    run_net();
+    
 
 
     printf("wudan\n");
