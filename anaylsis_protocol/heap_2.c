@@ -9,7 +9,7 @@
  */
 static void prvHeapInit( void );
 
-extern uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
+uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
 
 
 /* Define the linked list structure.  This is used to link free blocks in order
@@ -22,7 +22,7 @@ typedef struct A_BLOCK_LINK
 
 
 static const uint16_t heapSTRUCT_SIZE	= ( ( sizeof ( BlockLink_t ) + ( portBYTE_ALIGNMENT - 1 ) ) & ~portBYTE_ALIGNMENT_MASK );
-#define heapMINIMUM_BLOCK_SIZE	( ( size_t ) ( heapSTRUCT_SIZE * 2 ) )
+#define heapMINIMUM_BLOCK_SIZE	( ( uint32_t ) ( heapSTRUCT_SIZE * 2 ) )
 
 /* Create a couple of list links to mark the start and end of the list. */
 static BlockLink_t xStart, xEnd;
@@ -59,7 +59,7 @@ size_t xBlockSize;																	\
 }
 /*-----------------------------------------------------------*/
 
-void *pvPortMalloc( size_t xWantedSize )
+void *pvPortMalloc( uint32_t xWantedSize )
 {
 BlockLink_t *pxBlock, *pxPreviousBlock, *pxNewBlockLink;
 static uint32_t xHeapHasBeenInitialised = 0;
@@ -185,8 +185,8 @@ BlockLink_t *pxFirstFreeBlock;
 uint8_t *pucAlignedHeap;
 
 	/* Ensure the heap starts on a correctly aligned boundary. */
-	pucAlignedHeap = ( uint8_t * ) ( ( ( uint32_t ) &ucHeap[ portBYTE_ALIGNMENT ] ) & ( ~( ( uint32_t ) portBYTE_ALIGNMENT_MASK ) ) );
-
+	pucAlignedHeap = ( uint8_t * ) ( ( (portPOINTER_SIZE_TYPE ) &ucHeap[ portBYTE_ALIGNMENT ] ) & ( ~( (portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) ) );
+    //pucAlignedHeap = ucHeap;
 	/* xStart is used to hold a pointer to the first item in the list of free
 	blocks.  The void cast is used to prevent compiler warnings. */
 	xStart.pxNextFreeBlock = ( void * ) pucAlignedHeap;
