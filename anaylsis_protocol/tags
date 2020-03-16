@@ -4,6 +4,8 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+A_BLOCK_LINK	heap_2.c	/^typedef struct A_BLOCK_LINK$/;"	s	file:
+BlockLink_t	heap_2.c	/^} BlockLink_t;$/;"	t	typeref:struct:A_BLOCK_LINK	file:
 CIRCLEQ_EMPTY	queue.h	559;"	d
 CIRCLEQ_ENTRY	queue.h	479;"	d
 CIRCLEQ_FIRST	queue.h	560;"	d
@@ -99,6 +101,7 @@ WIFI	analysis_protocol.h	/^enum analysis_protocol_state_tag{ YINGXUE, WIFI  };$/
 YINGXUE	analysis_protocol.h	/^enum analysis_protocol_state_tag{ YINGXUE, WIFI  };$/;"	e	enum:analysis_protocol_state_tag
 _ANALYSIS_PROTOCOL_H_	analysis_protocol.h	22;"	d
 _ANALYSIS_PROTOCOL_TOOLS_H	analysis_protocol_tools.h	2;"	d
+_HEAP_H	heap.h	2;"	d
 _SYS_QUEUE_H_	queue.h	33;"	d
 _TAILQ_ENTRY	queue.h	377;"	d
 _TAILQ_HEAD	queue.h	367;"	d
@@ -119,6 +122,8 @@ chain_list_tag	analysis_protocol_tools.h	/^struct chain_list_tag{$/;"	s
 check_reply_func	main.c	/^uint8_t check_reply_func(struct analysis_protocol_base_tag *base, void *arg)$/;"	f
 check_reply_send_frame_bc	analysis_protocol.h	/^	base_callback check_reply_send_frame_bc;$/;"	m	struct:analysis_protocol_base_tag
 client_fd_g	main.c	/^int client_fd_g = 0;$/;"	v
+configADJUSTED_HEAP_SIZE	heap_2.c	5;"	d	file:
+configTOTAL_HEAP_SIZE	heap.h	4;"	d
 count	analysis_protocol_tools.h	/^	uint8_t count; \/\/当前数量$/;"	m	struct:chain_list_tag
 create_chain_list	analysis_protocol_tools.h	18;"	d
 curr_cache_time	analysis_protocol.h	/^    struct timeval curr_cache_time;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::timeval
@@ -129,6 +134,8 @@ data_len	analysis_protocol.h	/^    uint8_t data_len; \/\/命令长度$/;"	m	stru
 data_len	analysis_protocol.h	/^    uint8_t data_len; \/\/数据长度$/;"	m	struct:analysis_protocol_send_frame_list_tag
 front	analysis_protocol_tools.h	/^	uint8_t front; \/\/头结点$/;"	m	struct:chain_list_tag
 get_recv_frame_bc	analysis_protocol.h	/^	base_callback get_recv_frame_bc; $/;"	m	struct:analysis_protocol_base_tag
+heapMINIMUM_BLOCK_SIZE	heap_2.c	25;"	d	file:
+heapSTRUCT_SIZE	heap_2.c	/^static const uint16_t heapSTRUCT_SIZE	= ( ( sizeof ( BlockLink_t ) + ( portBYTE_ALIGNMENT - 1 ) ) & ~portBYTE_ALIGNMENT_MASK );$/;"	v	file:
 in_chain_list	analysis_protocol_tools.h	31;"	d
 is_empty_chain_list	analysis_protocol_tools.h	21;"	d
 is_full_chain_list	analysis_protocol_tools.h	26;"	d
@@ -138,7 +145,13 @@ main	main.c	/^int main()$/;"	f
 next	analysis_protocol.h	/^    TAILQ_ENTRY(analysis_protocol_send_frame_list_tag)  next; \/\/下一个节点  $/;"	m	struct:analysis_protocol_send_frame_list_tag
 next	analysis_protocol.h	/^    TAILQ_ENTRY(analysis_protocol_send_frame_to_dest_tag)  next; \/\/下一个节点  $/;"	m	struct:analysis_protocol_send_frame_to_dest_tag
 out_chain_list	analysis_protocol_tools.h	34;"	d
+portBYTE_ALIGNMENT	heap.h	5;"	d
+portBYTE_ALIGNMENT_MASK	heap.h	6;"	d
 process_recv_frame_bc	analysis_protocol.h	/^	base_callback process_recv_frame_bc;$/;"	m	struct:analysis_protocol_base_tag
+prvHeapInit	heap_2.c	/^static void prvHeapInit( void )$/;"	f	file:
+prvInsertBlockIntoFreeList	heap_2.c	41;"	d	file:
+pvPortMalloc	heap_2.c	/^void *pvPortMalloc( size_t xWantedSize )$/;"	f
+pxNextFreeBlock	heap_2.c	/^	struct A_BLOCK_LINK *pxNextFreeBlock;	\/*<< The next free block in the list. *\/$/;"	m	struct:A_BLOCK_LINK	typeref:struct:A_BLOCK_LINK::A_BLOCK_LINK	file:
 rear	analysis_protocol_tools.h	/^	uint8_t rear; \/\/尾结点$/;"	m	struct:chain_list_tag
 recv_frame	analysis_protocol.h	/^    void *recv_frame;$/;"	m	struct:analysis_protocol_base_tag
 repeat_during	analysis_protocol.h	/^    uint8_t repeat_during ; \/\/重发时间间隔$/;"	m	struct:analysis_protocol_send_frame_list_tag
@@ -155,9 +168,18 @@ state	analysis_protocol.h	/^    uint8_t state; \/\/自己定义状态$/;"	m	stru
 test_buf	main.c	/^unsigned char test_buf[] = {$/;"	v
 test_fun	main.c	/^void test_fun( struct analysis_protocol_base_tag *base )$/;"	f
 test_unit	main.c	/^test_unit(struct analysis_protocol_base_tag *base )$/;"	f
+vPortFree	heap_2.c	/^void vPortFree( void *pv )$/;"	f
+vPortInitialiseBlocks	heap_2.c	/^void vPortInitialiseBlocks( void )$/;"	f
+vTaskSuspendAll	heap.h	8;"	d
 wifi_1	analysis_protocol.h	/^    uint8_t wifi_1;$/;"	m	struct:wifi_frame_tag
 wifi_2	analysis_protocol.h	/^    uint8_t wifi_2;$/;"	m	struct:wifi_frame_tag
 wifi_frame_tag	analysis_protocol.h	/^struct wifi_frame_tag{$/;"	s
+xBlockSize	heap_2.c	/^	size_t xBlockSize;						\/*<< The size of the free block. *\/$/;"	m	struct:A_BLOCK_LINK	file:
+xEnd	heap_2.c	/^static BlockLink_t xStart, xEnd;$/;"	v	file:
+xFreeBytesRemaining	heap_2.c	/^static size_t xFreeBytesRemaining = configADJUSTED_HEAP_SIZE;$/;"	v	file:
+xPortGetFreeHeapSize	heap_2.c	/^size_t xPortGetFreeHeapSize( void )$/;"	f
+xStart	heap_2.c	/^static BlockLink_t xStart, xEnd;$/;"	v	file:
+xTaskResumeAll	heap.h	10;"	d
 yingxue_frame_recv_fun	main.c	/^yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)$/;"	f
 yingxue_frame_tag	analysis_protocol.h	/^struct yingxue_frame_tag{$/;"	s
 yingxue_process_frame	main.c	/^yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)$/;"	f
