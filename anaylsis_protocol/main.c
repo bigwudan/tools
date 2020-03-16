@@ -108,6 +108,7 @@ send_func_bc(struct analysis_protocol_base_tag *base, void *arg)
 		TAILQ_REMOVE(&base->send_frame_dest_head, send, next); 
         write(client_fd_g, send->data, send->data_len);
 		SELF_FREE(send);
+        //vPortFree(send);
 	}
     return 0;
 }
@@ -120,6 +121,7 @@ uint8_t check_reply_func(struct analysis_protocol_base_tag *base, void *arg)
 	if(tmp){
 		TAILQ_REMOVE(&base->send_frame_head, tmp, next);		
 		SELF_FREE(tmp);
+        //vPortFree(tmp);
 	}
     return 0;
 

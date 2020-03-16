@@ -25,12 +25,13 @@
 #include <sys/time.h>
 #include "analysis_protocol_tools.h"
 #include "queue.h"
+#include "heap.h"
 
 #define FRAME_RECV_CACHE_MAX 50
 #define FRAME_SEND_DATA 50
 
-#define SELF_MALLOC(num) malloc(num) 
-#define SELF_FREE(p) free(p)
+#define SELF_MALLOC(num) pvPortMalloc(num) 
+#define SELF_FREE(p) vPortFree(p)
 
 //前置声明
 struct analysis_protocol_base_tag;

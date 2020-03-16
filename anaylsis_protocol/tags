@@ -24,8 +24,8 @@ CIRCLEQ_LOOP_PREV	queue.h	569;"	d
 CIRCLEQ_NEXT	queue.h	562;"	d
 CIRCLEQ_PREV	queue.h	563;"	d
 CIRCLEQ_REMOVE	queue.h	533;"	d
-FRAME_RECV_CACHE_MAX	analysis_protocol.h	29;"	d
-FRAME_SEND_DATA	analysis_protocol.h	30;"	d
+FRAME_RECV_CACHE_MAX	analysis_protocol.h	30;"	d
+FRAME_SEND_DATA	analysis_protocol.h	31;"	d
 LIST_EMPTY	queue.h	142;"	d
 LIST_ENTRY	queue.h	92;"	d
 LIST_FIRST	queue.h	143;"	d
@@ -39,8 +39,8 @@ LIST_INSERT_HEAD	queue.h	120;"	d
 LIST_NEXT	queue.h	144;"	d
 LIST_REMOVE	queue.h	127;"	d
 MAX_CHAIN_NUM	analysis_protocol_tools.h	6;"	d
-SELF_FREE	analysis_protocol.h	33;"	d
-SELF_MALLOC	analysis_protocol.h	32;"	d
+SELF_FREE	analysis_protocol.h	34;"	d
+SELF_MALLOC	analysis_protocol.h	33;"	d
 SIMPLEQ_EMPTY	queue.h	359;"	d
 SIMPLEQ_ENTRY	queue.h	302;"	d
 SIMPLEQ_FIRST	queue.h	360;"	d

@@ -61,6 +61,7 @@ size_t xBlockSize;																	\
 
 void *pvPortMalloc( uint32_t xWantedSize )
 {
+    printf("my malloc\n");
 BlockLink_t *pxBlock, *pxPreviousBlock, *pxNewBlockLink;
 static uint32_t xHeapHasBeenInitialised = 0;
 void *pvReturn = NULL;
@@ -143,6 +144,7 @@ void *pvReturn = NULL;
 
 void vPortFree( void *pv )
 {
+    printf("my free\n");
 uint8_t *puc = ( uint8_t * ) pv;
 BlockLink_t *pxLink;
 
