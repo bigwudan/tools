@@ -1,0 +1,23 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+_KFIFO_H_	kfifo.h	2;"	d
+__kfifo_get	kfifo.c	/^ unsigned int __kfifo_get(struct kfifo *fifo,$/;"	f
+__kfifo_put	kfifo.c	/^ unsigned int __kfifo_put(struct kfifo *fifo,$/;"	f
+buffer	kfifo.h	/^	unsigned char *buffer;    \/* the buffer holding the data : 用于存放数据的缓存 *\/$/;"	m	struct:kfifo
+fls	kfifo.c	/^static inline int fls(int x)$/;"	f	file:
+in	kfifo.h	/^	unsigned int in;    \/* data is added at offset (in % size) ： 如果使用不能保证任何时间最多只有一个读线程和写线程，需要使用该lock实施同步*\/$/;"	m	struct:kfifo
+is_power_of_2	kfifo.h	6;"	d
+kfifo	kfifo.h	/^struct kfifo {$/;"	s
+kfifo_alloc	kfifo.c	/^struct kfifo *kfifo_alloc(unsigned int size)$/;"	f
+kfifo_get	kfifo.c	/^unsigned int kfifo_get(struct kfifo *fifo,$/;"	f
+kfifo_init	kfifo.c	/^struct kfifo *kfifo_init(unsigned char *buffer, unsigned int size)$/;"	f
+kfifo_put	kfifo.c	/^unsigned int kfifo_put(struct kfifo *fifo,$/;"	f
+main	test.c	/^int main()$/;"	f
+min	kfifo.h	8;"	d
+out	kfifo.h	/^	unsigned int out;    \/* data is extracted from off. (out % size) ：一起构成一个循环队列。 in指向buffer中队头，而且out指向buffer中的队尾 *\/$/;"	m	struct:kfifo
+roundup_pow_of_two	kfifo.c	/^static inline unsigned int roundup_pow_of_two(unsigned int x)$/;"	f	file:
+size	kfifo.h	/^	unsigned int size;    \/* the size of the allocated buffer : 空间的大小，在初化时将它向上扩展成2的幂，为了高效的进行与操作取余，后面会详解 *\/$/;"	m	struct:kfifo
