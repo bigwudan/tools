@@ -26,6 +26,7 @@ int main()
 
     }
 
+    printf("get len=%d\n", len = kfifo_get(p_kfifo, get_buf, sizeof(get_buf)));
 
 
     printf("ok\n");
