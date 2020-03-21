@@ -40,7 +40,7 @@ yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)
     struct chain_list_tag *chain = base->chain_list;
     struct yingxue_frame_tag *yingxue = (struct yingxue_frame_tag *)base->recv_frame;
     do{
-        is_empty_chain_list(chain, flag);
+        flag = is_empty_chain_list(chain);
         if(flag == 0) break;
         out_chain_list(chain, data);
 		//
@@ -239,14 +239,16 @@ test_unit(struct analysis_protocol_base_tag *base )
 
     flag = analysis_protocol_write_chain_list(base->chain_list, buf, sizeof(buf));
 
+    printf("rec=%d\n", flag);
     flag = base->get_recv_frame_bc(base, NULL);
     printf("finish frame state=%d\n", flag);
     printf("flag=%d\n", flag);
     
-    uint8_t buf_1[] = {   0x00, 0x00, 0x00, 0x2d, 0x10, 0x00, 0x00, 0x00, 0x41, 0x00, 0x00, 0x79, 0x53 };
+    uint8_t buf_1[] = {   0x00, 0x00, 0x00, 0x2d, 0x10, 0x00, 0x00, 0x00, 0x41, 0x00, 0x00, 0x79, 0x53, 0x11, 0x22,0x55 };
 
     flag = analysis_protocol_write_chain_list(base->chain_list, buf_1, sizeof(buf_1));
 
+    printf("rec=%d\n", flag);
     flag = base->get_recv_frame_bc(base, NULL);
     printf("finish frame state=%d\n", flag);
     printf("flag=%d\n", flag);
@@ -256,8 +258,8 @@ test_unit(struct analysis_protocol_base_tag *base )
 int main()
 {
     base_yingxue = analysis_protocol_init((void *)0, yingxue_frame_recv_fun, yingxue_process_frame, send_func_bc, check_reply_func ); 
-    //test_unit(base_yingxue);
-    run_net();
+    test_unit(base_yingxue);
+    //run_net();
     printf("wudan\n");
 
 }
