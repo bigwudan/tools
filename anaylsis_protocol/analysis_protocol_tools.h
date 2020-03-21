@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#define MAX_CHAIN_NUM 60
+#define MAX_CHAIN_NUM 10
 
 
 //环形队列
@@ -18,14 +18,12 @@ struct chain_list_tag{
 #define create_chain_list(p_chain_list) do{ p_chain_list->rear= 0; p_chain_list->front = 0; p_chain_list->count = 0;memset(p_chain_list->buf, 0, sizeof(p_chain_list->buf));  }while(0)
 
 //是否为空 flag 0空 1未空
-#define is_empty_chain_list(p_chain_list, flag) do{\
-    if(p_chain_list->rear == p_chain_list->front){flag =0;}else{flag = 1;}\
-}while(0)
+#define is_empty_chain_list(p_chain_list)\
+    ( (p_chain_list->rear == p_chain_list->front)? 0 : 1)
 
-//是否已经满 flag 0满 1 为满
-#define is_full_chain_list(p_chain_list, flag) do{\
-    if(  ((p_chain_list->rear + 1) % MAX_CHAIN_NUM) == p_chain_list->front   ){flag = 0;}else{flag = 1;}\
-}while(0)
+//是否已经满 0满 1未满
+#define is_full_chain_list(p_chain_list) \
+    ( ( ((p_chain_list->rear + 1) % MAX_CHAIN_NUM) == p_chain_list->front) ? 0 : 1 )
 
 //插入数据，但是插入前先判度是否满
 #define in_chain_list(p_chain_list, src) do{ *(p_chain_list->buf + p_chain_list->rear) = src;  p_chain_list->rear = (p_chain_list->rear + 1) % MAX_CHAIN_NUM; }while(0)

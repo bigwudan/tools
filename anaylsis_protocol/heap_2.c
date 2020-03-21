@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "heap.h"
 
 /* A few bytes might be lost to byte aligning the heap start address. */

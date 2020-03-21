@@ -64,7 +64,7 @@ analysis_protocol_write_chain_list(struct chain_list_tag *chain_list, uint8_t *s
     uint8_t flag = 0;
     for(uint8_t i=0; i< len; i++){
         //判断是否满
-        is_full_chain_list(chain_list , flag );
+        flag = is_full_chain_list(chain_list);
         if(flag != 0){
             in_chain_list(chain_list, src[i] ); 
             send_len++;
@@ -87,7 +87,7 @@ analysis_protocol_read_chain_list(struct chain_list_tag *chain_list, uint8_t *sr
 
     for(int i=0; i< len; i++){
         //是否有数据
-        is_empty_chain_list(chain_list, flag);
+        flag = is_empty_chain_list(chain_list);
         if( flag !=0 ){
             out_chain_list(chain_list, (src[i]));
             send_len++;
