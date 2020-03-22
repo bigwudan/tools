@@ -94,47 +94,10 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
 
         //需要发送命令开机
         if(yingxue_frame->data[3] ==0x01 ){
-            flag = 0; 
-            //写入写入缓存
-            //是否加入检查重试的队列
-            
-            //判断是否已经存在重复缓存中
-            TAILQ_FOREACH(tmp_send_frame, &base->send_frame_head, next) {
-                if(tmp_send_frame->state == 0x01){
-                    flag = 1;
-                    break;
-                }
-            }
-            //没有找到加入重复缓存中
-            if(flag == 0){
-                //发送发送命令
-                memmove(send_buff, on_buf, sizeof(send_buff));
-                struct analysis_protocol_send_frame_list_tag *send_dest = SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_list_tag));
-                if(send_dest){
-                    send_dest->repeat_max = 5;
-                    send_dest->repeat_num = 1;
-                    send_dest->state = 1;//关机
-
-                    memmove(send_dest->data, send_buff, sizeof(send_buff) );
-
-                    send_dest->data_len = sizeof(send_buff);
-                    gettimeofday(&send_dest->last_send_time,NULL);
-                    send_dest->repeat_during = 1;//2秒钟重发一次
-                    TAILQ_INSERT_TAIL(&base->send_frame_head, send_dest, next);
-                    //加入发送列表
-                    struct analysis_protocol_send_frame_to_dest_tag *send_frame_dest = 
-                        SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_to_dest_tag));
-
-                    if(send_frame_dest){
-                        memmove(send_frame_dest, send_buff, sizeof(send_buff));
-                        send_frame_dest->data_len = sizeof(send_buff);
-                        TAILQ_INSERT_TAIL(&base->send_frame_dest_head, send_frame_dest, next );
-                        return 0;
-                    }else{
-                        return -1;
-                    }
-                }
-            }
+            //去重在重复列表中
+            analysis_protocol_recv_repeat_up(base, 0x01, 0x02, DATA, on_buf, sizeof(on_buf));
+            //插入发送队列
+            analysis_protocol_insert_send_list(base, 0x01, 0x02, DATA, on_buf, sizeof(on_buf), 0);
         }
 
     }    
