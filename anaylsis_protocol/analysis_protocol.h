@@ -157,4 +157,10 @@ void analysis_protocol_overtime_send(struct analysis_protocol_base_tag *base );
 void
 analysis_protocol_compare_recv_repeat(struct frame_send_head_tag *head, int state, int data,enum compare_state cmp_state );
 
+//插入发送队列，并且去重,或者更新
+int
+analysis_protocol_insert_send_list(struct analysis_protocol_base_tag *base, int state, int data, enum compare_state cmp_state, uint8_t *src, uint8_t len, int head_tail );
+//发送命令需要，在重复列表中,如果存在，且是DATA型需要更新数据，如果没有插入数据
+void
+analysis_protocol_recv_repeat_up(struct analysis_protocol_base_tag *base, int state, int data, enum compare_state cmp_state, uint8_t *src, uint8_t len );
 #endif

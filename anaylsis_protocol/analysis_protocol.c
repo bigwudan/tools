@@ -221,7 +221,7 @@ analysis_protocol_recv_repeat_up(struct analysis_protocol_base_tag *base, int st
 
 //插入发送队列，并且去重,或者更新
 int
-analysis_protocol_insert_send_list(struct analysis_protocol_base_tag *base, int state, int data, enum compare_state cmp_state, uint8_t *src, uint8_t len ){
+analysis_protocol_insert_send_list(struct analysis_protocol_base_tag *base, int state, int data, enum compare_state cmp_state, uint8_t *src, uint8_t len, int head_tail ){
     int flag = 0; //是否需要从新插入
 
     //首先查找是否有重复的数据，有的话更新，没有的话在插入
@@ -254,7 +254,12 @@ analysis_protocol_insert_send_list(struct analysis_protocol_base_tag *base, int 
             send_frame_dest->data_len = len;
             send_frame_dest->state = state;
             send_frame_dest->value = data;
-            TAILQ_INSERT_TAIL(&base->send_frame_dest_head, send_frame_dest, next );
+            if(head_tail == 0){
+                TAILQ_INSERT_HEAD(&base->send_frame_dest_head, send_frame_dest, next );
+            }else{
+                TAILQ_INSERT_TAIL(&base->send_frame_dest_head, send_frame_dest, next );
+            }
+
             return 0;
         }else{
             return -1;
