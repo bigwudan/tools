@@ -19,7 +19,7 @@
 struct analysis_protocol_base_tag *base_yingxue;
 int client_fd_g = 0;
 int state_g = 0x01;//开机
-int data_g = 0x02;
+int data_g = 0x05;
 
 unsigned char test_buf[] = {
 	//[0][0] //[0][1]                                                 //erno
@@ -72,6 +72,8 @@ uint8_t
 yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
 {
     
+    data_g +=1;
+    on_buf[1] = data_g;
     unsigned char send_buff[11] = {0};
     //如果是第二帧加入回复缓存
     struct yingxue_frame_tag *yingxue_frame = (struct yingxue_frame_tag *)base->recv_frame; 
