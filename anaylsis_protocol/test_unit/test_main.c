@@ -18,6 +18,8 @@
 
 struct analysis_protocol_base_tag *base_yingxue;
 int client_fd_g = 0;
+int state_g = 0x01;//开机
+int data_g = 0x02;
 
 unsigned char test_buf[] = {
 	//[0][0] //[0][1]                                                 //erno
@@ -69,8 +71,7 @@ yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)
 uint8_t
 yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
 {
-
-    int flag = 1;
+    
     unsigned char send_buff[11] = {0};
     //如果是第二帧加入回复缓存
     struct yingxue_frame_tag *yingxue_frame = (struct yingxue_frame_tag *)base->recv_frame; 
@@ -82,22 +83,22 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
 
     memmove(send_buff, ack_buf, sizeof(send_buff));
 
-    //判断当前帧的状态 是否在重复列表中，有的话去挑
-    
-    analysis_protocol_compare_recv_repeat(&base->send_frame_head, 0x02, 0x01, DATA);
 
 
 
 
     //发送命令
     if(yingxue_frame->data[2] == 0x11){
+        //判断当前帧的状态 是否在重复列表中，有的话去挑
+
+        analysis_protocol_compare_recv_repeat(&base->send_frame_head, state_g, yingxue_frame->data[3], DATA);
 
         //需要发送命令开机
         if(yingxue_frame->data[3] ==0x01 ){
-            //去重在重复列表中
-            analysis_protocol_recv_repeat_up(base, 0x01, 0x02, DATA, on_buf, sizeof(on_buf));
-            //插入发送队列
-            analysis_protocol_insert_send_list(base, 0x01, 0x02, DATA, on_buf, sizeof(on_buf), 0);
+            //发送重复命令,并且去重在重复列表中
+            analysis_protocol_recv_repeat_up(base, state_g, data_g, DATA, on_buf, sizeof(on_buf));
+            //插入发送队列，并且去重
+            analysis_protocol_insert_send_list(base, state_g, data_g, DATA, on_buf, sizeof(on_buf), 0);
         }
 
     }    
