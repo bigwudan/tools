@@ -29,6 +29,7 @@ unsigned char test_buf[] = {
 
 uint8_t ack_buf[] = {0xEB, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0x2A};
 uint8_t reply[] =  {0xAA, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0xFF};
+uint8_t on_buf[] = {0xEB, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0x2A};
 
 uint8_t 
 yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)
@@ -69,6 +70,8 @@ uint8_t
 yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
 {
 
+    int flag = 1;
+    unsigned char send_buff[11] = {0};
     //如果是第二帧加入回复缓存
     struct yingxue_frame_tag *yingxue_frame = (struct yingxue_frame_tag *)base->recv_frame; 
     printf("rev finish frame= ");
@@ -77,31 +80,85 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
     }
     printf("\r\n");
 
-    if(0 ||yingxue_frame->data[2] == 0x11){
-        printf("write cache\n");
-        //写入写入缓存
-        //是否加入检查重试的队列
-        struct analysis_protocol_send_frame_list_tag *send_dest = SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_list_tag));
-        send_dest->repeat_max = 2;
-        send_dest->repeat_num = 1;
-        send_dest->state = 1;//关机
+    memmove(send_buff, ack_buf, sizeof(send_buff));
 
-        memmove(send_dest->data, ack_buf, sizeof(ack_buf) );
+    //判断当前帧的状态 是否在重复列表中，有的话去挑
+    
+    //便利整个缓存命令链表
+    struct analysis_protocol_send_frame_list_tag *send_frame;
+    struct analysis_protocol_send_frame_list_tag *tmp_send_frame;
 
-        send_dest->data_len = sizeof(ack_buf);
-        gettimeofday(&send_dest->last_send_time,NULL);
-        send_dest->repeat_during = 2;
-        TAILQ_INSERT_TAIL(&base->send_frame_head, send_dest, next);
+    //获得一个元素
+    send_frame = TAILQ_FIRST(&base->send_frame_head);
+    while(send_frame){
+        tmp_send_frame = send_frame;
+        send_frame = TAILQ_NEXT(send_frame, next);
+        //重复缓存中，命令状态是开启，去掉
+        if(tmp_send_frame->state == 1){
+            if(yingxue_frame->data[2] == 0x11 && yingxue_frame->data[3] == 0x02){
+                TAILQ_REMOVE(&base->send_frame_head, tmp_send_frame, next);   
+                SELF_FREE(tmp_send_frame);
+            }
+        }
+    
+    }
+
+
+
+
+    //发送命令
+    if(yingxue_frame->data[2] == 0x11){
+
+        //需要发送命令开机
+        if(yingxue_frame->data[3] ==0x01 ){
+            flag = 0; 
+        
+            printf("write cache\n");
+            //写入写入缓存
+            //是否加入检查重试的队列
+            
+            //判断是否已经存在重复缓存中
+            TAILQ_FOREACH(tmp_send_frame, &base->send_frame_head, next) {
+                if(tmp_send_frame->state == 0x01){
+                    flag = 1;
+                    break;
+                }
+            }
+            //没有找到加入重复缓存中
+            if(flag == 0){
+                //发送发送命令
+                memmove(send_buff, on_buf, sizeof(send_buff));
+                struct analysis_protocol_send_frame_list_tag *send_dest = SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_list_tag));
+                if(send_dest){
+                    send_dest->repeat_max = 2;
+                    send_dest->repeat_num = 1;
+                    send_dest->state = 1;//关机
+
+                    memmove(send_dest->data, ack_buf, sizeof(ack_buf) );
+
+                    send_dest->data_len = sizeof(ack_buf);
+                    gettimeofday(&send_dest->last_send_time,NULL);
+                    send_dest->repeat_during = 2;
+                    TAILQ_INSERT_TAIL(&base->send_frame_head, send_dest, next);
+                }
+            }
+        }
+
     }    
     //加入发送列表
     struct analysis_protocol_send_frame_to_dest_tag *send_frame_dest = 
         SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_to_dest_tag));
 
-    memmove(send_frame_dest, ack_buf, sizeof(ack_buf));
-    send_frame_dest->data_len = sizeof(ack_buf);
-    TAILQ_INSERT_TAIL(&base->send_frame_dest_head, send_frame_dest, next );
     //接收帧长度为0
     yingxue_frame->len = 0;
+    if(send_frame_dest){
+        memmove(send_frame_dest, send_buff, sizeof(send_buff));
+        send_frame_dest->data_len = sizeof(send_buff);
+        TAILQ_INSERT_TAIL(&base->send_frame_dest_head, send_frame_dest, next );
+        return 0;
+    }else{
+        return -1;
+    }
     return 0;    
 
 }
