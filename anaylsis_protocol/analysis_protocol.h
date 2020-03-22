@@ -29,6 +29,7 @@
 
 #define FRAME_RECV_CACHE_MAX 50
 #define FRAME_SEND_DATA 50
+#define REPEAT_MAX 10
 
 #define SELF_MALLOC(num) pvPortMalloc(num) 
 #define SELF_FREE(p) vPortFree(p)

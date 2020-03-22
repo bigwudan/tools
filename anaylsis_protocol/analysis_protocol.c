@@ -150,12 +150,14 @@ analysis_protocol_compare_recv_repeat(struct frame_send_head_tag *head, int stat
             if(tmp_send_frame->state == state && tmp_send_frame->value == data){
                 TAILQ_REMOVE(head, tmp_send_frame, next);   
                 SELF_FREE(tmp_send_frame);
+                return ;
             }
         }else{
             //只对比状态
             if(tmp_send_frame->state == state ){
                 TAILQ_REMOVE(head, tmp_send_frame, next);   
                 SELF_FREE(tmp_send_frame);
+                return ;
             }
         }
     }
@@ -178,7 +180,6 @@ analysis_protocol_recv_repeat_up(struct analysis_protocol_base_tag *base, int st
             //如果是数据，需要对比数据
             if(cmp_state == DATA){
                 if(tmp_send_frame->value == data){
-                    TAILQ_REMOVE(&base->send_frame_head, tmp_send_frame, next); 
                     return ;
                 }else{
                 
@@ -205,7 +206,7 @@ analysis_protocol_recv_repeat_up(struct analysis_protocol_base_tag *base, int st
         struct analysis_protocol_send_frame_list_tag *send_dest = SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_list_tag));
         if(send_dest){
         
-            send_dest->repeat_max = 5;
+            send_dest->repeat_max = REPEAT_MAX;
             send_dest->repeat_num = 1;
             send_dest->value = data;
             send_dest->state = state;//关机
@@ -237,6 +238,8 @@ analysis_protocol_insert_send_list(struct analysis_protocol_base_tag *base, int 
                 memmove(tmp_send_frame->data, src, len);
                 tmp_send_frame->data_len = len;
                 tmp_send_frame->value = data;
+                flag = 1;
+                break;
             }else{
                 flag = 1;
                 break;
