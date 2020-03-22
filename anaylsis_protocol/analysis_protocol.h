@@ -36,6 +36,9 @@
 //前置声明
 struct analysis_protocol_base_tag;
 
+//对比类型 在取重中 state状态型 只比较状态
+//DATA 数据性 ，状态和数据需要同时对比
+enum compare_state{STATE, DATA  }; 
 
 //发送的命令缓存
 struct analysis_protocol_send_frame_list_tag
@@ -47,6 +50,7 @@ struct analysis_protocol_send_frame_list_tag
     uint8_t data_len; //数据长度
     struct timeval last_send_time;//最后发送的时间
     uint8_t repeat_during ; //重发时间间隔
+    uint8_t value;//值，就是需要改变的值
     TAILQ_ENTRY(analysis_protocol_send_frame_list_tag)  next; //下一个节点  
 
 };
@@ -56,6 +60,8 @@ struct analysis_protocol_send_frame_to_dest_tag
 {
     uint8_t data[FRAME_SEND_DATA]; //保存的命令
     uint8_t data_len; //命令长度
+    uint8_t state; //类型
+    uint8_t value; //值
     TAILQ_ENTRY(analysis_protocol_send_frame_to_dest_tag)  next; //下一个节点  
 };
 
@@ -143,5 +149,12 @@ analysis_protocol_init(
 //超时重发,对超过时间没有确认的数据，在一次重发
 void analysis_protocol_overtime_send(struct analysis_protocol_base_tag *base );
 
+//在收到的数据中，对比重复发送的队列，如果有重复就删除
+//重复发送的头队列
+//状态
+//数据
+//对比类型  是否需要对比数据
+void
+analysis_protocol_compare_recv_repeat(struct frame_send_head_tag *head, int state, int data,enum compare_state cmp_state );
 
 #endif

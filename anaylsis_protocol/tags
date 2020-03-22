@@ -24,6 +24,7 @@ CIRCLEQ_LOOP_PREV	queue.h	569;"	d
 CIRCLEQ_NEXT	queue.h	562;"	d
 CIRCLEQ_PREV	queue.h	563;"	d
 CIRCLEQ_REMOVE	queue.h	533;"	d
+DATA	analysis_protocol.h	/^enum compare_state{STATE, DATA  }; $/;"	e	enum:compare_state
 FRAME_RECV_CACHE_MAX	analysis_protocol.h	30;"	d
 FRAME_SEND_DATA	analysis_protocol.h	31;"	d
 LIST_EMPTY	queue.h	142;"	d
@@ -38,7 +39,9 @@ LIST_INSERT_BEFORE	queue.h	113;"	d
 LIST_INSERT_HEAD	queue.h	120;"	d
 LIST_NEXT	queue.h	144;"	d
 LIST_REMOVE	queue.h	127;"	d
+MAXLINE	test_unit/client_test_unit.c	17;"	d	file:
 MAX_CHAIN_NUM	analysis_protocol_tools.h	6;"	d
+MY_DIR	test_unit/makefile	/^MY_DIR = ..\/$/;"	m
 SELF_FREE	analysis_protocol.h	34;"	d
 SELF_MALLOC	analysis_protocol.h	33;"	d
 SIMPLEQ_EMPTY	queue.h	359;"	d
@@ -80,6 +83,7 @@ STAILQ_INSERT_TAIL	queue.h	239;"	d
 STAILQ_NEXT	queue.h	287;"	d
 STAILQ_REMOVE	queue.h	256;"	d
 STAILQ_REMOVE_HEAD	queue.h	251;"	d
+STATE	analysis_protocol.h	/^enum compare_state{STATE, DATA  }; $/;"	e	enum:compare_state
 TAILQ_CONCAT	queue.h	445;"	d
 TAILQ_EMPTY	queue.h	457;"	d
 TAILQ_ENTRY	queue.h	382;"	d
@@ -106,23 +110,31 @@ _SYS_QUEUE_H_	queue.h	33;"	d
 _TAILQ_ENTRY	queue.h	377;"	d
 _TAILQ_HEAD	queue.h	367;"	d
 ack_buf	main.c	/^uint8_t ack_buf[] = {0xEB, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0x2A};$/;"	v
+ack_buf	test_unit/test_main.c	/^uint8_t ack_buf[] = {0xEB, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0x2A};$/;"	v
 analysis_protocol_base_tag	analysis_protocol.h	/^struct analysis_protocol_base_tag$/;"	s
+analysis_protocol_compare_recv_repeat	analysis_protocol.c	/^analysis_protocol_compare_recv_repeat(struct frame_send_head_tag *head, int state, int data,enum compare_state cmp_state )$/;"	f
 analysis_protocol_init	analysis_protocol.c	/^analysis_protocol_init(                                                                                                                                               $/;"	f
 analysis_protocol_overtime_send	analysis_protocol.c	/^analysis_protocol_overtime_send(struct analysis_protocol_base_tag *base )$/;"	f
 analysis_protocol_read_chain_list	analysis_protocol.c	/^analysis_protocol_read_chain_list(struct chain_list_tag *chain_list, uint8_t *src, uint8_t len )$/;"	f
+analysis_protocol_recv_repeat_up	analysis_protocol.c	/^analysis_protocol_recv_repeat_up(struct analysis_protocol_base_tag *base, int state, int data, enum compare_state cmp_state, uint8_t *src, uint8_t len )$/;"	f
 analysis_protocol_send_frame_list_tag	analysis_protocol.h	/^struct analysis_protocol_send_frame_list_tag$/;"	s
 analysis_protocol_send_frame_to_dest_tag	analysis_protocol.h	/^struct analysis_protocol_send_frame_to_dest_tag$/;"	s
 analysis_protocol_state_tag	analysis_protocol.h	/^enum analysis_protocol_state_tag{ YINGXUE, WIFI  };$/;"	g
 analysis_protocol_write_chain_list	analysis_protocol.c	/^analysis_protocol_write_chain_list(struct chain_list_tag *chain_list, uint8_t *src, uint8_t len )$/;"	f
 base_callback	analysis_protocol.h	/^typedef uint8_t (*base_callback)(struct analysis_protocol_base_tag *, void *);$/;"	t
 base_yingxue	main.c	/^struct analysis_protocol_base_tag *base_yingxue;$/;"	v	typeref:struct:analysis_protocol_base_tag
+base_yingxue	test_unit/test_main.c	/^struct analysis_protocol_base_tag *base_yingxue;$/;"	v	typeref:struct:analysis_protocol_base_tag
 buf	analysis_protocol_tools.h	/^	uint8_t buf[MAX_CHAIN_NUM];$/;"	m	struct:chain_list_tag
 chain_list	analysis_protocol.h	/^    struct chain_list_tag *chain_list;$/;"	m	struct:analysis_protocol_base_tag	typeref:struct:analysis_protocol_base_tag::chain_list_tag
 chain_list_tag	analysis_protocol_tools.h	/^struct chain_list_tag{$/;"	s
 check_reply_func	main.c	/^uint8_t check_reply_func(struct analysis_protocol_base_tag *base, void *arg)$/;"	f
+check_reply_func	test_unit/test_main.c	/^uint8_t check_reply_func(struct analysis_protocol_base_tag *base, void *arg)$/;"	f
 check_reply_send_frame_bc	analysis_protocol.h	/^	base_callback check_reply_send_frame_bc;$/;"	m	struct:analysis_protocol_base_tag
+client_connect	test_unit/client_test_unit.c	/^client_connect()$/;"	f
 client_fd_g	main.c	/^int client_fd_g = 0;$/;"	v
-configADJUSTED_HEAP_SIZE	heap_2.c	5;"	d	file:
+client_fd_g	test_unit/test_main.c	/^int client_fd_g = 0;$/;"	v
+compare_state	analysis_protocol.h	/^enum compare_state{STATE, DATA  }; $/;"	g
+configADJUSTED_HEAP_SIZE	heap_2.c	6;"	d	file:
 configTOTAL_HEAP_SIZE	heap.h	4;"	d
 count	analysis_protocol_tools.h	/^	uint8_t count; \/\/当前数量$/;"	m	struct:chain_list_tag
 create_chain_list	analysis_protocol_tools.h	18;"	d
@@ -134,24 +146,27 @@ data_len	analysis_protocol.h	/^    uint8_t data_len; \/\/命令长度$/;"	m	stru
 data_len	analysis_protocol.h	/^    uint8_t data_len; \/\/数据长度$/;"	m	struct:analysis_protocol_send_frame_list_tag
 front	analysis_protocol_tools.h	/^	uint8_t front; \/\/头结点$/;"	m	struct:chain_list_tag
 get_recv_frame_bc	analysis_protocol.h	/^	base_callback get_recv_frame_bc; $/;"	m	struct:analysis_protocol_base_tag
-heapMINIMUM_BLOCK_SIZE	heap_2.c	25;"	d	file:
+heapMINIMUM_BLOCK_SIZE	heap_2.c	26;"	d	file:
 heapSTRUCT_SIZE	heap_2.c	/^static const uint16_t heapSTRUCT_SIZE	= ( ( sizeof ( BlockLink_t ) + ( portBYTE_ALIGNMENT - 1 ) ) & ~portBYTE_ALIGNMENT_MASK );$/;"	v	file:
-in_chain_list	analysis_protocol_tools.h	31;"	d
+in_chain_list	analysis_protocol_tools.h	29;"	d
 is_empty_chain_list	analysis_protocol_tools.h	21;"	d
-is_full_chain_list	analysis_protocol_tools.h	26;"	d
+is_full_chain_list	analysis_protocol_tools.h	25;"	d
 last_send_time	analysis_protocol.h	/^    struct timeval last_send_time;\/\/最后发送的时间$/;"	m	struct:analysis_protocol_send_frame_list_tag	typeref:struct:analysis_protocol_send_frame_list_tag::timeval
 len	analysis_protocol.h	/^    uint8_t len;$/;"	m	struct:yingxue_frame_tag
 main	main.c	/^int main()$/;"	f
 main	test_main.c	/^int main()$/;"	f
+main	test_unit/client_test_unit.c	/^int main()$/;"	f
+main	test_unit/test_main.c	/^int main()$/;"	f
 next	analysis_protocol.h	/^    TAILQ_ENTRY(analysis_protocol_send_frame_list_tag)  next; \/\/下一个节点  $/;"	m	struct:analysis_protocol_send_frame_list_tag
 next	analysis_protocol.h	/^    TAILQ_ENTRY(analysis_protocol_send_frame_to_dest_tag)  next; \/\/下一个节点  $/;"	m	struct:analysis_protocol_send_frame_to_dest_tag
-out_chain_list	analysis_protocol_tools.h	34;"	d
+on_buf	test_unit/test_main.c	/^uint8_t on_buf[] = {0xEB, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0x2A};$/;"	v
+out_chain_list	analysis_protocol_tools.h	32;"	d
 portBYTE_ALIGNMENT	heap.h	5;"	d
 portBYTE_ALIGNMENT_MASK	heap.h	6;"	d
 portPOINTER_SIZE_TYPE	heap.h	8;"	d
 process_recv_frame_bc	analysis_protocol.h	/^	base_callback process_recv_frame_bc;$/;"	m	struct:analysis_protocol_base_tag
 prvHeapInit	heap_2.c	/^static void prvHeapInit( void )$/;"	f	file:
-prvInsertBlockIntoFreeList	heap_2.c	41;"	d	file:
+prvInsertBlockIntoFreeList	heap_2.c	42;"	d	file:
 pvPortMalloc	heap_2.c	/^void *pvPortMalloc( uint32_t xWantedSize )$/;"	f
 pxNextFreeBlock	heap_2.c	/^	struct A_BLOCK_LINK *pxNextFreeBlock;	\/*<< The next free block in the list. *\/$/;"	m	struct:A_BLOCK_LINK	typeref:struct:A_BLOCK_LINK::A_BLOCK_LINK	file:
 rear	analysis_protocol_tools.h	/^	uint8_t rear; \/\/尾结点$/;"	m	struct:chain_list_tag
@@ -160,20 +175,29 @@ repeat_during	analysis_protocol.h	/^    uint8_t repeat_during ; \/\/重发时间
 repeat_max	analysis_protocol.h	/^    uint8_t repeat_max; \/\/最大重发次数$/;"	m	struct:analysis_protocol_send_frame_list_tag
 repeat_num	analysis_protocol.h	/^    uint8_t repeat_num; \/\/重发次数$/;"	m	struct:analysis_protocol_send_frame_list_tag
 reply	main.c	/^uint8_t reply[] =  {0xAA, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0xFF};$/;"	v
+reply	test_unit/test_main.c	/^uint8_t reply[] =  {0xAA, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0xD8, 0xFF};$/;"	v
 run_net	main.c	/^run_net()$/;"	f
+run_net	test_unit/test_main.c	/^run_net()$/;"	f
 run_send_frame_bc	analysis_protocol.h	/^	base_callback run_send_frame_bc;$/;"	m	struct:analysis_protocol_base_tag
 send_frame_dest_head	analysis_protocol.h	/^    TAILQ_HEAD(frame_send_dest_head_tag, analysis_protocol_send_frame_to_dest_tag)   send_frame_dest_head;$/;"	m	struct:analysis_protocol_base_tag
 send_frame_head	analysis_protocol.h	/^    TAILQ_HEAD(frame_send_head_tag, analysis_protocol_send_frame_list_tag)   send_frame_head;$/;"	m	struct:analysis_protocol_base_tag
 send_func_bc	main.c	/^send_func_bc(struct analysis_protocol_base_tag *base, void *arg)$/;"	f
+send_func_bc	test_unit/test_main.c	/^send_func_bc(struct analysis_protocol_base_tag *base, void *arg)$/;"	f
 state	analysis_protocol.h	/^    enum analysis_protocol_state_tag state; $/;"	m	struct:analysis_protocol_base_tag	typeref:enum:analysis_protocol_base_tag::analysis_protocol_state_tag
 state	analysis_protocol.h	/^    uint8_t state; \/\/自己定义状态$/;"	m	struct:analysis_protocol_send_frame_list_tag
 test_buf	main.c	/^unsigned char test_buf[] = {$/;"	v
+test_buf	test_unit/client_test_unit.c	/^unsigned char test_buf[] = {$/;"	v
+test_buf	test_unit/test_main.c	/^unsigned char test_buf[] = {$/;"	v
+test_buf_1	test_unit/client_test_unit.c	/^unsigned char test_buf_1[] = {$/;"	v
 test_fun	main.c	/^void test_fun( struct analysis_protocol_base_tag *base )$/;"	f
+test_fun	test_unit/test_main.c	/^void test_fun( struct analysis_protocol_base_tag *base )$/;"	f
 test_unit	main.c	/^test_unit(struct analysis_protocol_base_tag *base )$/;"	f
+test_unit	test_unit/test_main.c	/^test_unit(struct analysis_protocol_base_tag *base )$/;"	f
 ucHeap	heap_2.c	/^uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];$/;"	v
 vPortFree	heap_2.c	/^void vPortFree( void *pv )$/;"	f
 vPortInitialiseBlocks	heap_2.c	/^void vPortInitialiseBlocks( void )$/;"	f
 vTaskSuspendAll	heap.h	10;"	d
+value	analysis_protocol.h	/^    uint8_t value;\/\/值，就是需要改变的值$/;"	m	struct:analysis_protocol_send_frame_list_tag
 wifi_1	analysis_protocol.h	/^    uint8_t wifi_1;$/;"	m	struct:wifi_frame_tag
 wifi_2	analysis_protocol.h	/^    uint8_t wifi_2;$/;"	m	struct:wifi_frame_tag
 wifi_frame_tag	analysis_protocol.h	/^struct wifi_frame_tag{$/;"	s
@@ -184,5 +208,7 @@ xPortGetFreeHeapSize	heap_2.c	/^size_t xPortGetFreeHeapSize( void )$/;"	f
 xStart	heap_2.c	/^static BlockLink_t xStart, xEnd;$/;"	v	file:
 xTaskResumeAll	heap.h	12;"	d
 yingxue_frame_recv_fun	main.c	/^yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)$/;"	f
+yingxue_frame_recv_fun	test_unit/test_main.c	/^yingxue_frame_recv_fun(struct analysis_protocol_base_tag *base, void *arg)$/;"	f
 yingxue_frame_tag	analysis_protocol.h	/^struct yingxue_frame_tag{$/;"	s
 yingxue_process_frame	main.c	/^yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)$/;"	f
+yingxue_process_frame	test_unit/test_main.c	/^yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)$/;"	f

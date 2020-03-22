@@ -84,25 +84,7 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
 
     //判断当前帧的状态 是否在重复列表中，有的话去挑
     
-    //便利整个缓存命令链表
-    struct analysis_protocol_send_frame_list_tag *send_frame;
-    struct analysis_protocol_send_frame_list_tag *tmp_send_frame;
-
-    //获得一个元素
-    send_frame = TAILQ_FIRST(&base->send_frame_head);
-    while(send_frame){
-        tmp_send_frame = send_frame;
-        send_frame = TAILQ_NEXT(send_frame, next);
-        //重复缓存中，命令状态是开启，去掉
-        if(tmp_send_frame->state == 1){
-            if(yingxue_frame->data[2] == 0x11 && yingxue_frame->data[3] == 0x02){
-                TAILQ_REMOVE(&base->send_frame_head, tmp_send_frame, next);   
-                SELF_FREE(tmp_send_frame);
-                printf("**************remove\n");
-            }
-        }
-    
-    }
+    analysis_protocol_compare_recv_repeat(&base->send_frame_head, 0x02, 0x01, DATA);
 
 
 
