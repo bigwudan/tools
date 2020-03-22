@@ -94,7 +94,7 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
         analysis_protocol_compare_recv_repeat(&base->send_frame_head, state_g, yingxue_frame->data[3], DATA);
 
         //需要发送命令开机
-        if(yingxue_frame->data[3] ==0x01 ){
+        if(yingxue_frame->data[3] ==0x01  ){
             //发送重复命令,并且去重在重复列表中
             analysis_protocol_recv_repeat_up(base, state_g, data_g, DATA, on_buf, sizeof(on_buf));
             //插入发送队列，并且去重

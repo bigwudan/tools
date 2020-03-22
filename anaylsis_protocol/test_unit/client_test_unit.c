@@ -71,7 +71,7 @@ client_connect()
         dur_tm = new_tm.tv_sec -  old_tm.tv_sec;
 
 
-        if(0 && dur_tm >=3){
+        if(dur_tm >=3){
             len = write(sockfd, test_buf_1, sizeof(test_buf_1));
             printf("***************over\n");
         }else{
