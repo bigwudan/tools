@@ -177,17 +177,25 @@ analysis_protocol_recv_repeat_up(struct analysis_protocol_base_tag *base, int st
         if(tmp_send_frame->state == state){
             //如果是数据，需要对比数据
             if(cmp_state == DATA){
-                //更新数据
-                tmp_send_frame->value = data;
-                tmp_send_frame->repeat_num = 0;
-                tmp_send_frame->data_len = len;
-                memmove(tmp_send_frame->data, src, len);
-                flag = 1;
-                break;
+                if(tmp_send_frame->value == data){
+                    TAILQ_REMOVE(&base->send_frame_head, tmp_send_frame, next); 
+                    return ;
+                }else{
+                
+                    //更新数据
+                    tmp_send_frame->value = data;
+                    tmp_send_frame->repeat_num = 0;
+                    tmp_send_frame->data_len = len;
+                    memmove(tmp_send_frame->data, src, len);
+                    flag = 1;
+                    return ;
+                }
+
+
             
             }else{
                 flag = 1;
-                break;
+                return ;
             }
         }
     }
