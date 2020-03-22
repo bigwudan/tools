@@ -71,13 +71,20 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
 
     //如果是第二帧加入回复缓存
     struct yingxue_frame_tag *yingxue_frame = (struct yingxue_frame_tag *)base->recv_frame; 
-    if(yingxue_frame->data[2] == 0x11){
+    printf("rev finish frame= ");
+    for(int i=0; i < yingxue_frame->len; i++){
+        printf(" 0x%02X ", yingxue_frame->data[i]);
+    }
+    printf("\r\n");
+
+    if(0 ||yingxue_frame->data[2] == 0x11){
         printf("write cache\n");
         //写入写入缓存
         //是否加入检查重试的队列
         struct analysis_protocol_send_frame_list_tag *send_dest = SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_list_tag));
         send_dest->repeat_max = 2;
         send_dest->repeat_num = 1;
+        send_dest->state = 1;//关机
 
         memmove(send_dest->data, ack_buf, sizeof(ack_buf) );
 
@@ -93,6 +100,8 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
     memmove(send_frame_dest, ack_buf, sizeof(ack_buf));
     send_frame_dest->data_len = sizeof(ack_buf);
     TAILQ_INSERT_TAIL(&base->send_frame_dest_head, send_frame_dest, next );
+    //接收帧长度为0
+    yingxue_frame->len = 0;
     return 0;    
 
 }
@@ -140,10 +149,16 @@ void test_fun( struct analysis_protocol_base_tag *base )
         gettimeofday(&base->curr_cache_time, NULL);
         sleep(1);
         len = read(client_fd_g, recv_buf, sizeof(recv_buf));
-        if(len > 0 ){
+
+        if(len > 0){
             //写入缓存
             flag = analysis_protocol_write_chain_list(base->chain_list, recv_buf, len);
             printf("recv frame_len=0x%02X\n", flag);
+        }
+        //查看环形缓存中是否为空
+        flag = is_empty_chain_list(base->chain_list);
+        if(flag != 0){
+        
             //运行分析数据看是否得到一个完整的数据
             flag = base->get_recv_frame_bc(base, NULL);
             printf("finish frame state=%d\n", flag);
@@ -157,14 +172,10 @@ void test_fun( struct analysis_protocol_base_tag *base )
             base->run_send_frame_bc(base, NULL);
             //查看是否需要超时
             analysis_protocol_overtime_send(base);
-        }else{
-
-            //发送
-            base->run_send_frame_bc(base, NULL);
-            //查看是否需要超时
-            analysis_protocol_overtime_send(base);
-
+        
         }
+
+
 
     }
 
@@ -258,8 +269,8 @@ test_unit(struct analysis_protocol_base_tag *base )
 int main()
 {
     base_yingxue = analysis_protocol_init((void *)0, yingxue_frame_recv_fun, yingxue_process_frame, send_func_bc, check_reply_func ); 
-    test_unit(base_yingxue);
-    //run_net();
+    //test_unit(base_yingxue);
+    run_net();
     printf("wudan\n");
 
 }
