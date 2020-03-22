@@ -98,6 +98,7 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
             if(yingxue_frame->data[2] == 0x11 && yingxue_frame->data[3] == 0x02){
                 TAILQ_REMOVE(&base->send_frame_head, tmp_send_frame, next);   
                 SELF_FREE(tmp_send_frame);
+                printf("**************remove\n");
             }
         }
     
