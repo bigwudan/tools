@@ -120,15 +120,8 @@ analysis_protocol_overtime_send(struct analysis_protocol_base_tag *base )
             if(base->curr_cache_time.tv_sec >= (tmp_send_frame->last_send_time.tv_sec + tmp_send_frame->repeat_during ) ){
                 tmp_send_frame->repeat_num++;
                 //加入重发 
-                tmp_frame_dest = (struct analysis_protocol_send_frame_to_dest_tag *)SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_to_dest_tag));
-                if(tmp_frame_dest){
-                    tmp_frame_dest->data_len = tmp_send_frame->data_len;
-                    memmove(tmp_frame_dest->data, tmp_send_frame->data, tmp_send_frame->data_len);
-                    //插入数据
-                    TAILQ_INSERT_TAIL(&base->send_frame_dest_head, tmp_frame_dest, next);
-                    //更改时间
-                    memmove(&tmp_send_frame->last_send_time, &base->curr_cache_time, sizeof(struct timeval));
-                }
+                analysis_protocol_insert_send_list(base, tmp_send_frame->state, tmp_send_frame->value, DATA, tmp_send_frame->data, tmp_send_frame->data_len, 1);
+
             }
         }
     }    
