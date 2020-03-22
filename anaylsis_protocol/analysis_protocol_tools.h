@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#define MAX_CHAIN_NUM 10
+#define MAX_CHAIN_NUM 100
 
 
 //环形队列
