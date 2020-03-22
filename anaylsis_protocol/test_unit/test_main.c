@@ -74,11 +74,11 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
     unsigned char send_buff[11] = {0};
     //如果是第二帧加入回复缓存
     struct yingxue_frame_tag *yingxue_frame = (struct yingxue_frame_tag *)base->recv_frame; 
-    printf("rev finish frame= ");
+    /*printf("rev finish frame= ");
     for(int i=0; i < yingxue_frame->len; i++){
         printf(" 0x%02X ", yingxue_frame->data[i]);
     }
-    printf("\r\n");
+    printf("\r\n");*/
 
     memmove(send_buff, ack_buf, sizeof(send_buff));
 
@@ -112,8 +112,6 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
         //需要发送命令开机
         if(yingxue_frame->data[3] ==0x01 ){
             flag = 0; 
-        
-            printf("write cache\n");
             //写入写入缓存
             //是否加入检查重试的队列
             
@@ -130,35 +128,35 @@ yingxue_process_frame(struct analysis_protocol_base_tag *base, void *arg)
                 memmove(send_buff, on_buf, sizeof(send_buff));
                 struct analysis_protocol_send_frame_list_tag *send_dest = SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_list_tag));
                 if(send_dest){
-                    send_dest->repeat_max = 2;
+                    send_dest->repeat_max = 5;
                     send_dest->repeat_num = 1;
                     send_dest->state = 1;//关机
 
-                    memmove(send_dest->data, ack_buf, sizeof(ack_buf) );
+                    memmove(send_dest->data, send_buff, sizeof(send_buff) );
 
-                    send_dest->data_len = sizeof(ack_buf);
+                    send_dest->data_len = sizeof(send_buff);
                     gettimeofday(&send_dest->last_send_time,NULL);
-                    send_dest->repeat_during = 2;
+                    send_dest->repeat_during = 1;//2秒钟重发一次
                     TAILQ_INSERT_TAIL(&base->send_frame_head, send_dest, next);
+                    //加入发送列表
+                    struct analysis_protocol_send_frame_to_dest_tag *send_frame_dest = 
+                        SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_to_dest_tag));
+
+                    if(send_frame_dest){
+                        memmove(send_frame_dest, send_buff, sizeof(send_buff));
+                        send_frame_dest->data_len = sizeof(send_buff);
+                        TAILQ_INSERT_TAIL(&base->send_frame_dest_head, send_frame_dest, next );
+                        return 0;
+                    }else{
+                        return -1;
+                    }
                 }
             }
         }
 
     }    
-    //加入发送列表
-    struct analysis_protocol_send_frame_to_dest_tag *send_frame_dest = 
-        SELF_MALLOC(sizeof(struct analysis_protocol_send_frame_to_dest_tag));
-
     //接收帧长度为0
     yingxue_frame->len = 0;
-    if(send_frame_dest){
-        memmove(send_frame_dest, send_buff, sizeof(send_buff));
-        send_frame_dest->data_len = sizeof(send_buff);
-        TAILQ_INSERT_TAIL(&base->send_frame_dest_head, send_frame_dest, next );
-        return 0;
-    }else{
-        return -1;
-    }
     return 0;    
 
 }
@@ -210,17 +208,13 @@ void test_fun( struct analysis_protocol_base_tag *base )
         if(len > 0){
             //写入缓存
             flag = analysis_protocol_write_chain_list(base->chain_list, recv_buf, len);
-            printf("recv frame_len=0x%02X\n", flag);
         }
         //查看环形缓存中是否为空
         flag = is_empty_chain_list(base->chain_list);
         if(flag != 0){
         
-            //运行分析数据看是否得到一个完整的数据
             flag = base->get_recv_frame_bc(base, NULL);
-            printf("finish frame state=%d\n", flag);
             if(flag == 1){
-                printf("rec finish\n");
                 base->process_recv_frame_bc(base, NULL);
                 //检查是否需要重复
                 //check_reply_func(base, NULL);	

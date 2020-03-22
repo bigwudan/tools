@@ -56,6 +56,7 @@ client_connect()
         exit(0);  
     }  
 
+    fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL) | O_NONBLOCK);
     while(1){
         len = write(sockfd, test_buf, sizeof(test_buf));
 
@@ -63,11 +64,15 @@ client_connect()
         printf("write =%d\n", len);
         sleep(1);
         len = read(sockfd, read_buf, sizeof(read_buf));
-        printf("read len=%d, ", len);
-        for(int i=0; i<len; i++){
-            printf(" 0x%02X ", read_buf[i]);
+        if(len >0){
+            printf("read len=%d, ", len);
+            for(int i=0; i<len; i++){
+                printf(" 0x%02X ", read_buf[i]);
+            }
+            printf("\r\n");
+        }else{
+            printf("read over\n");
         }
-        printf("\r\n");
     
     }
 
