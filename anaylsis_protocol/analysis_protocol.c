@@ -113,8 +113,10 @@ analysis_protocol_overtime_send(struct analysis_protocol_base_tag *base )
         send_frame = TAILQ_NEXT(send_frame, next);
         //判断是否超过重发次
         if(tmp_send_frame->repeat_num > tmp_send_frame->repeat_max){
-            TAILQ_REMOVE(&base->send_frame_head, tmp_send_frame, next);   
-            SELF_FREE(tmp_send_frame);
+            //不缺掉
+            //TAILQ_REMOVE(&base->send_frame_head, tmp_send_frame, next);   
+            //SELF_FREE(tmp_send_frame);
+            
         }else{
             //是否到达超时时间
             if(base->curr_cache_time.tv_sec >= (tmp_send_frame->last_send_time.tv_sec + tmp_send_frame->repeat_during ) ){
