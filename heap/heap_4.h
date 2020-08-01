@@ -5,7 +5,7 @@
 #include <stdint.h>
 #define portBYTE_ALIGNMENT  4
 
-#define configTOTAL_HEAP_SIZE 2000
+#define configTOTAL_HEAP_SIZE 10
 
 #define portBYTE_ALIGNMENT_MASK ( 0x0007 )
 
