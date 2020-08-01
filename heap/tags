@@ -1,0 +1,28 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+A_BLOCK_LINK	heap_4.c	/^typedef struct A_BLOCK_LINK$/;"	s	file:
+BlockLink_t	heap_4.c	/^} BlockLink_t;$/;"	t	typeref:struct:A_BLOCK_LINK	file:
+_HEAP_4_H	heap_4.h	2;"	d
+heapBITS_PER_BYTE	heap_4.c	13;"	d	file:
+heapMINIMUM_BLOCK_SIZE	heap_4.c	10;"	d	file:
+portBYTE_ALIGNMENT	heap_4.h	4;"	d
+prvHeapInit	heap_4.c	/^static void prvHeapInit( void )$/;"	f	file:
+prvInsertBlockIntoFreeList	heap_4.c	/^static void prvInsertBlockIntoFreeList( BlockLink_t *pxBlockToInsert )$/;"	f	file:
+pvPortMalloc	heap_4.c	/^void *pvPortMalloc( size_t xWantedSize )$/;"	f
+pxEnd	heap_4.c	/^static BlockLink_t xStart, *pxEnd = NULL;$/;"	v	file:
+pxNextFreeBlock	heap_4.c	/^	struct A_BLOCK_LINK *pxNextFreeBlock;	\/*<< The next free block in the list. *\/$/;"	m	struct:A_BLOCK_LINK	typeref:struct:A_BLOCK_LINK::A_BLOCK_LINK	file:
+ucHeap	heap_4.c	/^	static uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];$/;"	v	file:
+vPortFree	heap_4.c	/^void vPortFree( void *pv )$/;"	f
+vPortInitialiseBlocks	heap_4.c	/^void vPortInitialiseBlocks( void )$/;"	f
+xBlockAllocatedBit	heap_4.c	/^static size_t xBlockAllocatedBit = 0;$/;"	v	file:
+xBlockSize	heap_4.c	/^	size_t xBlockSize;						\/*<< The size of the free block. *\/$/;"	m	struct:A_BLOCK_LINK	file:
+xFreeBytesRemaining	heap_4.c	/^static size_t xFreeBytesRemaining = 0U;$/;"	v	file:
+xHeapStructSize	heap_4.c	/^static const size_t xHeapStructSize	= ( sizeof( BlockLink_t ) + ( ( size_t ) ( portBYTE_ALIGNMENT - 1 ) ) ) & ~( ( size_t ) portBYTE_ALIGNMENT_MASK );$/;"	v	file:
+xMinimumEverFreeBytesRemaining	heap_4.c	/^static size_t xMinimumEverFreeBytesRemaining = 0U;$/;"	v	file:
+xPortGetFreeHeapSize	heap_4.c	/^size_t xPortGetFreeHeapSize( void )$/;"	f
+xPortGetMinimumEverFreeHeapSize	heap_4.c	/^size_t xPortGetMinimumEverFreeHeapSize( void )$/;"	f
+xStart	heap_4.c	/^static BlockLink_t xStart, *pxEnd = NULL;$/;"	v	file:
